@@ -1,0 +1,2587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HL7 Message Viewer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#1e1e2e;--bg2:#181825;--bg3:#313244;--surface:#45475a;
+--text:#cdd6f4;--subtext:#a6adc8;--overlay:#585b70;
+--rose:#f38ba8;--green:#a6e3a1;--orange:#fab387;--blue:#89b4fa;
+--yellow:#f9e2af;--mauve:#cba6f7;--teal:#94e2d5;--red:#f38ba8;
+--sapphire:#74c7ec;--lavender:#b4befe;
+}
+html,body{height:100%;font-family:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+font-size:13px;background:var(--bg);color:var(--text);overflow:hidden}
+body{display:flex;flex-direction:column}
+
+/* Toolbar */
+#toolbar{display:flex;align-items:center;gap:10px;padding:6px 12px;
+background:var(--bg2);border-bottom:1px solid var(--bg3);height:40px;flex-shrink:0}
+#toolbar label{color:var(--subtext);font-size:12px}
+#toolbar select,#toolbar input[type=text]{background:var(--bg3);color:var(--text);
+border:1px solid var(--surface);border-radius:4px;padding:3px 8px;font-family:inherit;font-size:12px}
+#toolbar select{cursor:pointer}
+#toolbar input[type=text]{width:220px}
+#toolbar input[type=text]:focus{outline:none;border-color:var(--blue)}
+.tb-btn{background:var(--bg3);color:var(--text);border:1px solid var(--surface);
+border-radius:4px;padding:3px 10px;cursor:pointer;font-family:inherit;font-size:12px}
+.tb-btn:hover{background:var(--surface)}
+#profileIndicator{display:none;align-items:center;gap:6px;background:var(--bg3);
+border-radius:4px;padding:2px 8px;font-size:12px;color:var(--teal)}
+#profileIndicator .unload{cursor:pointer;color:var(--subtext);font-size:14px}
+#profileIndicator .unload:hover{color:var(--red)}
+#profileFile{display:none}
+#hl7File{display:none}
+
+/* Encoding info bar */
+#encodingInfo{display:none;align-items:center;gap:16px;padding:3px 12px;
+background:var(--bg2);border-bottom:1px solid var(--bg3);font-size:11px;flex-shrink:0}
+#encodingInfo .enc-label{color:var(--subtext)}
+#encodingInfo .enc-value{color:var(--teal)}
+#encodingInfo .enc-warn{color:var(--orange);font-weight:500}
+#encodingInfo .enc-error{color:var(--red);font-weight:500}
+
+/* Main layout */
+#main{display:flex;flex:1;min-height:0}
+#leftPanel{flex:0 0 62%;display:flex;flex-direction:column;border-right:1px solid var(--bg3);min-width:0}
+#rightPanel{flex:1;display:flex;flex-direction:column;overflow-y:auto;padding:12px;min-width:0}
+
+/* Tabs */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--bg3);flex-shrink:0}
+.tab{padding:6px 16px;cursor:pointer;color:var(--subtext);font-size:12px;
+border-bottom:2px solid transparent;user-select:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-content{display:none;flex:1;overflow:auto;min-height:0}
+.tab-content.active{display:flex;flex-direction:column}
+
+/* Input tab */
+#inputArea{flex:1;display:flex;flex-direction:column;padding:8px}
+#msgInput{flex:1;background:var(--bg2);color:var(--text);border:2px dashed var(--surface);
+border-radius:6px;padding:12px;font-family:inherit;font-size:13px;resize:none;min-height:200px}
+#msgInput:focus{outline:none;border-color:var(--blue)}
+#msgInput.dragover{border-color:var(--green);background:rgba(166,227,161,0.05)}
+#inputActions{display:flex;gap:8px;margin-top:8px;align-items:center}
+#inputActions .tb-btn{padding:5px 16px}
+#inputStatus{color:var(--subtext);font-size:12px;margin-left:8px}
+
+/* Parsed table */
+#parsedWrap{flex:1;overflow:auto}
+#parsedTable{width:100%;border-collapse:collapse}
+#parsedTable th{position:sticky;top:0;background:var(--bg2);color:var(--subtext);
+font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;
+text-align:left;padding:6px 8px;border-bottom:1px solid var(--bg3);z-index:1}
+#parsedTable td{padding:4px 8px;border-bottom:1px solid var(--bg3);
+vertical-align:top;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px}
+#parsedTable tr{cursor:pointer}
+#parsedTable tr:hover{background:var(--bg3)}
+#parsedTable tr.selected{background:rgba(137,180,250,0.12)}
+#parsedTable tr.seg-header{background:var(--bg2)}
+#parsedTable tr.seg-header td{padding:6px 8px;font-weight:700;color:var(--rose);
+border-bottom:1px solid var(--surface)}
+#parsedTable tr.seg-header .seg-toggle{cursor:pointer;margin-right:4px;color:var(--subtext);
+display:inline-block;width:12px;text-align:center;font-size:11px}
+#parsedTable .addr{color:var(--blue);font-weight:500;white-space:nowrap}
+#parsedTable .fname{color:var(--green)}
+#parsedTable .dtype{color:var(--orange);font-size:11px}
+#parsedTable .fval{color:var(--text);font-family:inherit}
+#parsedTable .fval.empty{color:var(--overlay);font-style:italic}
+#parsedTable tr.comp-row td{padding-left:30px;font-size:12px}
+#parsedTable tr.comp-row .addr{color:var(--sapphire)}
+#parsedTable tr.comp-row{display:none}
+#parsedTable tr.comp-row.expanded{display:table-row}
+#parsedTable tr.field-row .expand-icon{color:var(--subtext);font-size:10px;margin-right:3px;
+display:inline-block;width:12px;cursor:pointer}
+#parsedTable .opt-badge{font-size:10px;padding:1px 4px;border-radius:2px;margin-left:4px}
+#parsedTable .opt-R{background:rgba(243,139,168,0.2);color:var(--red)}
+#parsedTable .opt-O{background:rgba(166,173,200,0.15);color:var(--subtext)}
+#parsedTable .rep-badge{font-size:10px;color:var(--yellow);margin-left:3px}
+#parsedTable .custom-badge{font-size:10px;padding:1px 4px;border-radius:2px;
+background:rgba(203,166,247,0.2);color:var(--mauve);margin-left:4px}
+.hidden-row{display:none!important}
+.hidden-search{display:none!important}
+.hidden-collapse{display:none!important}
+
+/* Raw tab */
+#rawWrap{flex:1;overflow:auto;padding:12px}
+#rawContent{white-space:pre-wrap;word-break:break-all;line-height:1.6}
+#rawContent .raw-seg-name{color:var(--rose);font-weight:700}
+#rawContent .raw-sep{color:var(--surface)}
+#rawContent .raw-field{cursor:pointer;padding:1px 0;border-radius:2px}
+#rawContent .raw-field:hover{background:rgba(137,180,250,0.12)}
+#rawContent .raw-field.highlight{background:rgba(137,180,250,0.2);outline:1px solid var(--blue)}
+#rawContent .raw-segment{margin-bottom:2px}
+
+/* Right panel - detail */
+#detailPanel{color:var(--text)}
+#detailPanel h3{color:var(--blue);font-size:14px;margin-bottom:10px;font-weight:600}
+#detailPanel .detail-section{margin-bottom:16px}
+#detailPanel .detail-section h4{color:var(--subtext);font-size:11px;text-transform:uppercase;
+letter-spacing:0.5px;margin-bottom:6px}
+#detailPanel .detail-grid{display:grid;grid-template-columns:auto 1fr;gap:4px 12px}
+#detailPanel .detail-grid .lbl{color:var(--subtext);font-size:12px}
+#detailPanel .detail-grid .val{color:var(--text);font-size:12px;word-break:break-all}
+#detailPanel .val .dtype-link{color:var(--orange);cursor:pointer;text-decoration:underline}
+#detailPanel .val .dtype-link:hover{color:var(--yellow)}
+.comp-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:12px}
+.comp-table th{text-align:left;color:var(--subtext);font-weight:500;padding:3px 6px;
+border-bottom:1px solid var(--bg3);font-size:11px}
+.comp-table td{padding:3px 6px;border-bottom:1px solid var(--bg3)}
+.comp-table .ct-idx{color:var(--sapphire);width:30px}
+.comp-table .ct-name{color:var(--green)}
+.comp-table .ct-dt{color:var(--orange)}
+.comp-table .ct-val{color:var(--text);word-break:break-all}
+.comp-table .ct-val.empty{color:var(--overlay);font-style:italic}
+#profileNotes{margin-top:12px}
+#profileNotes .pn-label{color:var(--mauve);font-size:11px;text-transform:uppercase;
+letter-spacing:0.5px;margin-bottom:4px}
+#profileNotes .pn-text{color:var(--text);font-size:12px;line-height:1.5;
+background:var(--bg3);padding:8px;border-radius:4px;margin-bottom:8px}
+#profileNotes .vm-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+#profileNotes .vm-table td{padding:2px 6px;border-bottom:1px solid var(--bg3)}
+#profileNotes .vm-table .vm-code{color:var(--yellow);font-weight:500}
+#profileNotes .vm-table .vm-meaning{color:var(--text)}
+#noSelection{color:var(--subtext);text-align:center;margin-top:40px;font-size:13px}
+#noSelection p{margin-top:8px}
+
+/* Escape sequences */
+.esc-seq{background:rgba(249,226,175,0.15);color:var(--yellow);padding:0 2px;border-radius:2px;
+font-weight:500;cursor:help}
+.esc-note{margin-top:8px;padding:8px;background:var(--bg3);border-radius:4px;
+border-left:3px solid var(--yellow);font-size:11px;line-height:1.6;color:var(--subtext)}
+.esc-note code{color:var(--yellow);background:var(--bg2);padding:0 3px;border-radius:2px}
+.esc-note .esc-warn{color:var(--orange)}
+.val-warn{color:var(--red);cursor:help;margin-right:4px;font-size:14px}
+.dtype-resolved{font-size:9px;color:var(--blue);margin-left:2px;vertical-align:super}
+
+/* Keyboard hints */
+.kbd{display:inline-block;background:var(--bg3);border:1px solid var(--surface);
+border-radius:3px;padding:1px 5px;font-size:11px;color:var(--subtext);margin:0 2px}
+
+/* Help modal */
+#helpOverlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+background:rgba(0,0,0,0.6);z-index:100;justify-content:center;align-items:center}
+#helpOverlay.visible{display:flex}
+#helpModal{background:var(--bg);border:1px solid var(--surface);border-radius:8px;
+width:750px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+#helpModal .help-header{display:flex;justify-content:space-between;align-items:center;
+padding:12px 16px;border-bottom:1px solid var(--bg3)}
+#helpModal .help-header h2{font-size:15px;color:var(--blue);font-weight:600}
+#helpModal .help-close{cursor:pointer;color:var(--subtext);font-size:18px;background:none;
+border:none;font-family:inherit;padding:4px 8px}
+#helpModal .help-close:hover{color:var(--red)}
+#helpModal .help-body{overflow-y:auto;padding:16px;font-size:12px;line-height:1.7}
+#helpModal .help-body h3{color:var(--rose);font-size:13px;margin:16px 0 8px 0;font-weight:600}
+#helpModal .help-body h3:first-child{margin-top:0}
+#helpModal .help-body p{margin-bottom:8px;color:var(--text)}
+#helpModal .help-body code{background:var(--bg3);padding:1px 5px;border-radius:3px;
+color:var(--orange);font-size:12px}
+#helpModal .help-body pre{background:var(--bg2);border:1px solid var(--bg3);border-radius:4px;
+padding:10px;margin:8px 0;overflow-x:auto;color:var(--text);font-size:11px;line-height:1.5}
+#helpModal .help-body .field-ref{color:var(--green)}
+#helpModal .help-body .note{color:var(--subtext);font-style:italic;margin:4px 0 8px 0}
+#helpModal .help-body table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+#helpModal .help-body table th{text-align:left;color:var(--subtext);padding:4px 8px;
+border-bottom:1px solid var(--surface);font-weight:500}
+#helpModal .help-body table td{padding:4px 8px;border-bottom:1px solid var(--bg3);color:var(--text)}
+#helpModal .help-body table td:first-child{color:var(--orange);font-family:inherit}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--overlay)}
+
+/* Anonymization */
+.tb-btn.active{background:var(--yellow);color:var(--bg);font-weight:600}
+.tb-btn.active:hover{background:var(--orange);color:var(--bg)}
+.anon-checkbox{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--subtext);cursor:pointer}
+.anon-checkbox input{margin:0;cursor:pointer;accent-color:var(--yellow)}
+#anonIndicator{display:none;align-items:center;padding:3px 12px;
+background:rgba(249,226,175,0.1);border-bottom:1px solid var(--bg3);
+font-size:11px;color:var(--yellow);flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+<label>Version:</label>
+<select id="versionSelect"><option value="auto">Auto-detect</option>
+<option value="2.3">v2.3</option><option value="2.5">v2.5</option></select>
+<button class="tb-btn" onclick="document.getElementById('hl7File').click()">Open</button>
+<input type="file" id="hl7File" accept=".hl7,.txt,.dat,.msg">
+<button class="tb-btn" onclick="document.getElementById('profileFile').click()">Load Profile</button>
+<input type="file" id="profileFile" accept=".json">
+<div id="profileIndicator"><span id="profileName"></span><span class="unload" title="Unload profile" onclick="unloadProfile()">&#x2715;</span></div>
+<button id="anonBtn" class="tb-btn" onclick="toggleAnonymize()" title="Anonymize patient data (Ctrl+Shift+A)">Anon</button>
+<label class="anon-checkbox" title="Use Estonian non-ASCII names (&#xD5;, &#xD6;, &#xDC;, &#xC4;, &#x17D;, &#x160;)"><input type="checkbox" id="anonNonAscii" onchange="onNonAsciiChange()">Non-ASCII</label>
+<button class="tb-btn" onclick="showHelp()" title="Profile documentation &amp; help">?</button>
+<input type="text" id="searchInput" placeholder="Search addresses, names, values...">
+<div style="flex:1"></div>
+<span style="color:var(--subtext);font-size:11px">HL7 Message Viewer</span>
+</div>
+
+<div id="anonIndicator">&#9888; Anonymized view &mdash; original data preserved in input</div>
+<div id="encodingInfo">
+<span><span class="enc-label">File encoding: </span><span id="encDetected">-</span></span>
+<span><span class="enc-label">MSH-18: </span><span id="encDeclared">-</span></span>
+<span id="encWarning"></span>
+</div>
+
+<div id="main">
+<div id="leftPanel">
+<div class="tabs">
+<div class="tab active" data-tab="inputTab" onclick="switchTab(this)">Input</div>
+<div class="tab" data-tab="parsedTab" onclick="switchTab(this)">Parsed</div>
+<div class="tab" data-tab="rawTab" onclick="switchTab(this)">Raw</div>
+</div>
+<div id="inputTab" class="tab-content active">
+<div id="inputArea">
+<textarea id="msgInput" placeholder="Paste HL7 message here, or drag and drop an .hl7 file..."></textarea>
+<div id="inputActions">
+<button class="tb-btn" onclick="parseMessage()">Parse</button>
+<button class="tb-btn" onclick="clearAll()">Clear</button>
+<button class="tb-btn" onclick="loadSample()">Sample</button>
+<span id="inputStatus"></span>
+</div>
+</div>
+</div>
+<div id="parsedTab" class="tab-content">
+<div id="parsedWrap">
+<table id="parsedTable"><thead><tr>
+<th style="width:100px">Address</th><th style="width:180px">Field Name</th>
+<th style="width:50px">Type</th><th>Value</th>
+</tr></thead><tbody id="parsedBody"></tbody></table>
+</div>
+</div>
+<div id="rawTab" class="tab-content">
+<div id="rawWrap"><div id="rawContent"></div></div>
+</div>
+</div>
+<div id="rightPanel">
+<div id="noSelection">
+<p style="font-size:24px;color:var(--surface)">&#9776;</p>
+<p>Click a field in the parsed view<br>to see details</p>
+<p style="margin-top:20px;font-size:11px">
+<span class="kbd">&#8593;&#8595;</span> Navigate
+<span class="kbd">Enter</span> Expand
+<span class="kbd">Esc</span> Clear search
+<span class="kbd">Ctrl+C</span> Copy value
+<span class="kbd">Ctrl+Shift+A</span> Anonymize
+</p>
+<p style="margin-top:16px;font-size:11px;color:var(--subtext)">
+Click <span class="kbd">?</span> in the toolbar for<br>profile creation guide
+</p>
+</div>
+<div id="detailPanel" style="display:none"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA TYPE DEFINITIONS ==========
+const DATA_TYPES = {
+ST:{name:"String Data",primitive:true},
+NM:{name:"Numeric",primitive:true},
+ID:{name:"Coded Value for HL7 Tables",primitive:true},
+IS:{name:"Coded Value for User Tables",primitive:true},
+SI:{name:"Sequence ID",primitive:true},
+TX:{name:"Text Data",primitive:true},
+FT:{name:"Formatted Text",primitive:true},
+DT:{name:"Date",primitive:true},
+DTM:{name:"Date/Time",primitive:true},
+TM:{name:"Time",primitive:true},
+CQ:{name:"Composite Quantity with Units",components:[
+{name:"Quantity",dt:"NM"},{name:"Units",dt:"CE"}]},
+HD:{name:"Hierarchic Designator",components:[
+{name:"Namespace ID",dt:"IS"},{name:"Universal ID",dt:"ST"},
+{name:"Universal ID Type",dt:"ID"}]},
+EI:{name:"Entity Identifier",components:[
+{name:"Entity Identifier",dt:"ST"},{name:"Namespace ID",dt:"IS"},
+{name:"Universal ID",dt:"ST"},{name:"Universal ID Type",dt:"ID"}]},
+CE:{name:"Coded Element",components:[
+{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},
+{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
+{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"}]},
+CWE:{name:"Coded with Exceptions",components:[
+{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},
+{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
+{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"},
+{name:"Coding System Version ID",dt:"ST"},{name:"Alternate Coding System Version ID",dt:"ST"},
+{name:"Original Text",dt:"ST"}]},
+CNE:{name:"Coded with No Exceptions",components:[
+{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},
+{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
+{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"},
+{name:"Coding System Version ID",dt:"ST"},{name:"Alternate Coding System Version ID",dt:"ST"},
+{name:"Original Text",dt:"ST"}]},
+CX:{name:"Extended Composite ID with Check Digit",components:[
+{name:"ID Number",dt:"ST"},{name:"Check Digit",dt:"ST"},
+{name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},
+{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
+{name:"Effective Date",dt:"DT"},{name:"Expiration Date",dt:"DT"},
+{name:"Assigning Jurisdiction",dt:"CWE"},{name:"Assigning Agency",dt:"CWE"}]},
+XPN:{name:"Extended Person Name",components:[
+{name:"Family Name",dt:"FN"},{name:"Given Name",dt:"ST"},
+{name:"Second Name",dt:"ST"},{name:"Suffix",dt:"ST"},
+{name:"Prefix",dt:"ST"},{name:"Degree",dt:"IS"},
+{name:"Name Type Code",dt:"ID"},{name:"Name Representation Code",dt:"ID"},
+{name:"Name Context",dt:"CE"},{name:"Name Validity Range",dt:"DR"},
+{name:"Name Assembly Order",dt:"ID"},{name:"Effective Date",dt:"TS"},
+{name:"Expiration Date",dt:"TS"},{name:"Professional Suffix",dt:"ST"}]},
+XCN:{name:"Extended Composite ID and Name",components:[
+{name:"Person Identifier",dt:"ST"},{name:"Family Name",dt:"FN"},
+{name:"Given Name",dt:"ST"},{name:"Second Name",dt:"ST"},
+{name:"Suffix",dt:"ST"},{name:"Prefix",dt:"ST"},
+{name:"Degree",dt:"IS"},{name:"Source Table",dt:"IS"},
+{name:"Assigning Authority",dt:"HD"},{name:"Name Type Code",dt:"ID"},
+{name:"Identifier Check Digit",dt:"ST"},{name:"Check Digit Scheme",dt:"ID"},
+{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
+{name:"Name Representation Code",dt:"ID"},{name:"Name Context",dt:"CE"},
+{name:"Name Validity Range",dt:"DR"},{name:"Name Assembly Order",dt:"ID"},
+{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"},
+{name:"Professional Suffix",dt:"ST"},{name:"Assigning Jurisdiction",dt:"CWE"},
+{name:"Assigning Agency",dt:"CWE"}]},
+XAD:{name:"Extended Address",components:[
+{name:"Street Address",dt:"SAD"},{name:"Other Designation",dt:"ST"},
+{name:"City",dt:"ST"},{name:"State or Province",dt:"ST"},
+{name:"Zip or Postal Code",dt:"ST"},{name:"Country",dt:"ID"},
+{name:"Address Type",dt:"ID"},{name:"Other Geographic Designation",dt:"ST"},
+{name:"County/Parish Code",dt:"IS"},{name:"Census Tract",dt:"IS"},
+{name:"Address Representation Code",dt:"ID"},{name:"Address Validity Range",dt:"DR"},
+{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"}]},
+XTN:{name:"Extended Telecommunication Number",components:[
+{name:"Telephone Number",dt:"ST"},{name:"Telecommunication Use Code",dt:"ID"},
+{name:"Equipment Type",dt:"ID"},{name:"Email Address",dt:"ST"},
+{name:"Country Code",dt:"NM"},{name:"Area/City Code",dt:"NM"},
+{name:"Local Number",dt:"NM"},{name:"Extension",dt:"NM"},
+{name:"Any Text",dt:"ST"},{name:"Extension Prefix",dt:"ST"},
+{name:"Speed Dial Code",dt:"ST"},{name:"Unformatted Number",dt:"ST"}]},
+PL:{name:"Person Location",components:[
+{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},
+{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},
+{name:"Location Status",dt:"IS"},{name:"Person Location Type",dt:"IS"},
+{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},
+{name:"Location Description",dt:"ST"},{name:"Comprehensive Location ID",dt:"EI"},
+{name:"Assigning Authority for Location",dt:"HD"}]},
+MSG:{name:"Message Type",components:[
+{name:"Message Code",dt:"ID"},{name:"Trigger Event",dt:"ID"},
+{name:"Message Structure",dt:"ID"}]},
+PT:{name:"Processing Type",components:[
+{name:"Processing ID",dt:"ID"},{name:"Processing Mode",dt:"ID"}]},
+VID:{name:"Version Identifier",components:[
+{name:"Version ID",dt:"ID"},{name:"Internationalization Code",dt:"CE"},
+{name:"International Version ID",dt:"CE"}]},
+TS:{name:"Time Stamp",components:[
+{name:"Time",dt:"DTM"},{name:"Degree of Precision",dt:"ID"}]},
+FN:{name:"Family Name",components:[
+{name:"Surname",dt:"ST"},{name:"Own Surname Prefix",dt:"ST"},
+{name:"Own Surname",dt:"ST"},{name:"Surname Prefix from Partner",dt:"ST"},
+{name:"Surname from Partner",dt:"ST"}]},
+SAD:{name:"Street Address",components:[
+{name:"Street or Mailing Address",dt:"ST"},{name:"Street Name",dt:"ST"},
+{name:"Dwelling Number",dt:"ST"}]},
+RP:{name:"Reference Pointer",components:[
+{name:"Pointer",dt:"ST"},{name:"Application ID",dt:"HD"},
+{name:"Type of Data",dt:"ID"},{name:"Subtype",dt:"ID"}]},
+DR:{name:"Date/Time Range",components:[
+{name:"Range Start Date/Time",dt:"TS"},{name:"Range End Date/Time",dt:"TS"}]},
+DLN:{name:"Driver's License Number",components:[
+{name:"License Number",dt:"ST"},{name:"Issuing State",dt:"IS"},
+{name:"Expiration Date",dt:"DT"}]},
+FC:{name:"Financial Class",components:[
+{name:"Financial Class Code",dt:"IS"},{name:"Effective Date",dt:"TS"}]},
+DLD:{name:"Discharge to Location",components:[
+{name:"Discharge Location",dt:"IS"},{name:"Effective Date",dt:"TS"}]},
+CP:{name:"Composite Price",components:[
+{name:"Price",dt:"MO"},{name:"Price Type",dt:"ID"},
+{name:"From Value",dt:"NM"},{name:"To Value",dt:"NM"},
+{name:"Range Units",dt:"CE"},{name:"Range Type",dt:"ID"}]},
+MO:{name:"Money",components:[
+{name:"Quantity",dt:"NM"},{name:"Denomination",dt:"ID"}]},
+SN:{name:"Structured Numeric",components:[
+{name:"Comparator",dt:"ST"},{name:"Num1",dt:"NM"},
+{name:"Separator/Suffix",dt:"ST"},{name:"Num2",dt:"NM"}]},
+ED:{name:"Encapsulated Data",components:[
+{name:"Source Application",dt:"HD"},{name:"Type of Data",dt:"ID"},
+{name:"Data Subtype",dt:"ID"},{name:"Encoding",dt:"ID"},
+{name:"Data",dt:"TX"}]},
+CF:{name:"Coded Element with Formatted Values",components:[
+{name:"Identifier",dt:"ST"},{name:"Formatted Text",dt:"FT"},
+{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
+{name:"Alternate Formatted Text",dt:"FT"},{name:"Name of Alternate Coding System",dt:"ID"}]},
+TQ:{name:"Timing/Quantity",components:[
+{name:"Quantity",dt:"CQ"},{name:"Interval",dt:"RI"},
+{name:"Duration",dt:"ST"},{name:"Start Date/Time",dt:"TS"},
+{name:"End Date/Time",dt:"TS"},{name:"Priority",dt:"ST"},
+{name:"Condition",dt:"ST"},{name:"Text",dt:"TX"},
+{name:"Conjunction",dt:"ID"},{name:"Order Sequencing",dt:"OSD"},
+{name:"Occurrence Duration",dt:"CE"},{name:"Total Occurrences",dt:"NM"}]},
+RI:{name:"Repeat Interval",components:[
+{name:"Repeat Pattern",dt:"IS"},{name:"Explicit Time Interval",dt:"ST"}]},
+XON:{name:"Extended Composite Name for Organizations",components:[
+{name:"Organization Name",dt:"ST"},{name:"Organization Name Type Code",dt:"IS"},
+{name:"ID Number",dt:"NM"},{name:"Check Digit",dt:"NM"},
+{name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},
+{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
+{name:"Name Representation Code",dt:"ID"},{name:"Organization Identifier",dt:"ST"}]}
+};
+
+// ========== HL7 v2.3 SEGMENT DEFINITIONS ==========
+const HL7_V23 = {
+MSH:{name:"Message Header",fields:{
+1:{name:"Field Separator",dt:"ST",opt:"R",rep:false,len:1},
+2:{name:"Encoding Characters",dt:"ST",opt:"R",rep:false,len:4},
+3:{name:"Sending Application",dt:"HD",opt:"O",rep:false,len:180},
+4:{name:"Sending Facility",dt:"HD",opt:"O",rep:false,len:180},
+5:{name:"Receiving Application",dt:"HD",opt:"O",rep:false,len:180},
+6:{name:"Receiving Facility",dt:"HD",opt:"O",rep:false,len:180},
+7:{name:"Date/Time of Message",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Security",dt:"ST",opt:"O",rep:false,len:40},
+9:{name:"Message Type",dt:"MSG",opt:"R",rep:false,len:15},
+10:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
+11:{name:"Processing ID",dt:"PT",opt:"R",rep:false,len:3},
+12:{name:"Version ID",dt:"VID",opt:"R",rep:false,len:60},
+13:{name:"Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
+14:{name:"Continuation Pointer",dt:"ST",opt:"O",rep:false,len:180},
+15:{name:"Accept Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
+16:{name:"Application Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
+17:{name:"Country Code",dt:"ID",opt:"O",rep:false,len:3},
+18:{name:"Character Set",dt:"ID",opt:"O",rep:true,len:16},
+19:{name:"Principal Language of Message",dt:"CE",opt:"O",rep:false,len:250}}},
+EVN:{name:"Event Type",fields:{
+1:{name:"Event Type Code",dt:"ID",opt:"B",rep:false,len:3},
+2:{name:"Recorded Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+3:{name:"Date/Time Planned Event",dt:"TS",opt:"O",rep:false,len:26},
+4:{name:"Event Reason Code",dt:"IS",opt:"O",rep:false,len:3},
+5:{name:"Operator ID",dt:"XCN",opt:"O",rep:true,len:250},
+6:{name:"Event Occurred",dt:"TS",opt:"O",rep:false,len:26}}},
+PID:{name:"Patient Identification",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Patient ID",dt:"CX",opt:"B",rep:false,len:20},
+3:{name:"Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
+4:{name:"Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:20},
+5:{name:"Patient Name",dt:"XPN",opt:"R",rep:true,len:250},
+6:{name:"Mother's Maiden Name",dt:"XPN",opt:"O",rep:true,len:250},
+7:{name:"Date/Time of Birth",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
+9:{name:"Patient Alias",dt:"XPN",opt:"B",rep:true,len:250},
+10:{name:"Race",dt:"CE",opt:"O",rep:true,len:250},
+11:{name:"Patient Address",dt:"XAD",opt:"O",rep:true,len:250},
+12:{name:"County Code",dt:"IS",opt:"B",rep:false,len:4},
+13:{name:"Phone Number - Home",dt:"XTN",opt:"O",rep:true,len:250},
+14:{name:"Phone Number - Business",dt:"XTN",opt:"O",rep:true,len:250},
+15:{name:"Primary Language",dt:"CE",opt:"O",rep:false,len:250},
+16:{name:"Marital Status",dt:"CE",opt:"O",rep:false,len:250},
+17:{name:"Religion",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Patient Account Number",dt:"CX",opt:"O",rep:false,len:250},
+19:{name:"SSN Number",dt:"ST",opt:"B",rep:false,len:16},
+20:{name:"Driver's License Number",dt:"DLN",opt:"B",rep:false,len:25},
+21:{name:"Mother's Identifier",dt:"CX",opt:"O",rep:true,len:250},
+22:{name:"Ethnic Group",dt:"CE",opt:"O",rep:true,len:250},
+23:{name:"Birth Place",dt:"ST",opt:"O",rep:false,len:250},
+24:{name:"Multiple Birth Indicator",dt:"ID",opt:"O",rep:false,len:1},
+25:{name:"Birth Order",dt:"NM",opt:"O",rep:false,len:2},
+26:{name:"Citizenship",dt:"CE",opt:"O",rep:true,len:250},
+27:{name:"Veterans Military Status",dt:"CE",opt:"O",rep:false,len:250},
+28:{name:"Nationality",dt:"CE",opt:"B",rep:false,len:250},
+29:{name:"Patient Death Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+30:{name:"Patient Death Indicator",dt:"ID",opt:"O",rep:false,len:1}}},
+PV1:{name:"Patient Visit",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Patient Class",dt:"IS",opt:"R",rep:false,len:1},
+3:{name:"Assigned Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+4:{name:"Admission Type",dt:"IS",opt:"O",rep:false,len:2},
+5:{name:"Preadmit Number",dt:"CX",opt:"O",rep:false,len:250},
+6:{name:"Prior Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+7:{name:"Attending Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+8:{name:"Referring Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+9:{name:"Consulting Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+10:{name:"Hospital Service",dt:"IS",opt:"O",rep:false,len:3},
+11:{name:"Temporary Location",dt:"PL",opt:"O",rep:false,len:80},
+12:{name:"Preadmit Test Indicator",dt:"IS",opt:"O",rep:false,len:2},
+13:{name:"Re-admission Indicator",dt:"IS",opt:"O",rep:false,len:2},
+14:{name:"Admit Source",dt:"IS",opt:"O",rep:false,len:6},
+15:{name:"Ambulatory Status",dt:"IS",opt:"O",rep:true,len:2},
+16:{name:"VIP Indicator",dt:"IS",opt:"O",rep:false,len:2},
+17:{name:"Admitting Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+18:{name:"Patient Type",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Visit Number",dt:"CX",opt:"O",rep:false,len:250},
+20:{name:"Financial Class",dt:"FC",opt:"O",rep:true,len:50},
+21:{name:"Charge Price Indicator",dt:"IS",opt:"O",rep:false,len:2},
+22:{name:"Courtesy Code",dt:"IS",opt:"O",rep:false,len:2},
+23:{name:"Credit Rating",dt:"IS",opt:"O",rep:false,len:2},
+24:{name:"Contract Code",dt:"IS",opt:"O",rep:true,len:2},
+25:{name:"Contract Effective Date",dt:"DT",opt:"O",rep:true,len:8},
+26:{name:"Contract Amount",dt:"NM",opt:"O",rep:true,len:12},
+27:{name:"Contract Period",dt:"NM",opt:"O",rep:true,len:3},
+28:{name:"Interest Code",dt:"IS",opt:"O",rep:false,len:2},
+29:{name:"Transfer to Bad Debt Code",dt:"IS",opt:"O",rep:false,len:1},
+30:{name:"Transfer to Bad Debt Date",dt:"DT",opt:"O",rep:false,len:8},
+31:{name:"Bad Debt Agency Code",dt:"IS",opt:"O",rep:false,len:10},
+32:{name:"Bad Debt Transfer Amount",dt:"NM",opt:"O",rep:false,len:12},
+33:{name:"Bad Debt Recovery Amount",dt:"NM",opt:"O",rep:false,len:12},
+34:{name:"Delete Account Indicator",dt:"IS",opt:"O",rep:false,len:1},
+35:{name:"Delete Account Date",dt:"DT",opt:"O",rep:false,len:8},
+36:{name:"Discharge Disposition",dt:"IS",opt:"O",rep:false,len:3},
+37:{name:"Discharged to Location",dt:"DLD",opt:"O",rep:false,len:25},
+38:{name:"Diet Type",dt:"CE",opt:"O",rep:false,len:250},
+39:{name:"Servicing Facility",dt:"IS",opt:"O",rep:false,len:2},
+40:{name:"Bed Status",dt:"IS",opt:"B",rep:false,len:1},
+41:{name:"Account Status",dt:"IS",opt:"O",rep:false,len:2},
+42:{name:"Pending Location",dt:"PL",opt:"O",rep:false,len:80},
+43:{name:"Prior Temporary Location",dt:"PL",opt:"O",rep:false,len:80},
+44:{name:"Admit Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+45:{name:"Discharge Date/Time",dt:"TS",opt:"O",rep:true,len:26},
+46:{name:"Current Patient Balance",dt:"NM",opt:"O",rep:false,len:12},
+47:{name:"Total Charges",dt:"NM",opt:"O",rep:false,len:12},
+48:{name:"Total Adjustments",dt:"NM",opt:"O",rep:false,len:12},
+49:{name:"Total Payments",dt:"NM",opt:"O",rep:false,len:12},
+50:{name:"Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
+51:{name:"Visit Indicator",dt:"IS",opt:"O",rep:false,len:1},
+52:{name:"Other Healthcare Provider",dt:"XCN",opt:"B",rep:true,len:250}}},
+PV2:{name:"Patient Visit - Additional",fields:{
+1:{name:"Prior Pending Location",dt:"PL",opt:"C",rep:false,len:80},
+2:{name:"Accommodation Code",dt:"CE",opt:"O",rep:false,len:250},
+3:{name:"Admit Reason",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Transfer Reason",dt:"CE",opt:"O",rep:false,len:250},
+5:{name:"Patient Valuables",dt:"ST",opt:"O",rep:true,len:25},
+6:{name:"Patient Valuables Location",dt:"ST",opt:"O",rep:false,len:25},
+7:{name:"Visit User Code",dt:"IS",opt:"O",rep:true,len:2},
+8:{name:"Expected Admit Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Expected Discharge Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+10:{name:"Estimated Length of Inpatient Stay",dt:"NM",opt:"O",rep:false,len:3},
+11:{name:"Actual Length of Inpatient Stay",dt:"NM",opt:"O",rep:false,len:3},
+12:{name:"Visit Description",dt:"ST",opt:"O",rep:false,len:50},
+13:{name:"Referral Source Code",dt:"XCN",opt:"O",rep:true,len:250},
+14:{name:"Previous Service Date",dt:"DT",opt:"O",rep:false,len:8},
+15:{name:"Employment Illness Related Indicator",dt:"ID",opt:"O",rep:false,len:1},
+16:{name:"Purge Status Code",dt:"IS",opt:"O",rep:false,len:1},
+17:{name:"Purge Status Date",dt:"DT",opt:"O",rep:false,len:8},
+18:{name:"Special Program Code",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Retention Indicator",dt:"ID",opt:"O",rep:false,len:1},
+20:{name:"Expected Number of Insurance Plans",dt:"NM",opt:"O",rep:false,len:1},
+21:{name:"Visit Publicity Code",dt:"IS",opt:"O",rep:false,len:1},
+22:{name:"Visit Protection Indicator",dt:"ID",opt:"O",rep:false,len:1},
+23:{name:"Clinic Organization Name",dt:"XON",opt:"O",rep:true,len:250},
+24:{name:"Patient Status Code",dt:"IS",opt:"O",rep:false,len:2},
+25:{name:"Visit Priority Code",dt:"IS",opt:"O",rep:false,len:1},
+26:{name:"Previous Treatment Date",dt:"DT",opt:"O",rep:false,len:8},
+27:{name:"Expected Discharge Disposition",dt:"IS",opt:"O",rep:false,len:2},
+28:{name:"Signature on File Date",dt:"DT",opt:"O",rep:false,len:8},
+29:{name:"First Similar Illness Date",dt:"DT",opt:"O",rep:false,len:8},
+30:{name:"Patient Charge Adjustment Code",dt:"CE",opt:"O",rep:false,len:250}}},
+NK1:{name:"Next of Kin",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Name",dt:"XPN",opt:"O",rep:true,len:250},
+3:{name:"Relationship",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Address",dt:"XAD",opt:"O",rep:true,len:250},
+5:{name:"Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+6:{name:"Business Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+7:{name:"Contact Role",dt:"CE",opt:"O",rep:false,len:250},
+8:{name:"Start Date",dt:"DT",opt:"O",rep:false,len:8},
+9:{name:"End Date",dt:"DT",opt:"O",rep:false,len:8},
+10:{name:"Next of Kin Job Title",dt:"ST",opt:"O",rep:false,len:60},
+11:{name:"Next of Kin Job Code/Class",dt:"JCC",opt:"O",rep:false,len:20},
+12:{name:"Next of Kin Employee Number",dt:"CX",opt:"O",rep:false,len:250},
+13:{name:"Organization Name",dt:"XON",opt:"O",rep:true,len:250}}},
+ORC:{name:"Common Order",fields:{
+1:{name:"Order Control",dt:"ID",opt:"R",rep:false,len:2},
+2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
+3:{name:"Filler Order Number",dt:"EI",opt:"C",rep:false,len:22},
+4:{name:"Placer Group Number",dt:"EI",opt:"O",rep:false,len:22},
+5:{name:"Order Status",dt:"ID",opt:"O",rep:false,len:2},
+6:{name:"Response Flag",dt:"ID",opt:"O",rep:false,len:1},
+7:{name:"Quantity/Timing",dt:"TQ",opt:"O",rep:true,len:200},
+8:{name:"Parent",dt:"EI",opt:"O",rep:false,len:200},
+9:{name:"Date/Time of Transaction",dt:"TS",opt:"O",rep:false,len:26},
+10:{name:"Entered By",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Verified By",dt:"XCN",opt:"O",rep:true,len:250},
+12:{name:"Ordering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+13:{name:"Enterer's Location",dt:"PL",opt:"O",rep:false,len:80},
+14:{name:"Call Back Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+15:{name:"Order Effective Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+16:{name:"Order Control Code Reason",dt:"CE",opt:"O",rep:false,len:250},
+17:{name:"Entering Organization",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Entering Device",dt:"CE",opt:"O",rep:false,len:250},
+19:{name:"Action By",dt:"XCN",opt:"O",rep:true,len:250}}},
+OBR:{name:"Observation Request",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
+3:{name:"Filler Order Number",dt:"EI",opt:"C",rep:false,len:22},
+4:{name:"Universal Service Identifier",dt:"CE",opt:"R",rep:false,len:250},
+5:{name:"Priority",dt:"ID",opt:"B",rep:false,len:2},
+6:{name:"Requested Date/Time",dt:"TS",opt:"B",rep:false,len:26},
+7:{name:"Observation Date/Time",dt:"TS",opt:"C",rep:false,len:26},
+8:{name:"Observation End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Collection Volume",dt:"CQ",opt:"O",rep:false,len:20},
+10:{name:"Collector Identifier",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Specimen Action Code",dt:"ID",opt:"O",rep:false,len:1},
+12:{name:"Danger Code",dt:"CE",opt:"O",rep:false,len:250},
+13:{name:"Relevant Clinical Information",dt:"ST",opt:"O",rep:false,len:300},
+14:{name:"Specimen Received Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+15:{name:"Specimen Source",dt:"SPS",opt:"O",rep:false,len:300},
+16:{name:"Ordering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+17:{name:"Order Callback Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+18:{name:"Placer Field 1",dt:"ST",opt:"O",rep:false,len:60},
+19:{name:"Placer Field 2",dt:"ST",opt:"O",rep:false,len:60},
+20:{name:"Filler Field 1",dt:"ST",opt:"O",rep:false,len:60},
+21:{name:"Filler Field 2",dt:"ST",opt:"O",rep:false,len:60},
+22:{name:"Results Rpt/Status Chng Date/Time",dt:"TS",opt:"C",rep:false,len:26},
+23:{name:"Charge to Practice",dt:"MOC",opt:"O",rep:false,len:40},
+24:{name:"Diagnostic Service Section ID",dt:"ID",opt:"O",rep:false,len:10},
+25:{name:"Result Status",dt:"ID",opt:"C",rep:false,len:1},
+26:{name:"Parent Result",dt:"PRL",opt:"O",rep:false,len:400},
+27:{name:"Quantity/Timing",dt:"TQ",opt:"O",rep:true,len:200},
+28:{name:"Result Copies To",dt:"XCN",opt:"O",rep:true,len:250},
+29:{name:"Parent Number",dt:"EI",opt:"O",rep:false,len:200},
+30:{name:"Transportation Mode",dt:"ID",opt:"O",rep:false,len:20},
+31:{name:"Reason for Study",dt:"CE",opt:"O",rep:true,len:250},
+32:{name:"Principal Result Interpreter",dt:"NDL",opt:"O",rep:false,len:200},
+33:{name:"Assistant Result Interpreter",dt:"NDL",opt:"O",rep:true,len:200},
+34:{name:"Technician",dt:"NDL",opt:"O",rep:true,len:200},
+35:{name:"Transcriptionist",dt:"NDL",opt:"O",rep:true,len:200},
+36:{name:"Scheduled Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+37:{name:"Number of Sample Containers",dt:"NM",opt:"O",rep:false,len:4},
+38:{name:"Transport Logistics of Collected Sample",dt:"CE",opt:"O",rep:true,len:250},
+39:{name:"Collector's Comment",dt:"CE",opt:"O",rep:true,len:250},
+40:{name:"Transport Arrangement Responsibility",dt:"CE",opt:"O",rep:false,len:250},
+41:{name:"Transport Arranged",dt:"ID",opt:"O",rep:false,len:30},
+42:{name:"Escort Required",dt:"ID",opt:"O",rep:false,len:1},
+43:{name:"Planned Patient Transport Comment",dt:"CE",opt:"O",rep:true,len:250}}},
+OBX:{name:"Observation/Result",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Value Type",dt:"ID",opt:"C",rep:false,len:3},
+3:{name:"Observation Identifier",dt:"CE",opt:"R",rep:false,len:250},
+4:{name:"Observation Sub-ID",dt:"ST",opt:"C",rep:false,len:20},
+5:{name:"Observation Value",dt:"*",opt:"C",rep:true,len:65536},
+6:{name:"Units",dt:"CE",opt:"O",rep:false,len:250},
+7:{name:"References Range",dt:"ST",opt:"O",rep:false,len:60},
+8:{name:"Abnormal Flags",dt:"IS",opt:"O",rep:true,len:5},
+9:{name:"Probability",dt:"NM",opt:"O",rep:false,len:5},
+10:{name:"Nature of Abnormal Test",dt:"ID",opt:"O",rep:false,len:2},
+11:{name:"Observation Result Status",dt:"ID",opt:"R",rep:false,len:1},
+12:{name:"Effective Date of Reference Range",dt:"TS",opt:"O",rep:false,len:26},
+13:{name:"User Defined Access Checks",dt:"ST",opt:"O",rep:false,len:20},
+14:{name:"Date/Time of Observation",dt:"TS",opt:"O",rep:false,len:26},
+15:{name:"Producer's ID",dt:"CE",opt:"O",rep:false,len:250},
+16:{name:"Responsible Observer",dt:"XCN",opt:"O",rep:true,len:250},
+17:{name:"Observation Method",dt:"CE",opt:"O",rep:true,len:250}}},
+DG1:{name:"Diagnosis",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Diagnosis Coding Method",dt:"ID",opt:"B",rep:false,len:2},
+3:{name:"Diagnosis Code",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Diagnosis Description",dt:"ST",opt:"B",rep:false,len:40},
+5:{name:"Diagnosis Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+6:{name:"Diagnosis Type",dt:"IS",opt:"R",rep:false,len:2},
+7:{name:"Major Diagnostic Category",dt:"CE",opt:"B",rep:false,len:250},
+8:{name:"Diagnostic Related Group",dt:"CE",opt:"B",rep:false,len:250},
+9:{name:"DRG Approval Indicator",dt:"ID",opt:"B",rep:false,len:1},
+10:{name:"DRG Grouper Review Code",dt:"IS",opt:"B",rep:false,len:2},
+11:{name:"Outlier Type",dt:"CE",opt:"B",rep:false,len:250},
+12:{name:"Outlier Days",dt:"NM",opt:"B",rep:false,len:3},
+13:{name:"Outlier Cost",dt:"CP",opt:"B",rep:false,len:12},
+14:{name:"Grouper Version and Type",dt:"ST",opt:"B",rep:false,len:4},
+15:{name:"Diagnosis Priority",dt:"ID",opt:"O",rep:false,len:2},
+16:{name:"Diagnosing Clinician",dt:"XCN",opt:"O",rep:true,len:250}}},
+IN1:{name:"Insurance",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Insurance Plan ID",dt:"CE",opt:"R",rep:false,len:250},
+3:{name:"Insurance Company ID",dt:"CX",opt:"R",rep:true,len:250},
+4:{name:"Insurance Company Name",dt:"XON",opt:"O",rep:true,len:250},
+5:{name:"Insurance Company Address",dt:"XAD",opt:"O",rep:true,len:250},
+6:{name:"Insurance Co Contact Person",dt:"XPN",opt:"O",rep:true,len:250},
+7:{name:"Insurance Co Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+8:{name:"Group Number",dt:"ST",opt:"O",rep:false,len:12},
+9:{name:"Group Name",dt:"XON",opt:"O",rep:true,len:250},
+10:{name:"Insured's Group Emp ID",dt:"CX",opt:"O",rep:true,len:250},
+11:{name:"Insured's Group Emp Name",dt:"XON",opt:"O",rep:true,len:250},
+12:{name:"Plan Effective Date",dt:"DT",opt:"O",rep:false,len:8},
+13:{name:"Plan Expiration Date",dt:"DT",opt:"O",rep:false,len:8},
+14:{name:"Authorization Information",dt:"AUI",opt:"O",rep:false,len:239},
+15:{name:"Plan Type",dt:"IS",opt:"O",rep:false,len:3},
+16:{name:"Name of Insured",dt:"XPN",opt:"O",rep:true,len:250},
+17:{name:"Insured's Relationship to Patient",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Insured's Date of Birth",dt:"TS",opt:"O",rep:false,len:26},
+19:{name:"Insured's Address",dt:"XAD",opt:"O",rep:true,len:250},
+20:{name:"Assignment of Benefits",dt:"IS",opt:"O",rep:false,len:2},
+21:{name:"Coordination of Benefits",dt:"IS",opt:"O",rep:false,len:2},
+22:{name:"Coord of Ben. Priority",dt:"ST",opt:"O",rep:false,len:2}}},
+AL1:{name:"Patient Allergy",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Allergen Type Code",dt:"CE",opt:"O",rep:false,len:250},
+3:{name:"Allergen Code/Description",dt:"CE",opt:"R",rep:false,len:250},
+4:{name:"Allergy Severity Code",dt:"CE",opt:"O",rep:false,len:250},
+5:{name:"Allergy Reaction Code",dt:"ST",opt:"O",rep:true,len:15},
+6:{name:"Identification Date",dt:"DT",opt:"B",rep:false,len:8}}},
+GT1:{name:"Guarantor",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Guarantor Number",dt:"CX",opt:"O",rep:true,len:250},
+3:{name:"Guarantor Name",dt:"XPN",opt:"R",rep:true,len:250},
+4:{name:"Guarantor Spouse Name",dt:"XPN",opt:"O",rep:true,len:250},
+5:{name:"Guarantor Address",dt:"XAD",opt:"O",rep:true,len:250},
+6:{name:"Guarantor Ph Num - Home",dt:"XTN",opt:"O",rep:true,len:250},
+7:{name:"Guarantor Ph Num - Business",dt:"XTN",opt:"O",rep:true,len:250},
+8:{name:"Guarantor Date/Time of Birth",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Guarantor Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
+10:{name:"Guarantor Type",dt:"IS",opt:"O",rep:false,len:2},
+11:{name:"Guarantor Relationship",dt:"CE",opt:"O",rep:false,len:250},
+12:{name:"Guarantor SSN",dt:"ST",opt:"O",rep:false,len:11}}},
+NTE:{name:"Notes and Comments",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Source of Comment",dt:"ID",opt:"O",rep:false,len:8},
+3:{name:"Comment",dt:"FT",opt:"O",rep:true,len:65536},
+4:{name:"Comment Type",dt:"CE",opt:"O",rep:false,len:250}}},
+MSA:{name:"Message Acknowledgment",fields:{
+1:{name:"Acknowledgment Code",dt:"ID",opt:"R",rep:false,len:2},
+2:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
+3:{name:"Text Message",dt:"ST",opt:"O",rep:false,len:80},
+4:{name:"Expected Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
+5:{name:"Delayed Acknowledgment Type",dt:"ID",opt:"B",rep:false,len:1},
+6:{name:"Error Condition",dt:"CE",opt:"O",rep:false,len:250}}},
+ERR:{name:"Error",fields:{
+1:{name:"Error Code and Location",dt:"CM",opt:"R",rep:true,len:80}}},
+QRD:{name:"Original-Style Query Definition",fields:{
+1:{name:"Query Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+2:{name:"Query Format Code",dt:"ID",opt:"R",rep:false,len:1},
+3:{name:"Query Priority",dt:"ID",opt:"R",rep:false,len:1},
+4:{name:"Query ID",dt:"ST",opt:"R",rep:false,len:10},
+5:{name:"Deferred Response Type",dt:"ID",opt:"O",rep:false,len:1},
+6:{name:"Deferred Response Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Quantity Limited Request",dt:"CQ",opt:"R",rep:false,len:10},
+8:{name:"Who Subject Filter",dt:"XCN",opt:"R",rep:true,len:250},
+9:{name:"What Subject Filter",dt:"CE",opt:"R",rep:true,len:250},
+10:{name:"What Department Data Code",dt:"CE",opt:"R",rep:true,len:250},
+11:{name:"What Data Code Value Qual",dt:"CM",opt:"O",rep:true,len:20},
+12:{name:"Query Results Level",dt:"ID",opt:"O",rep:false,len:1}}},
+QRF:{name:"Original-Style Query Filter",fields:{
+1:{name:"Where Subject Filter",dt:"ST",opt:"R",rep:true,len:20},
+2:{name:"When Data Start Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+3:{name:"When Data End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+4:{name:"What User Qualifier",dt:"ST",opt:"O",rep:true,len:60},
+5:{name:"Other QRY Subject Filter",dt:"ST",opt:"O",rep:true,len:60}}},
+MRG:{name:"Merge Patient Information",fields:{
+1:{name:"Prior Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
+2:{name:"Prior Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:250},
+3:{name:"Prior Patient Account Number",dt:"CX",opt:"O",rep:false,len:250},
+4:{name:"Prior Patient ID",dt:"CX",opt:"B",rep:false,len:250},
+5:{name:"Prior Visit Number",dt:"CX",opt:"O",rep:false,len:250},
+6:{name:"Prior Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
+7:{name:"Prior Patient Name",dt:"XPN",opt:"O",rep:true,len:250}}},
+SCH:{name:"Scheduling Activity",fields:{
+1:{name:"Placer Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
+2:{name:"Filler Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
+3:{name:"Occurrence Number",dt:"NM",opt:"C",rep:false,len:5},
+4:{name:"Placer Group Number",dt:"EI",opt:"O",rep:false,len:22},
+5:{name:"Schedule ID",dt:"CE",opt:"O",rep:false,len:250},
+6:{name:"Event Reason",dt:"CE",opt:"R",rep:false,len:250},
+7:{name:"Appointment Reason",dt:"CE",opt:"O",rep:false,len:250},
+8:{name:"Appointment Type",dt:"CE",opt:"O",rep:false,len:250},
+9:{name:"Appointment Duration",dt:"NM",opt:"O",rep:false,len:20},
+10:{name:"Appointment Duration Units",dt:"CE",opt:"O",rep:false,len:250},
+11:{name:"Appointment Timing Quantity",dt:"TQ",opt:"O",rep:true,len:200},
+12:{name:"Placer Contact Person",dt:"XCN",opt:"O",rep:true,len:250},
+13:{name:"Placer Contact Phone Number",dt:"XTN",opt:"O",rep:false,len:250},
+14:{name:"Placer Contact Address",dt:"XAD",opt:"O",rep:true,len:250},
+15:{name:"Placer Contact Location",dt:"PL",opt:"O",rep:false,len:80},
+16:{name:"Filler Contact Person",dt:"XCN",opt:"R",rep:true,len:250},
+17:{name:"Filler Contact Phone Number",dt:"XTN",opt:"O",rep:false,len:250},
+18:{name:"Filler Contact Address",dt:"XAD",opt:"O",rep:true,len:250},
+19:{name:"Filler Contact Location",dt:"PL",opt:"O",rep:false,len:80},
+20:{name:"Entered By Person",dt:"XCN",opt:"R",rep:true,len:250},
+21:{name:"Entered By Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+22:{name:"Entered By Location",dt:"PL",opt:"O",rep:false,len:80},
+23:{name:"Parent Placer Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
+24:{name:"Parent Filler Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
+25:{name:"Filler Status Code",dt:"CE",opt:"O",rep:false,len:250}}},
+TXA:{name:"Transcription Document Header",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Document Type",dt:"IS",opt:"R",rep:false,len:30},
+3:{name:"Document Content Presentation",dt:"ID",opt:"C",rep:false,len:2},
+4:{name:"Activity Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+5:{name:"Primary Activity Provider Code/Name",dt:"XCN",opt:"C",rep:true,len:250},
+6:{name:"Origination Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Transcription Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Edit Date/Time",dt:"TS",opt:"O",rep:true,len:26},
+9:{name:"Originator Code/Name",dt:"XCN",opt:"O",rep:true,len:250},
+10:{name:"Assigned Document Authenticator",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Transcriptionist Code/Name",dt:"XCN",opt:"O",rep:true,len:250},
+12:{name:"Unique Document Number",dt:"EI",opt:"R",rep:false,len:30},
+13:{name:"Parent Document Number",dt:"EI",opt:"O",rep:false,len:30},
+14:{name:"Placer Order Number",dt:"EI",opt:"O",rep:true,len:22},
+15:{name:"Filler Order Number",dt:"EI",opt:"O",rep:false,len:22},
+16:{name:"Unique Document File Name",dt:"ST",opt:"O",rep:false,len:30},
+17:{name:"Document Completion Status",dt:"ID",opt:"R",rep:false,len:2},
+18:{name:"Document Confidentiality Status",dt:"ID",opt:"O",rep:false,len:2},
+19:{name:"Document Availability Status",dt:"ID",opt:"O",rep:false,len:2},
+20:{name:"Document Storage Status",dt:"ID",opt:"O",rep:false,len:2},
+21:{name:"Document Change Reason",dt:"ST",opt:"C",rep:false,len:30},
+22:{name:"Authentication Person Time Stamp",dt:"PPN",opt:"C",rep:true,len:250},
+23:{name:"Distributed Copies",dt:"XCN",opt:"O",rep:true,len:250}}},
+DSP:{name:"Display Data",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Display Level",dt:"SI",opt:"O",rep:false,len:4},
+3:{name:"Data Line",dt:"TX",opt:"R",rep:false,len:300},
+4:{name:"Logical Break Point",dt:"ST",opt:"O",rep:false,len:2},
+5:{name:"Result ID",dt:"TX",opt:"O",rep:false,len:20}}}
+};
+
+// ========== HL7 v2.5 SEGMENT DEFINITIONS ==========
+// Start with v2.3 as base, then override/extend
+const HL7_V25 = JSON.parse(JSON.stringify(HL7_V23));
+
+// MSH v2.5 extensions
+HL7_V25.MSH.fields[20] = {name:"Alternate Character Set Handling",dt:"ID",opt:"O",rep:false,len:20};
+HL7_V25.MSH.fields[21] = {name:"Message Profile Identifier",dt:"EI",opt:"O",rep:true,len:427};
+
+// PID v2.5 extensions
+HL7_V25.PID.fields[31] = {name:"Identity Unknown Indicator",dt:"ID",opt:"O",rep:false,len:1};
+HL7_V25.PID.fields[32] = {name:"Identity Reliability Code",dt:"IS",opt:"O",rep:true,len:20};
+HL7_V25.PID.fields[33] = {name:"Last Update Date/Time",dt:"TS",opt:"O",rep:false,len:26};
+HL7_V25.PID.fields[34] = {name:"Last Update Facility",dt:"HD",opt:"O",rep:false,len:241};
+HL7_V25.PID.fields[35] = {name:"Species Code",dt:"CE",opt:"C",rep:false,len:250};
+HL7_V25.PID.fields[36] = {name:"Breed Code",dt:"CE",opt:"C",rep:false,len:250};
+HL7_V25.PID.fields[37] = {name:"Strain",dt:"ST",opt:"O",rep:false,len:80};
+HL7_V25.PID.fields[38] = {name:"Production Class Code",dt:"CE",opt:"O",rep:false,len:250};
+HL7_V25.PID.fields[39] = {name:"Tribal Citizenship",dt:"CWE",opt:"O",rep:true,len:250};
+
+// ERR v2.5 expanded
+HL7_V25.ERR = {name:"Error",fields:{
+1:{name:"Error Code and Location",dt:"ELD",opt:"B",rep:true,len:493},
+2:{name:"Error Location",dt:"ERL",opt:"O",rep:true,len:18},
+3:{name:"HL7 Error Code",dt:"CWE",opt:"R",rep:false,len:705},
+4:{name:"Severity",dt:"ID",opt:"R",rep:false,len:2},
+5:{name:"Application Error Code",dt:"CWE",opt:"O",rep:false,len:705},
+6:{name:"Application Error Parameter",dt:"ST",opt:"O",rep:true,len:80},
+7:{name:"Diagnostic Information",dt:"TX",opt:"O",rep:false,len:2048},
+8:{name:"User Message",dt:"TX",opt:"O",rep:false,len:250},
+9:{name:"Inform Person Indicator",dt:"IS",opt:"O",rep:true,len:20},
+10:{name:"Override Type",dt:"CWE",opt:"O",rep:false,len:705},
+11:{name:"Override Reason Code",dt:"CWE",opt:"O",rep:true,len:705},
+12:{name:"Help Desk Contact Point",dt:"XTN",opt:"O",rep:true,len:652}}};
+
+// ORC v2.5 extensions
+HL7_V25.ORC.fields[20] = {name:"Advanced Beneficiary Notice Code",dt:"CE",opt:"O",rep:false,len:250};
+HL7_V25.ORC.fields[21] = {name:"Ordering Facility Name",dt:"XON",opt:"O",rep:true,len:250};
+HL7_V25.ORC.fields[22] = {name:"Ordering Facility Address",dt:"XAD",opt:"O",rep:true,len:250};
+HL7_V25.ORC.fields[23] = {name:"Ordering Facility Phone Number",dt:"XTN",opt:"O",rep:true,len:250};
+HL7_V25.ORC.fields[24] = {name:"Ordering Provider Address",dt:"XAD",opt:"O",rep:true,len:250};
+HL7_V25.ORC.fields[25] = {name:"Order Status Modifier",dt:"CWE",opt:"O",rep:false,len:250};
+
+// OBR v2.5 extensions
+HL7_V25.OBR.fields[44] = {name:"Procedure Code",dt:"CE",opt:"O",rep:false,len:250};
+HL7_V25.OBR.fields[45] = {name:"Procedure Code Modifier",dt:"CE",opt:"O",rep:true,len:250};
+HL7_V25.OBR.fields[46] = {name:"Placer Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250};
+HL7_V25.OBR.fields[47] = {name:"Filler Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250};
+HL7_V25.OBR.fields[48] = {name:"Medically Necessary Duplicate Procedure Reason",dt:"CWE",opt:"C",rep:false,len:250};
+HL7_V25.OBR.fields[49] = {name:"Result Handling",dt:"IS",opt:"O",rep:false,len:2};
+HL7_V25.OBR.fields[50] = {name:"Parent Universal Service Identifier",dt:"CWE",opt:"O",rep:false,len:250};
+
+// OBX v2.5 extensions
+HL7_V25.OBX.fields[18] = {name:"Equipment Instance Identifier",dt:"EI",opt:"O",rep:true,len:22};
+HL7_V25.OBX.fields[19] = {name:"Date/Time of the Analysis",dt:"TS",opt:"O",rep:false,len:26};
+
+const HL7_DEFS = {"2.3": HL7_V23, "2.5": HL7_V25};
+
+// ========== MSH-18 CHARACTER SET MAPPING ==========
+const MSH18_TO_ENCODING = {
+  '':'ASCII', 'ASCII':'ASCII',
+  '8859/1':'ISO-8859-1', '8859/2':'ISO-8859-2', '8859/3':'ISO-8859-3',
+  '8859/4':'ISO-8859-4', '8859/5':'ISO-8859-5', '8859/6':'ISO-8859-6',
+  '8859/7':'ISO-8859-7', '8859/8':'ISO-8859-8', '8859/9':'ISO-8859-9',
+  'UNICODE':'UTF-8', 'UNICODE UTF-8':'UTF-8', 'UTF-8':'UTF-8'
+};
+// ========== STATE ==========
+let parsedMessage = null;
+let currentProfile = null;
+let selectedRow = null;
+let selectedFieldKey = null;
+let activeVersion = "2.5";
+let collapsedSegments = new Set();
+let fileEncodingInfo = null;
+let anonymized = false;
+let originalRawMessage = null;
+let anonReplacements = null;
+
+// ========== NAME POOLS ==========
+const ASCII_NAMES = [
+  {family:"Smith",given:"John"},{family:"Doe",given:"Jane"},{family:"Johnson",given:"Robert"},
+  {family:"Williams",given:"Mary"},{family:"Brown",given:"James"},{family:"Davis",given:"Patricia"},
+  {family:"Miller",given:"Michael"},{family:"Wilson",given:"Linda"},{family:"Moore",given:"William"},
+  {family:"Taylor",given:"Elizabeth"},{family:"Anderson",given:"David"},{family:"Thomas",given:"Barbara"},
+  {family:"Jackson",given:"Richard"},{family:"White",given:"Susan"},{family:"Harris",given:"Joseph"},
+  {family:"Martin",given:"Jessica"},{family:"Thompson",given:"Charles"},{family:"Garcia",given:"Sarah"}
+];
+const ESTONIAN_NAMES = [
+  {family:"\u00D6\u00F6\u00FCmin",given:"\u00D5gvard\u017E"},
+  {family:"T\u00E4\u00E4ger",given:"M\u00E4rt"},
+  {family:"P\u00F5ldm\u00E4e",given:"K\u00FClli"},
+  {family:"T\u00F5nisson",given:"J\u00FCri"},
+  {family:"\u00DCllase",given:"\u0160arl"},
+  {family:"M\u00E4esalu",given:"\u00C4nn"},
+  {family:"K\u00E4\u00E4rmann",given:"\u00DClle"},
+  {family:"\u00D5ispuu",given:"T\u00F5nu"},
+  {family:"P\u00E4\u00E4ren",given:"\u017Danna"},
+  {family:"S\u00F5star",given:"K\u00E4rt"},
+  {family:"\u00D6\u00F6pik",given:"L\u00FCri"},
+  {family:"V\u00E4\u00E4rtn\u00F5u",given:"R\u00FC\u00FCtli"},
+  {family:"\u0160vede",given:"\u00D5nne"},
+  {family:"T\u00FC\u00FCr",given:"P\u00E4ike"},
+  {family:"\u017Digulski",given:"\u00D6\u00F6sel"}
+];
+const FAKE_STREETS = [
+  "Tamme tee 5","P\u00E4rnu mnt 42","Liivalaia 33","Viru v\u00E4ljak 8","Narva mnt 120",
+  "S\u00F5pruse pst 15","Tartu mnt 67","Kadrioru park 3","Toompuiestee 10","Paldiski mnt 28",
+  "Oak Street 12","Maple Avenue 45","Park Lane 7","High Street 23","Mill Road 9"
+];
+const FAKE_CITIES = [
+  "Tallinn","Tartu","P\u00E4rnu","Narva","Haapsalu","Viljandi","Rakvere","Kuressaare",
+  "Springfield","Riverside","Fairview","Madison","Georgetown"
+];
+
+// ========== ENCODING DETECTION ==========
+function detectEncoding(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+  const result = {encoding: 'ASCII', decoderLabel: 'utf-8', hasBOM: false, hasHighBytes: false, hasMultibyteUTF8: false};
+  if (bytes.length === 0) return result;
+
+  // BOM check
+  if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+    return {encoding: 'UTF-8', decoderLabel: 'utf-8', hasBOM: true, hasHighBytes: true, hasMultibyteUTF8: true};
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xFE) {
+    return {encoding: 'UTF-16 LE', decoderLabel: 'utf-16le', hasBOM: true, hasHighBytes: true, hasMultibyteUTF8: false};
+  }
+  if (bytes.length >= 2 && bytes[0] === 0xFE && bytes[1] === 0xFF) {
+    return {encoding: 'UTF-16 BE', decoderLabel: 'utf-16be', hasBOM: true, hasHighBytes: true, hasMultibyteUTF8: false};
+  }
+
+  // No BOM: scan bytes
+  let hasHigh = false;
+  let validUTF8 = true;
+  let hasMultibyte = false;
+  let i = 0;
+  while (i < bytes.length) {
+    const b = bytes[i];
+    if (b < 0x80) { i++; continue; }
+    hasHigh = true;
+    // Check UTF-8 multi-byte sequence
+    let seqLen = 0;
+    if ((b & 0xE0) === 0xC0) seqLen = 2;
+    else if ((b & 0xF0) === 0xE0) seqLen = 3;
+    else if ((b & 0xF8) === 0xF0) seqLen = 4;
+    else { validUTF8 = false; break; }
+    if (i + seqLen > bytes.length) { validUTF8 = false; break; }
+    for (let j = 1; j < seqLen; j++) {
+      if ((bytes[i + j] & 0xC0) !== 0x80) { validUTF8 = false; break; }
+    }
+    if (!validUTF8) break;
+    hasMultibyte = true;
+    i += seqLen;
+  }
+
+  if (!hasHigh) {
+    return {encoding: 'ASCII', decoderLabel: 'utf-8', hasBOM: false, hasHighBytes: false, hasMultibyteUTF8: false};
+  }
+  if (validUTF8 && hasMultibyte) {
+    return {encoding: 'UTF-8', decoderLabel: 'utf-8', hasBOM: false, hasHighBytes: true, hasMultibyteUTF8: true};
+  }
+  // Invalid UTF-8 with high bytes -> ISO-8859-1 (decode as windows-1252 for safety)
+  return {encoding: 'ISO-8859-1', decoderLabel: 'windows-1252', hasBOM: false, hasHighBytes: true, hasMultibyteUTF8: false};
+}
+
+function openHL7File(file) {
+  const reader = new FileReader();
+  reader.onerror = function() {
+    setStatus('Failed to read file: ' + file.name, true);
+  };
+  reader.onload = function(ev) {
+    const buffer = ev.target.result;
+    const enc = detectEncoding(buffer);
+    const decoder = new TextDecoder(enc.decoderLabel);
+    const text = decoder.decode(buffer);
+    document.getElementById('msgInput').value = text;
+    fileEncodingInfo = {
+      source: 'file',
+      fileName: file.name,
+      encoding: enc.encoding,
+      decoderLabel: enc.decoderLabel,
+      hasBOM: enc.hasBOM,
+      hasHighBytes: enc.hasHighBytes,
+      hasMultibyteUTF8: enc.hasMultibyteUTF8
+    };
+    setStatus('File loaded: ' + file.name + ' (' + enc.encoding + (enc.hasBOM ? ' BOM' : '') + ')');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ========== PARSER ==========
+function normalizeMessage(raw) {
+  let content = raw;
+
+  // Strip MLLP framing: VT (0x0b) at start, FS (0x1c) + optional CR at end
+  content = content.replace(/^\x0b/, '').replace(/\x1c[\r\n]*$/, '');
+
+  // Strip common log/dump artifacts: <VT>, <FS>, <CR>, <SB>, <EB> markers
+  content = content.replace(/<VT>|<SB>/gi, '').replace(/<FS>|<EB>/gi, '').replace(/<CR>/gi, '\r');
+
+  // Handle \x0b and \x1c that may appear mid-message (multi-message MLLP captures)
+  content = content.replace(/\x0b/g, '').replace(/\x1c/g, '');
+
+  content = content.trim();
+  if (!content) return [];
+
+  // Normalize line endings:
+  // 1. \r\n -> \r (Windows line endings to standard HL7 CR)
+  // 2. Detect whether \r or \n is the segment delimiter
+  // 3. Handle the degenerate case where it's all on one line (single-line paste)
+
+  // First, collapse \r\n pairs to \r
+  content = content.replace(/\r\n/g, '\r');
+
+  // If message has \r, use that as segment delimiter
+  if (content.indexOf('\r') >= 0) {
+    // Handle Java-style "illegal newlines": \n chars mixed into a \r-delimited message
+    // (e.g., report text with embedded line breaks that aren't segment breaks)
+    const fragments = content.split('\r');
+    let result = '';
+    let prev = null;
+    for (let i = 0; i < fragments.length; i++) {
+      let current = fragments[i];
+      if (prev !== null) {
+        if (current.length === 0) {
+          result += prev;
+          prev = '';
+          continue;
+        }
+        if (current.charAt(0) === '|' || current.startsWith('\n|') ||
+            (current.charAt(0) === '\n' && current.length < 4)) {
+          result += prev;
+          current = current.replace(/^\n/, '');
+        } else if (current.startsWith('\n') && current.length > 4 && current.charAt(4) !== '|') {
+          result += prev;
+          current = current.replace(/^\n/, '~');
+        } else {
+          result += prev;
+          result += '\r';
+        }
+      }
+      prev = current;
+    }
+    if (prev !== null) result += prev;
+    return result.split('\r').filter(s => s.trim().length > 0);
+  }
+
+  // No \r found — try \n (unix-ified files, or clean copy-paste)
+  if (content.indexOf('\n') >= 0) {
+    return content.split('\n').filter(s => s.trim().length > 0);
+  }
+
+  // Single line: might be a whole message on one line — look for segment boundaries
+  // Pattern: known segment name preceded by content (end of previous segment)
+  // Only split if we find multiple segments jammed together
+  const segPattern = /(?<=.)(?=(?:MSH|MSA|EVN|PID|PV1|PV2|NK1|ORC|OBR|OBX|DG1|IN1|AL1|GT1|NTE|ERR|QRD|QRF|MRG|SCH|TXA|DSP|ZDS|ZPD|Z[A-Z][A-Z0-9])\|)/g;
+  if (segPattern.test(content)) {
+    return content.split(segPattern).filter(s => s.trim().length > 0);
+  }
+
+  // Truly a single segment
+  return [content];
+}
+
+function parseHL7(raw) {
+  const segments = normalizeMessage(raw);
+  if (segments.length === 0) return null;
+
+  const result = {segments: [], rawSegments: segments, version: null, messageType: null};
+  const segmentCounts = {};
+
+  for (let i = 0; i < segments.length; i++) {
+    const segLine = segments[i];
+    const fields = segLine.split('|');
+    const segName = fields[0];
+    if (!segName || segName.length < 2) continue;
+
+    segmentCounts[segName] = (segmentCounts[segName] || 0) + 1;
+    const segRepIdx = segmentCounts[segName];
+
+    const segData = {name: segName, repIndex: segRepIdx, fields: [], rawLine: segLine};
+
+    if (segName === 'MSH') {
+      // MSH-1: field separator (always |)
+      segData.fields.push({
+        fieldNum: 1, address: 'MSH-1', value: '|', rawValue: '|',
+        components: [], repetitions: []
+      });
+      // MSH-2: encoding characters
+      if (fields.length > 1) {
+        segData.fields.push({
+          fieldNum: 2, address: 'MSH-2', value: fields[1], rawValue: fields[1],
+          components: [], repetitions: []
+        });
+      }
+      // MSH-3 onwards: fields[2] = MSH-3, fields[3] = MSH-4, etc.
+      for (let j = 2; j < fields.length; j++) {
+        const fieldNum = j + 1;
+        const addr = 'MSH-' + fieldNum;
+        segData.fields.push(parseField(addr, fieldNum, fields[j]));
+      }
+    } else {
+      // Normal segments: fields[1] = SEG-1, fields[2] = SEG-2, etc.
+      const addrPrefix = segName + (segRepIdx > 1 ? '[' + segRepIdx + ']' : '');
+      for (let j = 1; j < fields.length; j++) {
+        const addr = addrPrefix + '-' + j;
+        segData.fields.push(parseField(addr, j, fields[j]));
+      }
+    }
+
+    // Extract version from MSH-12
+    if (segName === 'MSH') {
+      const versionField = segData.fields.find(f => f.fieldNum === 12);
+      if (versionField) {
+        let ver = versionField.value;
+        if (ver && ver.indexOf('^') >= 0) ver = ver.split('^')[0];
+        result.version = ver;
+      }
+      const msgTypeField = segData.fields.find(f => f.fieldNum === 9);
+      if (msgTypeField) result.messageType = msgTypeField.value;
+
+      const charsetField = segData.fields.find(f => f.fieldNum === 18);
+      if (charsetField) {
+        let charset = charsetField.value || '';
+        if (charset.indexOf('~') >= 0) charset = charset.split('~')[0];
+        result.declaredCharset = charset;
+      }
+    }
+
+    result.segments.push(segData);
+  }
+
+  return result;
+}
+
+function parseField(address, fieldNum, rawValue) {
+  const field = {fieldNum, address, value: rawValue, rawValue, components: [], repetitions: []};
+
+  if (!rawValue) return field;
+
+  // Handle field repetitions (~)
+  if (rawValue.indexOf('~') >= 0) {
+    const reps = rawValue.split('~');
+    field.value = reps[0];
+    field.repetitions = reps.map((rep, idx) => ({
+      index: idx + 1,
+      value: rep,
+      components: splitComponents(rep)
+    }));
+    field.components = field.repetitions[0].components;
+  } else {
+    field.components = splitComponents(rawValue);
+  }
+
+  return field;
+}
+
+function splitComponents(value) {
+  if (!value || value.indexOf('^') < 0) return [];
+  const parts = value.split('^');
+  return parts.map((comp, idx) => ({
+    index: idx + 1,
+    value: comp,
+    subcomponents: comp.indexOf('&') >= 0 ? comp.split('&') : []
+  }));
+}
+
+// ========== VERSION DETECTION ==========
+function resolveVersion(parsed) {
+  const sel = document.getElementById('versionSelect').value;
+  if (sel !== 'auto') return sel;
+  if (parsed && parsed.version) {
+    const v = parsed.version.trim();
+    if (v.startsWith('2.5')) return '2.5';
+    if (v.startsWith('2.3') || v === '2.4') return '2.3';
+    if (v.startsWith('2.6') || v.startsWith('2.7') || v.startsWith('2.8')) return '2.5';
+  }
+  return '2.5'; // default
+}
+
+function getSegDef(segName, version) {
+  const defs = HL7_DEFS[version];
+  return defs ? defs[segName] : null;
+}
+
+function getFieldDef(segName, fieldNum, version) {
+  const seg = getSegDef(segName, version);
+  if (!seg || !seg.fields) return null;
+  return seg.fields[fieldNum] || null;
+}
+
+function getProfileField(segName, fieldNum) {
+  if (!currentProfile || !currentProfile.segments) return null;
+  const seg = currentProfile.segments[segName];
+  if (!seg || !seg.fields) return null;
+  return seg.fields[String(fieldNum)] || null;
+}
+
+function getProfileSegment(segName) {
+  if (!currentProfile || !currentProfile.segments) return null;
+  return currentProfile.segments[segName] || null;
+}
+
+// ========== ANONYMIZATION ==========
+function toggleAnonymize() {
+  if (!parsedMessage) {
+    setStatus('Parse a message first', true);
+    return;
+  }
+  const btn = document.getElementById('anonBtn');
+  const indicator = document.getElementById('anonIndicator');
+  if (!anonymized) {
+    // Store original raw text
+    originalRawMessage = document.getElementById('msgInput').value;
+    const useNonAscii = document.getElementById('anonNonAscii').checked;
+    anonReplacements = generateReplacements(parsedMessage, useNonAscii);
+    anonymizeMessage();
+    anonymized = true;
+    btn.classList.add('active');
+    indicator.style.display = 'flex';
+    setStatus('Anonymized view active');
+  } else {
+    // Restore original
+    document.getElementById('msgInput').value = originalRawMessage;
+    parsedMessage = parseHL7(originalRawMessage);
+    activeVersion = resolveVersion(parsedMessage);
+    anonymized = false;
+    anonReplacements = null;
+    originalRawMessage = null;
+    btn.classList.remove('active');
+    indicator.style.display = 'none';
+    renderParsedTable();
+    renderRawView();
+    clearDetail();
+    setStatus('Original data restored');
+  }
+}
+
+function onNonAsciiChange() {
+  if (anonymized) {
+    // Re-anonymize with new name pool
+    document.getElementById('msgInput').value = originalRawMessage;
+    parsedMessage = parseHL7(originalRawMessage);
+    activeVersion = resolveVersion(parsedMessage);
+    const useNonAscii = document.getElementById('anonNonAscii').checked;
+    anonReplacements = generateReplacements(parsedMessage, useNonAscii);
+    anonymizeMessage();
+    setStatus('Re-anonymized with ' + (useNonAscii ? 'Non-ASCII' : 'ASCII') + ' names');
+  }
+}
+
+function anonymizeMessage() {
+  if (!parsedMessage || !anonReplacements) return;
+  for (const seg of parsedMessage.segments) {
+    if (seg.name !== 'PID') continue;
+    for (const field of seg.fields) {
+      const key = seg.name + '-' + field.fieldNum;
+      const repl = anonReplacements[key];
+      if (!repl) continue;
+      if (field.repetitions && field.repetitions.length > 1) {
+        // Anonymize each repetition
+        for (let ri = 0; ri < field.repetitions.length; ri++) {
+          const repRepl = anonReplacements[key + '~' + (ri + 1)] || repl;
+          field.repetitions[ri].value = repRepl.value;
+          field.repetitions[ri].components = splitComponents(repRepl.value);
+        }
+        field.value = field.repetitions[0].value;
+        field.rawValue = field.repetitions.map(r => r.value).join('~');
+        field.components = field.repetitions[0].components;
+      } else {
+        field.value = repl.value;
+        field.rawValue = repl.value;
+        field.components = splitComponents(repl.value);
+      }
+    }
+    seg.rawLine = reconstructSegmentLine(seg);
+  }
+  renderParsedTable();
+  renderRawView();
+  clearDetail();
+}
+
+function reconstructSegmentLine(seg) {
+  if (seg.name === 'MSH') {
+    // MSH: segName + | (MSH-1) + encoding chars (MSH-2) + | + remaining fields joined by |
+    let parts = ['MSH'];
+    const encField = seg.fields.find(f => f.fieldNum === 2);
+    parts.push(encField ? encField.value : '^~\\&');
+    for (let i = 2; i < seg.fields.length; i++) {
+      const f = seg.fields[i];
+      parts.push(reconstructFieldValue(f));
+    }
+    // MSH line: MSH|encChars|field3|field4|...
+    return 'MSH|' + parts.slice(1).join('|');
+  } else {
+    let parts = [seg.name];
+    for (const f of seg.fields) {
+      parts.push(reconstructFieldValue(f));
+    }
+    return parts.join('|');
+  }
+}
+
+function reconstructFieldValue(field) {
+  if (field.repetitions && field.repetitions.length > 1) {
+    return field.repetitions.map(r => r.value).join('~');
+  }
+  return field.rawValue || field.value || '';
+}
+
+function generateReplacements(parsed, useNonAscii) {
+  const replacements = {};
+  const namePool = useNonAscii ? ESTONIAN_NAMES : ASCII_NAMES;
+  let nameIdx = Math.floor(Math.random() * namePool.length);
+
+  for (const seg of parsed.segments) {
+    if (seg.name !== 'PID') continue;
+    for (const field of seg.fields) {
+      const fn = field.fieldNum;
+      const key = 'PID-' + fn;
+
+      if (fn === 2 || fn === 3) {
+        // Patient ID (CX) — random numeric, same length
+        if (field.repetitions && field.repetitions.length > 1) {
+          for (let ri = 0; ri < field.repetitions.length; ri++) {
+            replacements[key + '~' + (ri + 1)] = {value: generateFakeId(field.repetitions[ri].value)};
+          }
+          replacements[key] = replacements[key + '~1'];
+        } else {
+          replacements[key] = {value: generateFakeId(field.rawValue)};
+        }
+      } else if (fn === 5 || fn === 9) {
+        // Patient Name / Alias (XPN) — fake name from pool
+        if (field.repetitions && field.repetitions.length > 1) {
+          for (let ri = 0; ri < field.repetitions.length; ri++) {
+            const name = namePool[nameIdx % namePool.length];
+            nameIdx++;
+            replacements[key + '~' + (ri + 1)] = {value: generateFakeName(name, field.repetitions[ri].value)};
+          }
+          replacements[key] = replacements[key + '~1'];
+        } else {
+          const name = namePool[nameIdx % namePool.length];
+          nameIdx++;
+          replacements[key] = {value: generateFakeName(name, field.rawValue)};
+        }
+      } else if (fn === 7) {
+        // Date/Time of Birth (TS) — shift
+        if (field.value) {
+          replacements[key] = {value: shiftDate(field.rawValue)};
+        }
+      } else if (fn === 11) {
+        // Patient Address (XAD)
+        if (field.repetitions && field.repetitions.length > 1) {
+          for (let ri = 0; ri < field.repetitions.length; ri++) {
+            replacements[key + '~' + (ri + 1)] = {value: generateFakeAddress(field.repetitions[ri].value)};
+          }
+          replacements[key] = replacements[key + '~1'];
+        } else {
+          replacements[key] = {value: generateFakeAddress(field.rawValue)};
+        }
+      } else if (fn === 13 || fn === 14) {
+        // Phone (XTN) — random digits preserving format
+        if (field.repetitions && field.repetitions.length > 1) {
+          for (let ri = 0; ri < field.repetitions.length; ri++) {
+            replacements[key + '~' + (ri + 1)] = {value: generateFakePhone(field.repetitions[ri].value)};
+          }
+          replacements[key] = replacements[key + '~1'];
+        } else if (field.rawValue) {
+          replacements[key] = {value: generateFakePhone(field.rawValue)};
+        }
+      } else if (fn === 19) {
+        // SSN — random digits, same length
+        if (field.value) {
+          replacements[key] = {value: generateFakeSsn(field.rawValue)};
+        }
+      } else if (fn === 20) {
+        // Driver's License (DLN) — random alphanumeric
+        if (field.value) {
+          replacements[key] = {value: generateFakeDln(field.rawValue)};
+        }
+      }
+    }
+  }
+  return replacements;
+}
+
+function generateFakeId(original) {
+  if (!original) return '';
+  // Preserve component structure (CX type), only randomize the ID number part (component 1)
+  const comps = original.split('^');
+  const idPart = comps[0];
+  let fakeId = '';
+  for (let i = 0; i < idPart.length; i++) {
+    if (/\d/.test(idPart[i])) {
+      fakeId += Math.floor(Math.random() * 10);
+    } else {
+      fakeId += idPart[i];
+    }
+  }
+  comps[0] = fakeId;
+  return comps.join('^');
+}
+
+function generateFakeName(nameObj, original) {
+  if (!original) return '';
+  // XPN: family^given^second^suffix^prefix^degree^nameTypeCode...
+  const comps = original.split('^');
+  comps[0] = nameObj.family;
+  if (comps.length > 1) comps[1] = nameObj.given;
+  // Clear second name if present
+  if (comps.length > 2 && comps[2]) comps[2] = '';
+  return comps.join('^');
+}
+
+function shiftDate(original) {
+  if (!original) return '';
+  // TS format: YYYYMMDD[HHmmss...] possibly with ^precision
+  const parts = original.split('^');
+  const ts = parts[0];
+  if (ts.length < 4) return original;
+  const year = parseInt(ts.substring(0, 4));
+  if (isNaN(year)) return original;
+  // Shift by random ±1-20 years
+  const shift = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 20) + 1);
+  const newYear = year + shift;
+  parts[0] = String(newYear) + ts.substring(4);
+  return parts.join('^');
+}
+
+function generateFakeAddress(original) {
+  if (!original) return '';
+  // XAD: street^other^city^state^zip^country^type^...
+  const comps = original.split('^');
+  comps[0] = FAKE_STREETS[Math.floor(Math.random() * FAKE_STREETS.length)];
+  if (comps.length > 1 && comps[1]) comps[1] = '';
+  if (comps.length > 2 && comps[2]) comps[2] = FAKE_CITIES[Math.floor(Math.random() * FAKE_CITIES.length)];
+  if (comps.length > 4 && comps[4]) {
+    // Randomize zip
+    let zip = '';
+    for (let i = 0; i < comps[4].length; i++) {
+      zip += /\d/.test(comps[4][i]) ? Math.floor(Math.random() * 10) : comps[4][i];
+    }
+    comps[4] = zip;
+  }
+  return comps.join('^');
+}
+
+function generateFakePhone(original) {
+  if (!original) return '';
+  // Replace digits but keep separators, parens, + prefix, and component structure
+  return original.replace(/\d/g, () => Math.floor(Math.random() * 10));
+}
+
+function generateFakeSsn(original) {
+  if (!original) return '';
+  return original.replace(/\d/g, () => Math.floor(Math.random() * 10));
+}
+
+function generateFakeDln(original) {
+  if (!original) return '';
+  // DLN: license^state^expiry — randomize the license number
+  const comps = original.split('^');
+  let lic = '';
+  for (let i = 0; i < comps[0].length; i++) {
+    const c = comps[0][i];
+    if (/\d/.test(c)) lic += Math.floor(Math.random() * 10);
+    else if (/[A-Z]/i.test(c)) lic += String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    else lic += c;
+  }
+  comps[0] = lic;
+  return comps.join('^');
+}
+
+// ========== UI RENDERING ==========
+function parseMessage() {
+  const raw = document.getElementById('msgInput').value;
+  if (!raw.trim()) {
+    setStatus('No message to parse', true);
+    return;
+  }
+
+  // Reset anon state on fresh parse
+  if (anonymized) {
+    anonymized = false;
+    originalRawMessage = null;
+    anonReplacements = null;
+    document.getElementById('anonBtn').classList.remove('active');
+    document.getElementById('anonIndicator').style.display = 'none';
+  }
+
+  parsedMessage = parseHL7(raw);
+  if (!parsedMessage || parsedMessage.segments.length === 0) {
+    setStatus('Failed to parse message', true);
+    return;
+  }
+
+  activeVersion = resolveVersion(parsedMessage);
+  document.getElementById('versionSelect').value =
+    document.getElementById('versionSelect').querySelector('option[value="auto"]') ? 'auto' : activeVersion;
+
+  const verLabel = parsedMessage.version || 'unknown';
+  const msgType = parsedMessage.messageType || 'unknown';
+  setStatus('Parsed: ' + msgType + ' (v' + verLabel + ') - ' +
+    parsedMessage.segments.length + ' segments');
+
+  collapsedSegments.clear();
+  renderParsedTable();
+  renderRawView();
+  updateEncodingDisplay();
+  switchTab(document.querySelector('[data-tab="parsedTab"]'));
+  clearDetail();
+}
+
+function renderParsedTable() {
+  const tbody = document.getElementById('parsedBody');
+  tbody.innerHTML = '';
+  if (!parsedMessage) return;
+
+  const version = activeVersion;
+
+  for (let si = 0; si < parsedMessage.segments.length; si++) {
+    const seg = parsedMessage.segments[si];
+    const segDef = getSegDef(seg.name, version);
+    const profileSeg = getProfileSegment(seg.name);
+    const segLabel = segDef ? segDef.name : (profileSeg && profileSeg.description ? profileSeg.description :
+      (seg.name.startsWith('Z') ? 'Custom Segment' : 'Unknown Segment'));
+    const addrPrefix = seg.name + (seg.repIndex > 1 ? '[' + seg.repIndex + ']' : '');
+    const segKey = addrPrefix;
+
+    // Segment header row
+    const hdr = document.createElement('tr');
+    hdr.className = 'seg-header';
+    hdr.dataset.segKey = segKey;
+    hdr.innerHTML = '<td colspan="4"><span class="seg-toggle" onclick="toggleSegment(\'' +
+      escAttr(segKey) + '\',event)">&#9660;</span>' +
+      '<span class="addr">' + esc(addrPrefix) + '</span> ' + esc(segLabel) +
+      (profileSeg ? '<span class="custom-badge">Profile</span>' : '') + '</td>';
+    tbody.appendChild(hdr);
+
+    for (const field of seg.fields) {
+      const fDef = getFieldDef(seg.name, field.fieldNum, version);
+      const pField = getProfileField(seg.name, field.fieldNum);
+      const fieldName = pField && pField.customName ? pField.customName :
+        (fDef ? fDef.name : 'Field ' + field.fieldNum);
+      const dt = pField && pField.dt ? pField.dt : (fDef ? fDef.dt : '');
+      // Resolve OBX-5 varying data type from OBX-2
+      let displayDt = dt;
+      if (dt === '*' && seg.name === 'OBX' && field.fieldNum === 5) {
+        const obx2 = seg.fields.find(f => f.fieldNum === 2);
+        if (obx2 && obx2.value) displayDt = obx2.value.trim();
+      }
+      const hasComponents = field.components && field.components.length > 1;
+      const hasReps = field.repetitions && field.repetitions.length > 1;
+      const fieldKey = segKey + '-' + field.fieldNum;
+      const displayValue = field.value || '';
+
+      // OBX validation warnings
+      let valWarning = '';
+      if (seg.name === 'OBX') {
+        const obx2 = seg.fields.find(f => f.fieldNum === 2);
+        const obx5 = seg.fields.find(f => f.fieldNum === 5);
+        if (field.fieldNum === 5 && obx5 && obx5.value && (!obx2 || !obx2.value)) {
+          valWarning = '<span class="val-warn" title="OBX-5 has data but OBX-2 (Value Type) is empty">&#9888;</span>';
+        }
+        if (field.fieldNum === 5 && displayDt === 'NM' && displayValue && !/^\s*[+-]?\d*\.?\d+([eE][+-]?\d+)?\s*$/.test(displayValue)) {
+          valWarning = '<span class="val-warn" title="OBX-2 declares NM (Numeric) but value is not a valid number">&#9888;</span>';
+        }
+      }
+
+      const row = document.createElement('tr');
+      row.className = 'field-row';
+      row.dataset.segKey = segKey;
+      row.dataset.fieldKey = fieldKey;
+      row.dataset.segName = seg.name;
+      row.dataset.fieldNum = field.fieldNum;
+      row.onclick = () => selectField(row, seg.name, field.fieldNum, field, segKey, si);
+
+      const expandIcon = hasComponents ?
+        '<span class="expand-icon" onclick="toggleComponents(\'' + escAttr(fieldKey) + '\',event)">&#9654;</span>' : '<span class="expand-icon"></span>';
+
+      row.innerHTML =
+        '<td class="addr">' + expandIcon + esc(field.address) + '</td>' +
+        '<td class="fname">' + esc(fieldName) +
+          (pField && pField.customName ? '<span class="custom-badge">Custom</span>' : '') +
+          (fDef && fDef.rep ? '<span class="rep-badge">&#8634;</span>' : '') + '</td>' +
+        '<td class="dtype">' + esc(displayDt) +
+          (dt === '*' && displayDt !== '*' ? '<span class="dtype-resolved" title="Resolved from OBX-2">&#8592;2</span>' : '') +
+          (fDef ? '<span class="opt-badge opt-' + fDef.opt + '">' + fDef.opt + '</span>' : '') + '</td>' +
+        '<td class="fval' + (displayValue ? '' : ' empty') + '">' + valWarning +
+          (displayValue ? esc(displayValue) : '(empty)') +
+          (hasReps ? '<span class="rep-badge" title="' + field.repetitions.length + ' repetitions"> [' + field.repetitions.length + 'x]</span>' : '') + '</td>';
+
+      tbody.appendChild(row);
+
+      // Component sub-rows
+      if (hasComponents) {
+        const dtDef = DATA_TYPES[displayDt] || DATA_TYPES[dt];
+        for (let ci = 0; ci < field.components.length; ci++) {
+          const comp = field.components[ci];
+          const compDef = dtDef && dtDef.components && dtDef.components[ci] ? dtDef.components[ci] : null;
+          const compRow = document.createElement('tr');
+          compRow.className = 'comp-row';
+          compRow.dataset.parentKey = fieldKey;
+          compRow.dataset.segKey = segKey;
+          compRow.dataset.compIdx = ci + 1;
+
+          const pComp = pField && pField.components && pField.components[String(ci + 1)] ? pField.components[String(ci + 1)] : null;
+
+          compRow.innerHTML =
+            '<td class="addr">' + esc(field.address) + '.' + (ci + 1) + '</td>' +
+            '<td class="fname">' + esc(pComp && pComp.description ? pComp.description :
+              (compDef ? compDef.name : 'Component ' + (ci + 1))) + '</td>' +
+            '<td class="dtype">' + esc(compDef ? compDef.dt : '') + '</td>' +
+            '<td class="fval' + (comp.value ? '' : ' empty') + '">' +
+              (comp.value ? esc(comp.value) : '(empty)') + '</td>';
+          tbody.appendChild(compRow);
+        }
+      }
+
+      // Repetition rows
+      if (hasReps) {
+        for (let ri = 1; ri < field.repetitions.length; ri++) {
+          const rep = field.repetitions[ri];
+          const repRow = document.createElement('tr');
+          repRow.className = 'comp-row';
+          repRow.dataset.parentKey = fieldKey;
+          repRow.dataset.segKey = segKey;
+          repRow.innerHTML =
+            '<td class="addr">' + esc(field.address) + '~' + (ri + 1) + '</td>' +
+            '<td class="fname" style="color:var(--yellow)">Repetition ' + (ri + 1) + '</td>' +
+            '<td class="dtype"></td>' +
+            '<td class="fval' + (rep.value ? '' : ' empty') + '">' +
+              (rep.value ? esc(rep.value) : '(empty)') + '</td>';
+          tbody.appendChild(repRow);
+        }
+      }
+    }
+  }
+
+  applySearch();
+}
+
+function renderRawView() {
+  const container = document.getElementById('rawContent');
+  container.innerHTML = '';
+  if (!parsedMessage) return;
+
+  for (const seg of parsedMessage.segments) {
+    const segDiv = document.createElement('div');
+    segDiv.className = 'raw-segment';
+    const addrPrefix = seg.name + (seg.repIndex > 1 ? '[' + seg.repIndex + ']' : '');
+
+    let html = '<span class="raw-seg-name">' + esc(seg.name) + '</span>';
+
+    if (seg.name === 'MSH') {
+      // MSH-1 is the | after segment name
+      html += '<span class="raw-sep raw-field" data-field="' + addrPrefix + '-1" title="MSH-1: Field Separator">|</span>';
+      // MSH-2 is encoding chars
+      const encChars = seg.fields.find(f => f.fieldNum === 2);
+      html += '<span class="raw-field" data-field="' + addrPrefix + '-2" title="MSH-2: Encoding Characters">' +
+        esc(encChars ? encChars.value : '') + '</span>';
+      // Rest of fields
+      for (let fi = 2; fi < seg.fields.length; fi++) {
+        const f = seg.fields[fi];
+        html += '<span class="raw-sep">|</span>';
+        html += '<span class="raw-field" data-field="' + addrPrefix + '-' + f.fieldNum + '" title="' +
+          escAttr(f.address) + '">' + esc(f.value || '') + '</span>';
+      }
+    } else {
+      for (let fi = 0; fi < seg.fields.length; fi++) {
+        const f = seg.fields[fi];
+        html += '<span class="raw-sep">|</span>';
+        html += '<span class="raw-field" data-field="' + addrPrefix + '-' + f.fieldNum + '" title="' +
+          escAttr(f.address) + '">' + esc(f.rawValue || '') + '</span>';
+      }
+    }
+
+    segDiv.innerHTML = html;
+    container.appendChild(segDiv);
+  }
+
+  // Click handler for raw view
+  container.addEventListener('click', function(e) {
+    const el = e.target.closest('.raw-field');
+    if (!el) return;
+    const fieldId = el.dataset.field;
+    if (!fieldId) return;
+    // Highlight in raw view
+    container.querySelectorAll('.raw-field.highlight').forEach(r => r.classList.remove('highlight'));
+    el.classList.add('highlight');
+    // Select corresponding row in parsed table
+    const row = document.querySelector('#parsedBody tr[data-field-key="' + CSS.escape(fieldId) + '"]');
+    if (row) {
+      row.click();
+      switchTab(document.querySelector('[data-tab="parsedTab"]'));
+      row.scrollIntoView({block:'center'});
+    }
+  });
+}
+
+function selectField(row, segName, fieldNum, fieldData, segKey, segIdx) {
+  // Deselect previous
+  document.querySelectorAll('#parsedTable tr.selected').forEach(r => r.classList.remove('selected'));
+  row.classList.add('selected');
+  selectedRow = row;
+  selectedFieldKey = row.dataset.fieldKey;
+
+  // Highlight in raw view
+  document.querySelectorAll('#rawContent .raw-field.highlight').forEach(r => r.classList.remove('highlight'));
+  const rawField = document.querySelector('#rawContent .raw-field[data-field="' + CSS.escape(selectedFieldKey) + '"]');
+  if (rawField) rawField.classList.add('highlight');
+
+  showDetail(segName, fieldNum, fieldData, segKey, segIdx);
+}
+
+function showDetail(segName, fieldNum, fieldData, segKey, segIdx) {
+  const version = activeVersion;
+  const fDef = getFieldDef(segName, fieldNum, version);
+  const pField = getProfileField(segName, fieldNum);
+  const profileSeg = getProfileSegment(segName);
+  const segDef = getSegDef(segName, version);
+
+  const panel = document.getElementById('detailPanel');
+  const noSel = document.getElementById('noSelection');
+  noSel.style.display = 'none';
+  panel.style.display = 'block';
+
+  let html = '<h3>' + esc(fieldData.address) + '</h3>';
+
+  // Spec info
+  html += '<div class="detail-section"><h4>Specification</h4><div class="detail-grid">';
+  html += '<span class="lbl">Segment</span><span class="val">' +
+    esc(segName) + ' - ' + esc(segDef ? segDef.name : (segName.startsWith('Z') ? 'Custom Segment' : 'Unknown')) + '</span>';
+  html += '<span class="lbl">Field</span><span class="val">' +
+    esc(fDef ? fDef.name : 'Field ' + fieldNum) + '</span>';
+
+  let dt = pField && pField.dt ? pField.dt : (fDef ? fDef.dt : '');
+
+  // Resolve OBX-5 effective data type from OBX-2
+  let effectiveDt = '';
+  if (dt === '*' && segName === 'OBX' && fieldNum === 5 && parsedMessage && segIdx != null) {
+    const seg = parsedMessage.segments[segIdx];
+    if (seg) {
+      const obx2 = seg.fields.find(f => f.fieldNum === 2);
+      if (obx2 && obx2.value) effectiveDt = obx2.value.trim();
+    }
+  }
+
+  if (dt) {
+    const displayDt = effectiveDt || dt;
+    const dtDef = DATA_TYPES[displayDt] || DATA_TYPES[dt];
+    html += '<span class="lbl">Data Type</span><span class="val"><span class="dtype-link" onclick="showDataType(\'' +
+      escAttr(displayDt) + '\')">' + esc(displayDt) + '</span>' +
+      (dt === '*' && effectiveDt ? ' <em style="color:var(--subtext)">(from OBX-2)</em>' : '') +
+      (dtDef ? ' - ' + esc(dtDef.name) : '') + '</span>';
+  }
+
+  if (fDef) {
+    html += '<span class="lbl">Optionality</span><span class="val">' +
+      esc({R:'Required',O:'Optional',C:'Conditional',B:'Backward Compatible'}[fDef.opt] || fDef.opt) + ' (' + fDef.opt + ')</span>';
+    html += '<span class="lbl">Repeatable</span><span class="val">' + (fDef.rep ? 'Yes' : 'No') + '</span>';
+    html += '<span class="lbl">Max Length</span><span class="val">' + fDef.len + '</span>';
+  }
+
+  const rawVal = fieldData.rawValue || fieldData.value || '';
+  const valHasEscapes = hasHL7Escapes(rawVal);
+  html += '<span class="lbl">Value</span><span class="val">' +
+    (rawVal ? (valHasEscapes ? renderEscapedValue(rawVal) : esc(rawVal)) : '<em style="color:var(--overlay)">empty</em>') + '</span>';
+  if (valHasEscapes) {
+    const decoded = decodeHL7Escapes(rawVal);
+    html += '<span class="lbl">Decoded</span><span class="val" style="white-space:pre-wrap">' + esc(decoded) + '</span>';
+  }
+  html += '<span class="lbl">HL7 Version</span><span class="val">' + esc(version) + '</span>';
+  html += '</div></div>';
+
+  // OBX-5 / OBX-2 validation
+  const textDt = effectiveDt || dt;
+  if (segName === 'OBX' && fieldNum === 5) {
+    const obx2val = effectiveDt;
+    if (!obx2val && rawVal) {
+      html += '<div class="esc-note" style="border-left-color:var(--red)"><span class="esc-warn">&#9888; OBX-5 has data but OBX-2 (Value Type) is empty.</span> ' +
+        'OBX-2 must declare the data type so receivers know how to interpret OBX-5. Common values: ST, TX, FT, NM, CE, CWE, ED, DT, TS.</div>';
+    } else if (obx2val && rawVal) {
+      // Type-specific value validation
+      if (obx2val === 'NM' && !/^\s*[+-]?\d*\.?\d+([eE][+-]?\d+)?\s*$/.test(rawVal)) {
+        html += '<div class="esc-note" style="border-left-color:var(--red)"><span class="esc-warn">&#9888; OBX-2 declares NM (Numeric) but the value <code>' +
+          esc(rawVal) + '</code> does not look numeric.</span> NM fields should contain a single decimal number (e.g., <code>120</code>, <code>98.6</code>, <code>-3.14</code>).</div>';
+      }
+      if ((obx2val === 'DT') && !/^\d{4,8}$/.test(rawVal.trim())) {
+        html += '<div class="esc-note" style="border-left-color:var(--orange)"><span class="esc-warn">&#9888; OBX-2 declares DT (Date) — expected format: YYYY[MM[DD]] (4-8 digits).</span></div>';
+      }
+      if (obx2val === 'TS' && !/^\d{4,14}/.test(rawVal.trim())) {
+        html += '<div class="esc-note" style="border-left-color:var(--orange)"><span class="esc-warn">&#9888; OBX-2 declares TS (Timestamp) — expected format: YYYY[MM[DD[HH[MM[SS]]]]].</span></div>';
+      }
+      if ((obx2val === 'CE' || obx2val === 'CWE' || obx2val === 'CNE') && fieldData.components && fieldData.components.length < 2) {
+        html += '<div class="esc-note" style="border-left-color:var(--orange)"><span class="esc-warn">' +
+          'OBX-2 declares ' + esc(obx2val) + ' (Coded Element) — typically has components: code^description^coding system (e.g., <code>I^Intermediate^HL70078</code>).</span></div>';
+      }
+    }
+  }
+
+  // Escape sequence / line break notes for text fields
+  if (textDt === 'FT' || textDt === 'TX' || textDt === 'ST' || valHasEscapes) {
+    const hasTilde = rawVal.indexOf('~') >= 0 && fDef && fDef.rep;
+    html += '<div class="esc-note">';
+    if (textDt === 'FT') {
+      html += '<strong>FT (Formatted Text)</strong> — line breaks should be encoded as <code>\\.br\\</code>. ';
+      html += 'Escape sequences: <code>\\F\\</code>=| <code>\\S\\</code>=^ <code>\\R\\</code>=~ <code>\\T\\</code>=&amp; <code>\\E\\</code>=\\ <code>\\Xhh\\</code>=hex.';
+      if (!valHasEscapes && rawVal.length > 0) {
+        html += '<br><span class="esc-warn">No escape sequences found in this value.</span>';
+      }
+    } else if (textDt === 'TX') {
+      html += '<strong>TX (Text Data)</strong> — intended for long text. Line breaks: <code>\\.br\\</code> per the standard. ';
+      html += 'Some systems use <code>~</code> (repetition separator) as a line break instead — technically wrong but common.';
+    } else if (textDt === 'ST' && rawVal.length > 80) {
+      html += 'Long ST value. If this contains multi-line content, it should use <code>\\.br\\</code> for line breaks or be sent as FT/TX type instead.';
+    } else if (valHasEscapes) {
+      html += 'This value contains HL7 escape sequences. See the Decoded row above for the resolved text.';
+    }
+    if (hasTilde) {
+      html += '<br><span class="esc-warn">This field has <code>~</code> repetitions — could be actual repeats OR line breaks depending on the sending system. Check your integration docs.</span>';
+    }
+    html += '</div>';
+  }
+
+  // Type-specific guidance for non-text data types (shown for any field, not just OBX)
+  if (textDt && !['FT','TX','ST','*',''].includes(textDt)) {
+    const typeGuide = {
+      'NM': 'Numeric value. Should contain a single decimal number. Components and repetitions not expected.',
+      'DT': 'Date. Format: YYYY[MM[DD]] — 4 to 8 digits. Example: 20240215 = February 15, 2024.',
+      'TS': 'Timestamp. Format: YYYY[MM[DD[HH[MM[SS[.S[S[S[S]]]]]]]]][+/-ZZZZ]. Example: 20240215143000+0200.',
+      'DTM': 'Date/Time. Same format as TS but used in v2.5+.',
+      'CE': 'Coded Element. Components: identifier^text^coding system^alt id^alt text^alt coding system.',
+      'CWE': 'Coded With Exceptions. Components: identifier^text^coding system^alt id^alt text^alt coding system (+ more in v2.5+).',
+      'CNE': 'Coded No Exceptions. Same structure as CWE but a code from the specified table is required.',
+      'ED': 'Encapsulated Data. Components: source app^type^data subtype^encoding^data. Common encoding: Base64.',
+      'SN': 'Structured Numeric. Components: comparator^num1^separator^num2. Example: >^100 or ^100^-^200 (range).',
+      'ID': 'Coded value from an HL7 table. Should match a value from the specified table.',
+      'IS': 'Coded value from a user-defined table.',
+    };
+    if (typeGuide[textDt]) {
+      html += '<div class="esc-note"><strong>' + esc(textDt) + '</strong> — ' + typeGuide[textDt] + '</div>';
+    }
+  }
+
+  // MSH-18 encoding info note
+  if (segName === 'MSH' && fieldNum === 18) {
+    const msh18Val = (fieldData.value || '').trim();
+    const msh18Upper = msh18Val.toUpperCase();
+    const mappedEnc = MSH18_TO_ENCODING[msh18Upper];
+    html += '<div class="esc-note">';
+    html += '<strong>MSH-18 (Character Set)</strong> — declares the character encoding of the message.<br>';
+    if (msh18Val === '') {
+      html += 'Empty value defaults to <strong>ASCII</strong> (7-bit only).';
+    } else if (mappedEnc) {
+      html += 'Value <code>' + esc(msh18Val) + '</code> maps to <strong>' + esc(mappedEnc) + '</strong>.';
+    } else {
+      html += '<span class="esc-warn">\u26A0 Unknown value <code>' + esc(msh18Val) + '</code>.</span> ';
+      html += 'Common values: <code>8859/1</code> (ISO-8859-1), <code>UNICODE UTF-8</code>, <code>UTF-8</code>.';
+    }
+    if (fileEncodingInfo && fileEncodingInfo.source === 'file') {
+      html += '<br>File detected as: <strong>' + esc(fileEncodingInfo.encoding) + '</strong>' +
+        (fileEncodingInfo.hasBOM ? ' (BOM)' : '') + '.';
+    }
+    html += '</div>';
+  }
+
+  // Components — use resolved data type for OBX-5
+  const compDtKey = effectiveDt || dt;
+  const dtDef = DATA_TYPES[compDtKey] || DATA_TYPES[dt];
+  if (dtDef && dtDef.components && fieldData.components && fieldData.components.length > 0) {
+    html += '<div class="detail-section"><h4>Components (' + esc(compDtKey) + ')</h4>';
+    html += '<table class="comp-table"><thead><tr><th>#</th><th>Name</th><th>Type</th><th>Value</th></tr></thead><tbody>';
+    const maxLen = Math.max(dtDef.components.length, fieldData.components.length);
+    for (let ci = 0; ci < maxLen; ci++) {
+      const cDef = dtDef.components[ci];
+      const cVal = fieldData.components[ci];
+      const pComp = pField && pField.components && pField.components[String(ci + 1)] ? pField.components[String(ci + 1)] : null;
+      const val = cVal ? cVal.value : '';
+      html += '<tr><td class="ct-idx">' + (ci + 1) + '</td>';
+      html += '<td class="ct-name">' + esc(pComp && pComp.description ? pComp.description : (cDef ? cDef.name : 'Component ' + (ci + 1))) + '</td>';
+      html += '<td class="ct-dt">' + esc(cDef ? cDef.dt : '') + '</td>';
+      html += '<td class="ct-val' + (val ? '' : ' empty') + '">' + (val ? esc(val) : '(empty)') + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+  }
+
+  // Repetitions
+  if (fieldData.repetitions && fieldData.repetitions.length > 1) {
+    html += '<div class="detail-section"><h4>Repetitions (' + fieldData.repetitions.length + ')</h4>';
+    for (let ri = 0; ri < fieldData.repetitions.length; ri++) {
+      const rep = fieldData.repetitions[ri];
+      html += '<div style="margin-bottom:6px"><span class="lbl">~' + (ri + 1) + ':</span> ' +
+        '<span class="val">' + esc(rep.value || '(empty)') + '</span></div>';
+    }
+    html += '</div>';
+  }
+
+  // Profile info
+  if (pField || profileSeg) {
+    html += '<div id="profileNotes">';
+    if (pField && pField.customName) {
+      html += '<div class="pn-label">Custom Name (Profile)</div>';
+      html += '<div class="pn-text">' + esc(pField.customName) + '</div>';
+    }
+    if (pField && pField.description) {
+      html += '<div class="pn-label">Description (Profile)</div>';
+      html += '<div class="pn-text">' + esc(pField.description) + '</div>';
+    }
+    if (pField && pField.notes) {
+      html += '<div class="pn-label">Notes (Profile)</div>';
+      html += '<div class="pn-text">' + esc(pField.notes) + '</div>';
+    }
+    if (pField && pField.valueMap) {
+      const currentVal = fieldData.components && fieldData.components.length > 0 ?
+        fieldData.components[0].value : fieldData.value;
+      html += '<div class="pn-label">Value Map</div>';
+      html += '<table class="vm-table">';
+      for (const [code, meaning] of Object.entries(pField.valueMap)) {
+        const isCurrent = code === currentVal;
+        html += '<tr' + (isCurrent ? ' style="background:rgba(166,227,161,0.1)"' : '') + '>';
+        html += '<td class="vm-code">' + esc(code) + (isCurrent ? ' &#9668;' : '') + '</td>';
+        html += '<td class="vm-meaning">' + esc(meaning) + '</td></tr>';
+      }
+      html += '</table>';
+    }
+    html += '</div>';
+  }
+
+  panel.innerHTML = html;
+}
+
+function showDataType(dt) {
+  const dtDef = DATA_TYPES[dt];
+  if (!dtDef) return;
+  const panel = document.getElementById('detailPanel');
+  const noSel = document.getElementById('noSelection');
+  noSel.style.display = 'none';
+  panel.style.display = 'block';
+
+  let html = '<h3>Data Type: ' + esc(dt) + '</h3>';
+  html += '<div class="detail-section"><div class="detail-grid">';
+  html += '<span class="lbl">Name</span><span class="val">' + esc(dtDef.name) + '</span>';
+  html += '<span class="lbl">Type</span><span class="val">' + (dtDef.primitive ? 'Primitive' : 'Composite') + '</span>';
+  html += '</div></div>';
+
+  if (dtDef.components) {
+    html += '<div class="detail-section"><h4>Components</h4>';
+    html += '<table class="comp-table"><thead><tr><th>#</th><th>Name</th><th>Type</th></tr></thead><tbody>';
+    for (let i = 0; i < dtDef.components.length; i++) {
+      const c = dtDef.components[i];
+      html += '<tr><td class="ct-idx">' + (i + 1) + '</td>';
+      html += '<td class="ct-name">' + esc(c.name) + '</td>';
+      html += '<td class="ct-dt"><span class="dtype-link" onclick="showDataType(\'' +
+        escAttr(c.dt) + '\')">' + esc(c.dt) + '</span></td></tr>';
+    }
+    html += '</tbody></table></div>';
+  }
+
+  panel.innerHTML = html;
+}
+
+function clearDetail() {
+  document.getElementById('detailPanel').style.display = 'none';
+  document.getElementById('noSelection').style.display = 'block';
+  document.querySelectorAll('#parsedTable tr.selected').forEach(r => r.classList.remove('selected'));
+  selectedRow = null;
+  selectedFieldKey = null;
+}
+
+// ========== ENCODING DISPLAY ==========
+function updateEncodingDisplay() {
+  const bar = document.getElementById('encodingInfo');
+  const detSpan = document.getElementById('encDetected');
+  const declSpan = document.getElementById('encDeclared');
+  const warnSpan = document.getElementById('encWarning');
+
+  if (!parsedMessage) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'flex';
+  warnSpan.textContent = '';
+  warnSpan.className = '';
+
+  // File encoding display
+  if (fileEncodingInfo && fileEncodingInfo.source === 'file') {
+    const enc = fileEncodingInfo.encoding;
+    detSpan.innerHTML = '<span class="enc-value">' + esc(enc) + (fileEncodingInfo.hasBOM ? ' (BOM)' : '') + '</span>';
+  } else if (fileEncodingInfo && fileEncodingInfo.source === 'paste') {
+    detSpan.innerHTML = '<span class="enc-value">Pasted (browser-decoded)</span>';
+  } else if (fileEncodingInfo && fileEncodingInfo.source === 'sample') {
+    detSpan.innerHTML = '<span class="enc-value">Sample (embedded)</span>';
+  } else {
+    detSpan.innerHTML = '<span class="enc-value">-</span>';
+  }
+
+  // MSH-18 display
+  const declared = parsedMessage.declaredCharset;
+  if (declared === undefined || declared === null) {
+    declSpan.innerHTML = '<span class="enc-value">not present</span>';
+  } else if (declared === '') {
+    declSpan.innerHTML = '<span class="enc-value">(empty) = ASCII default</span>';
+  } else {
+    const encName = MSH18_TO_ENCODING[declared.toUpperCase().trim()];
+    if (encName) {
+      declSpan.innerHTML = '<span class="enc-value">' + esc(declared) + ' (' + esc(encName) + ')</span>';
+    } else {
+      declSpan.innerHTML = '<span class="enc-warn">' + esc(declared) + ' (unknown)</span>';
+      warnSpan.className = 'enc-warn';
+      warnSpan.textContent = '\u26A0 Unknown MSH-18 value: ' + declared;
+    }
+  }
+
+  // Mismatch detection
+  if (fileEncodingInfo && fileEncodingInfo.source === 'file') {
+    const fileEnc = fileEncodingInfo.encoding; // ASCII, UTF-8, ISO-8859-1, etc.
+    const msh18 = (declared || '').toUpperCase().trim();
+    const msh18Enc = MSH18_TO_ENCODING[msh18]; // mapped encoding name
+
+    if (msh18Enc) {
+      const fileIsUTF8 = fileEnc === 'UTF-8' || fileEnc === 'ASCII';
+      const declIsUTF8 = msh18Enc === 'UTF-8' || msh18Enc === 'ASCII';
+      const fileIsLatin = fileEnc === 'ISO-8859-1';
+      const declIsLatin = msh18Enc.startsWith('ISO-8859');
+
+      if (fileIsUTF8 && declIsLatin) {
+        warnSpan.className = 'enc-warn';
+        warnSpan.textContent = '\u26A0 Mismatch: file is ' + fileEnc + ' but MSH-18 declares ' + declared + ' (' + msh18Enc + ')';
+      } else if (fileIsLatin && declIsUTF8 && msh18 !== '' && msh18 !== 'ASCII') {
+        warnSpan.className = 'enc-error';
+        warnSpan.textContent = '\u26A0 Mismatch: file is ' + fileEnc + ' but MSH-18 declares ' + declared + ' (' + msh18Enc + ')';
+      } else if (fileIsLatin && (msh18 === '' || msh18 === 'ASCII')) {
+        warnSpan.className = 'enc-warn';
+        warnSpan.textContent = '\u26A0 File contains high bytes (ISO-8859-1) but MSH-18 is empty/ASCII — encoding ambiguous';
+      }
+    }
+  } else if (fileEncodingInfo && fileEncodingInfo.source === 'paste') {
+    // For paste, just note if MSH-18 is unusual
+    const msh18 = (declared || '').toUpperCase().trim();
+    if (msh18 && !MSH18_TO_ENCODING[msh18]) {
+      warnSpan.className = 'enc-warn';
+      warnSpan.textContent = '\u26A0 Unknown MSH-18 value: ' + declared;
+    }
+  }
+}
+
+// ========== SEGMENT COLLAPSE ==========
+function toggleSegment(segKey, event) {
+  event.stopPropagation();
+  if (collapsedSegments.has(segKey)) {
+    collapsedSegments.delete(segKey);
+  } else {
+    collapsedSegments.add(segKey);
+  }
+  applyCollapse();
+}
+
+function applyCollapse() {
+  const tbody = document.getElementById('parsedBody');
+  for (const row of tbody.children) {
+    const segKey = row.dataset.segKey;
+    if (!segKey) continue;
+    if (row.classList.contains('seg-header')) {
+      const toggle = row.querySelector('.seg-toggle');
+      if (toggle) toggle.innerHTML = collapsedSegments.has(segKey) ? '&#9654;' : '&#9660;';
+    } else {
+      if (collapsedSegments.has(segKey)) {
+        row.classList.add('hidden-collapse');
+      } else {
+        row.classList.remove('hidden-collapse');
+      }
+    }
+  }
+}
+
+function toggleComponents(fieldKey, event) {
+  event.stopPropagation();
+  const rows = document.querySelectorAll('#parsedBody tr.comp-row[data-parent-key="' + CSS.escape(fieldKey) + '"]');
+  const icon = event.target.closest('.expand-icon') || event.target;
+  const expanding = rows.length > 0 && !rows[0].classList.contains('expanded');
+  rows.forEach(r => r.classList.toggle('expanded', expanding));
+  icon.innerHTML = expanding ? '&#9660;' : '&#9654;';
+}
+
+// ========== SEARCH ==========
+function applySearch() {
+  const term = document.getElementById('searchInput').value.toLowerCase().trim();
+  const tbody = document.getElementById('parsedBody');
+  const matchingSegKeys = new Set();
+
+  for (const row of tbody.children) {
+    if (row.classList.contains('seg-header')) continue;
+    if (row.classList.contains('comp-row')) continue;
+    if (!term) {
+      row.classList.remove('hidden-search');
+      continue;
+    }
+    const text = row.textContent.toLowerCase();
+    if (text.indexOf(term) >= 0) {
+      row.classList.remove('hidden-search');
+      matchingSegKeys.add(row.dataset.segKey);
+    } else {
+      row.classList.add('hidden-search');
+    }
+  }
+
+  // Show/hide segment headers
+  for (const row of tbody.children) {
+    if (!row.classList.contains('seg-header')) continue;
+    if (!term) {
+      row.classList.remove('hidden-search');
+    } else {
+      row.classList.toggle('hidden-search', !matchingSegKeys.has(row.dataset.segKey));
+    }
+  }
+
+  applyCollapse();
+}
+
+// ========== PROFILE MANAGER ==========
+function loadProfile(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const profile = JSON.parse(e.target.result);
+      if (!profile.name) {
+        setStatus('Invalid profile: missing "name" field', true);
+        return;
+      }
+      currentProfile = profile;
+      document.getElementById('profileName').textContent = profile.name;
+      document.getElementById('profileIndicator').style.display = 'flex';
+      setStatus('Profile loaded: ' + profile.name);
+
+      // If profile specifies a version and auto-detect is on
+      if (profile.hl7Version && document.getElementById('versionSelect').value === 'auto') {
+        activeVersion = profile.hl7Version.startsWith('2.5') ? '2.5' : '2.3';
+      }
+
+      if (parsedMessage) {
+        renderParsedTable();
+        clearDetail();
+      }
+    } catch (err) {
+      setStatus('Failed to parse profile JSON: ' + err.message, true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function unloadProfile() {
+  currentProfile = null;
+  document.getElementById('profileIndicator').style.display = 'none';
+  setStatus('Profile unloaded');
+  if (parsedMessage) {
+    renderParsedTable();
+    clearDetail();
+  }
+}
+
+// ========== TABS ==========
+function switchTab(tabEl) {
+  const tabId = tabEl.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ========== UTILITIES ==========
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(str) {
+  return esc(str).replace(/'/g,'&#39;');
+}
+
+function setStatus(msg, isError) {
+  const el = document.getElementById('inputStatus');
+  el.textContent = msg;
+  el.style.color = isError ? 'var(--red)' : 'var(--green)';
+}
+
+// ========== HL7 ESCAPE SEQUENCES ==========
+const HL7_ESCAPES = {
+  '\\F\\': {char: '|', name: 'Field separator'},
+  '\\S\\': {char: '^', name: 'Component separator'},
+  '\\T\\': {char: '&', name: 'Subcomponent separator'},
+  '\\R\\': {char: '~', name: 'Repetition separator'},
+  '\\E\\': {char: '\\', name: 'Escape character'},
+  '\\.br\\': {char: '\n', name: 'Line break'},
+  '\\.sp\\': {char: ' ', name: 'Non-breaking space'},
+};
+
+function hasHL7Escapes(value) {
+  if (!value) return false;
+  return /\\(?:F|S|T|R|E|\.br|\.sp|X[0-9A-Fa-f]+)\\/.test(value);
+}
+
+function decodeHL7Escapes(value) {
+  if (!value) return value;
+  let result = value;
+  // Named escapes
+  result = result.replace(/\\\.br\\/gi, '\n');
+  result = result.replace(/\\\.sp\\/gi, ' ');
+  result = result.replace(/\\F\\/g, '|');
+  result = result.replace(/\\S\\/g, '^');
+  result = result.replace(/\\T\\/g, '&');
+  result = result.replace(/\\R\\/g, '~');
+  result = result.replace(/\\E\\/g, '\\');
+  // Hex escapes: \Xhh\ or \Xhhhh\
+  result = result.replace(/\\X([0-9A-Fa-f]+)\\/g, function(m, hex) {
+    try {
+      const bytes = hex.match(/.{2}/g);
+      return bytes.map(b => String.fromCharCode(parseInt(b, 16))).join('');
+    } catch(e) { return m; }
+  });
+  return result;
+}
+
+// Render value with escape sequences highlighted (returns HTML)
+function renderEscapedValue(value) {
+  if (!value) return '';
+  return esc(value)
+    .replace(/\\\.br\\/gi, '<span class="esc-seq" title="Line break (\.br\)">&#x23CE;</span>')
+    .replace(/\\\.sp\\/gi, '<span class="esc-seq" title="Non-breaking space (\.sp\)">&#x2423;</span>')
+    .replace(/\\F\\/g, '<span class="esc-seq" title="Field separator (\\F\\)">|</span>')
+    .replace(/\\S\\/g, '<span class="esc-seq" title="Component separator (\\S\\)">^</span>')
+    .replace(/\\T\\/g, '<span class="esc-seq" title="Subcomponent separator (\\T\\)">&#38;</span>')
+    .replace(/\\R\\/g, '<span class="esc-seq" title="Repetition separator (\\R\\)">~</span>')
+    .replace(/\\E\\/g, '<span class="esc-seq" title="Escape character (\\E\\)">\\</span>')
+    .replace(/\\X([0-9A-Fa-f]+)\\/gi, '<span class="esc-seq" title="Hex escape (\\X$1\\)">0x$1</span>');
+}
+
+function clearAll() {
+  document.getElementById('msgInput').value = '';
+  document.getElementById('parsedBody').innerHTML = '';
+  document.getElementById('rawContent').innerHTML = '';
+  parsedMessage = null;
+  fileEncodingInfo = null;
+  anonymized = false;
+  originalRawMessage = null;
+  anonReplacements = null;
+  document.getElementById('anonBtn').classList.remove('active');
+  document.getElementById('anonIndicator').style.display = 'none';
+  document.getElementById('encodingInfo').style.display = 'none';
+  clearDetail();
+  setStatus('');
+  switchTab(document.querySelector('[data-tab="inputTab"]'));
+}
+
+function loadSample() {
+  document.getElementById('msgInput').value =
+    'MSH|^~\\&|EHL|DEFAULT|SEMASERVER|VMH|20211021170716||ADR^A19^ADR_A19|1634825236927|P|2.5|||AL|NE||UTF-8\r' +
+    'MSA|AA|20211021150716252|OK\r' +
+    'QRD|20211021150716|R|I|QRY0000006|||1^RD|V107602584002|APA\r' +
+    'PID|1||38508016020^^^MIRTH^PI|38508016020|JAANUS^KAIDO^^^^^L||19850801|M\r' +
+    'PV1|1|O|||||||||||||||||V107602584002^^^MIRTH^VN|||||||||||||||||||||||||||||||QqItjP0hihhZqtz0';
+  fileEncodingInfo = {source: 'sample'};
+  setStatus('Sample message loaded');
+}
+
+// ========== EVENT LISTENERS ==========
+document.getElementById('hl7File').addEventListener('change', function(e) {
+  if (e.target.files.length > 0) openHL7File(e.target.files[0]);
+  e.target.value = '';
+});
+
+document.getElementById('profileFile').addEventListener('change', function(e) {
+  if (e.target.files.length > 0) loadProfile(e.target.files[0]);
+  e.target.value = ''; // reset for re-upload
+});
+
+document.getElementById('searchInput').addEventListener('input', applySearch);
+
+document.getElementById('versionSelect').addEventListener('change', function() {
+  if (parsedMessage) {
+    activeVersion = resolveVersion(parsedMessage);
+    renderParsedTable();
+    clearDetail();
+  }
+});
+
+// Drag and drop
+const msgInput = document.getElementById('msgInput');
+msgInput.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.add('dragover');
+});
+msgInput.addEventListener('dragleave', function(e) {
+  e.preventDefault();
+  this.classList.remove('dragover');
+});
+msgInput.addEventListener('drop', function(e) {
+  e.preventDefault();
+  this.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    openHL7File(files[0]);
+  }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  // Escape: close help modal or clear search
+  if (e.key === 'Escape') {
+    const helpOverlay = document.getElementById('helpOverlay');
+    if (helpOverlay.classList.contains('visible')) {
+      hideHelp();
+      return;
+    }
+    const search = document.getElementById('searchInput');
+    if (document.activeElement === search) {
+      search.value = '';
+      applySearch();
+      search.blur();
+    }
+    return;
+  }
+
+  // Ctrl+Shift+A to toggle anonymize (works even in inputs)
+  if (e.key === 'A' && e.ctrlKey && e.shiftKey) {
+    e.preventDefault();
+    toggleAnonymize();
+    return;
+  }
+
+  // Don't intercept when typing in inputs
+  if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
+
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    navigateRows(e.key === 'ArrowDown' ? 1 : -1);
+  } else if (e.key === 'Enter' && selectedRow) {
+    const fieldKey = selectedRow.dataset.fieldKey;
+    if (fieldKey) {
+      const icon = selectedRow.querySelector('.expand-icon');
+      if (icon && icon.textContent.trim()) {
+        icon.click();
+      }
+    }
+  } else if (e.key === 'c' && e.ctrlKey && selectedRow) {
+    e.preventDefault();
+    const valCell = selectedRow.querySelector('.fval');
+    if (valCell) {
+      const text = valCell.textContent === '(empty)' ? '' : valCell.textContent;
+      navigator.clipboard.writeText(text).then(() => setStatus('Copied to clipboard'));
+    }
+  }
+});
+
+function navigateRows(direction) {
+  const rows = Array.from(document.querySelectorAll('#parsedBody tr.field-row:not(.hidden-search):not(.hidden-collapse)'));
+  if (rows.length === 0) return;
+
+  let idx = -1;
+  if (selectedRow) {
+    idx = rows.indexOf(selectedRow);
+  }
+  idx += direction;
+  if (idx < 0) idx = 0;
+  if (idx >= rows.length) idx = rows.length - 1;
+
+  rows[idx].click();
+  rows[idx].scrollIntoView({block:'nearest'});
+}
+
+// Track when user types/pastes into textarea
+msgInput.addEventListener('input', function() {
+  if (!fileEncodingInfo || fileEncodingInfo.source !== 'paste') {
+    fileEncodingInfo = {source: 'paste'};
+  }
+});
+
+// Ctrl+Enter to parse
+msgInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && e.ctrlKey) {
+    e.preventDefault();
+    parseMessage();
+  }
+});
+
+function showHelp() {
+  document.getElementById('helpOverlay').classList.add('visible');
+}
+function hideHelp() {
+  document.getElementById('helpOverlay').classList.remove('visible');
+}
+</script>
+
+<div id="helpOverlay" onclick="if(event.target===this)hideHelp()">
+<div id="helpModal">
+<div class="help-header">
+<h2>Integration Profile Guide</h2>
+<button class="help-close" onclick="hideHelp()">&#x2715;</button>
+</div>
+<div class="help-body">
+
+<h3>What are profiles?</h3>
+<p>Integration profiles are JSON files that overlay integration-specific context onto the standard HL7 field definitions. When working with a specific system (e.g., Carestream PACS, Agfa EI, Schiller ECG), a profile tells the viewer how that system uses each field &mdash; custom names, expected values, component meanings, and implementation notes.</p>
+<p>Profiles do not replace the HL7 spec definitions; they add to them. A loaded profile shows <code>Custom</code> badges next to overridden fields and adds notes/value maps in the detail panel.</p>
+
+<h3>Creating a profile</h3>
+<p>A profile is a single <code>.json</code> file. The minimum required structure:</p>
+<pre>{
+  "name": "My Integration v2.5",
+  "hl7Version": "2.5",
+  "description": "Optional description of this integration",
+  "segments": { }
+}</pre>
+<p class="note">Only <code>name</code> is strictly required. All other fields are optional.</p>
+
+<h3>Profile fields reference</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td>name</td><td>string</td><td>Display name shown in toolbar when loaded (required)</td></tr>
+<tr><td>hl7Version</td><td>string</td><td>HL7 version hint: <code>"2.3"</code> or <code>"2.5"</code>. Auto-selects version dropdown when set to "auto"</td></tr>
+<tr><td>description</td><td>string</td><td>Free text description of the integration</td></tr>
+<tr><td>segments</td><td>object</td><td>Segment overrides keyed by segment name (MSH, PID, OBR, etc.)</td></tr>
+</table>
+
+<h3>Segment definition</h3>
+<p>Each key under <code>segments</code> is a segment name. The value is an object:</p>
+<pre>"PID": {
+  "description": "Patient demographics from HIS",
+  "custom": false,
+  "fields": { ... }
+}</pre>
+<table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td>description</td><td>string</td><td>Segment-level description shown in detail panel</td></tr>
+<tr><td>custom</td><td>boolean</td><td>Set <code>true</code> for Z-segments. Provides "Custom Segment" label and type info in the viewer</td></tr>
+<tr><td>fields</td><td>object</td><td>Field overrides keyed by field number (as string)</td></tr>
+</table>
+
+<h3>Field definition</h3>
+<p>Each key under <code>fields</code> is the HL7 field number as a string. The value is an object with any combination of:</p>
+<pre>"4": {
+  "customName": "Procedure Code",
+  "description": "PACS procedure code from RadIS catalog",
+  "notes": "Component 1 is the code, component 2 is description",
+  "dt": "CE",
+  "valueMap": {
+    "CR": "Computed Radiography",
+    "US": "Ultrasound",
+    "CT": "Computed Tomography"
+  },
+  "components": {
+    "1": { "description": "RadIS procedure code" },
+    "2": { "description": "Procedure description text" }
+  }
+}</pre>
+<table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td>customName</td><td>string</td><td>Replaces the standard HL7 field name in the parsed table. Shown with a <code>Custom</code> badge</td></tr>
+<tr><td>description</td><td>string</td><td>Shown in the detail panel under "Profile Description"</td></tr>
+<tr><td>notes</td><td>string</td><td>Implementation notes shown in the detail panel under "Profile Notes"</td></tr>
+<tr><td>dt</td><td>string</td><td>Override data type (useful for Z-segment fields where the type is not in the spec)</td></tr>
+<tr><td>valueMap</td><td>object</td><td>Maps coded values to human-readable descriptions. Current value is highlighted in the detail panel</td></tr>
+<tr><td>components</td><td>object</td><td>Component-level descriptions keyed by component number (as string, 1-based)</td></tr>
+</table>
+
+<h3>Z-segment example</h3>
+<p>Z-segments are custom segments not defined in the HL7 spec. Mark them with <code>"custom": true</code> and provide field-level <code>dt</code> overrides:</p>
+<pre>"ZDS": {
+  "description": "DICOM Study reference (custom Z-segment)",
+  "custom": true,
+  "fields": {
+    "1": {
+      "customName": "Study Instance UID",
+      "dt": "RP",
+      "description": "DICOM Study Instance UID as Reference Pointer",
+      "notes": "Format: StudyUID^Application^DICOM"
+    }
+  }
+}</pre>
+
+<h3>Value maps</h3>
+<p>Use <code>valueMap</code> to document coded values. The viewer matches the current field value against the map and highlights the match. Common examples:</p>
+<pre>"8": {
+  "customName": "Sex",
+  "valueMap": {
+    "M": "Male",
+    "F": "Female",
+    "O": "Other",
+    "U": "Unknown"
+  }
+}
+
+"25": {
+  "customName": "Result Status",
+  "valueMap": {
+    "P": "Preliminary",
+    "F": "Final",
+    "C": "Corrected",
+    "X": "Cancelled"
+  }
+}</pre>
+
+<h3>Tips for building profiles</h3>
+<p>1. <strong>Start from a real message.</strong> Parse a sample message in the viewer, then note which fields your integration actually populates. Only document those fields.</p>
+<p>2. <strong>Use field numbers from the viewer.</strong> The address column shows the exact field number to use as the key (e.g., <code>MSH-3</code> &rarr; key <code>"3"</code>).</p>
+<p>3. <strong>Focus on non-obvious fields.</strong> Standard fields like PID-5 (Patient Name) rarely need profiles. Document fields with integration-specific meaning: custom procedure codes, device references, local value sets.</p>
+<p>4. <strong>One profile per integration system.</strong> Separate profiles for Carestream, Agfa, Schiller, etc. The profile name appears in the toolbar when loaded.</p>
+<p>5. <strong>Component descriptions</strong> are useful when the integration uses specific subfields (e.g., PID-3.4 Assigning Authority must be a specific value).</p>
+
+<h3>Loading profiles</h3>
+<p>Click <strong>Load Profile</strong> in the toolbar and select the <code>.json</code> file. The profile name appears in the toolbar. Click the <strong>&#x2715;</strong> next to the name to unload it. The sample profile is at <code>profiles/sample-profile.json</code>.</p>
+<p>Profiles work with <code>file://</code> URLs &mdash; no web server needed.</p>
+
+<h3>Anonymization</h3>
+<p>The <strong>Anon</strong> button in the toolbar toggles patient data anonymization. When active, PID segment fields containing identifying information are replaced with random fake data. Keyboard shortcut: <span class="kbd">Ctrl+Shift+A</span>.</p>
+<p>Anonymized fields:</p>
+<table>
+<tr><th>Field</th><th>Strategy</th></tr>
+<tr><td>PID-2, PID-3</td><td>Random numeric IDs (same length, structure preserved)</td></tr>
+<tr><td>PID-5, PID-9</td><td>Fake names from pool (ASCII or Estonian non-ASCII)</td></tr>
+<tr><td>PID-7</td><td>Date of birth shifted by &plusmn;1&ndash;20 years</td></tr>
+<tr><td>PID-11</td><td>Fake address (street, city, ZIP randomized)</td></tr>
+<tr><td>PID-13, PID-14</td><td>Random digits preserving format</td></tr>
+<tr><td>PID-19</td><td>SSN: random digits, same length</td></tr>
+<tr><td>PID-20</td><td>Driver&rsquo;s license: random alphanumeric</td></tr>
+</table>
+<p>Check <strong>Non-ASCII</strong> to use Estonian-style names containing &Otilde;, &Ouml;, &Uuml;, &Auml;, &#x17D;, &#x160; &mdash; useful for testing encoding handling.</p>
+<p>Toggle off to restore the original data. Each toggle-on generates fresh random values. The original message text is preserved in the Input tab and restored exactly when toggling off.</p>
+
+<h3>Line breaks &amp; escape sequences in values</h3>
+<p>HL7 uses <code>\r</code> (0x0D) as the segment terminator, so literal carriage returns cannot appear inside field values. The standard defines escape sequences for special characters:</p>
+<table>
+<tr><th>Escape</th><th>Meaning</th><th>Character</th></tr>
+<tr><td>\.br\</td><td>Line break</td><td>CR/LF</td></tr>
+<tr><td>\F\</td><td>Field separator</td><td>|</td></tr>
+<tr><td>\S\</td><td>Component separator</td><td>^</td></tr>
+<tr><td>\R\</td><td>Repetition separator</td><td>~</td></tr>
+<tr><td>\T\</td><td>Subcomponent separator</td><td>&amp;</td></tr>
+<tr><td>\E\</td><td>Escape character</td><td>\</td></tr>
+<tr><td>\Xhh\</td><td>Hex byte value</td><td>e.g. \X0D\ = CR</td></tr>
+</table>
+<p>The <strong>FT</strong> (Formatted Text) data type is specifically designed for multi-line content like radiology reports. It uses <code>\.br\</code> for line breaks.</p>
+<p><strong>TX</strong> (Text Data) fields also support escape sequences but are simpler than FT.</p>
+
+<h3>Real-world deviations</h3>
+<p>In practice, many systems deviate from the standard. Common patterns seen in production integrations:</p>
+<p>1. <strong>Tilde as line break:</strong> Some systems (especially older PACS) send OBX-5 report lines as separate <code>~</code> repetitions instead of using <code>\.br\</code>. The <code>~</code> is officially the field repetition separator, but many receiving systems interpret repeating OBX-5 values as report lines. The viewer shows these as "Repetitions" &mdash; check your integration docs to know if they mean repeats or line breaks.</p>
+<p>2. <strong>Separate OBX segments per line:</strong> Instead of one OBX-5 with escapes or repetitions, some systems send one OBX segment per report line (all sharing the same OBX-3 observation ID). This is common in ORU messages with radiology reports.</p>
+<p>3. <strong>Literal newlines in data:</strong> Some systems embed raw <code>\n</code> (0x0A) inside field values. This is non-standard and will cause parsing problems with strict parsers. The viewer's normalizer attempts to detect and handle these (ported from the Java tool's <code>replaceIllegalNewLines</code>).</p>
+<p>4. <strong>No escaping at all:</strong> Some systems simply omit characters they cannot encode rather than escaping them.</p>
+<p class="note">When the viewer detects HL7 escape sequences in a field value, it shows a "Decoded" row in the detail panel with the resolved text. Escape sequences are highlighted in the value display. For FT and TX fields, a note about the expected encoding appears automatically.</p>
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

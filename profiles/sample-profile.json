@@ -1,0 +1,138 @@
+{
+  "name": "Carestream v2.3 ORM/ORU",
+  "hl7Version": "2.3",
+  "description": "Carestream PACS imaging integration - sample integration profile demonstrating all supported customization options",
+  "segments": {
+    "MSH": {
+      "description": "Message Header with Carestream-specific values",
+      "fields": {
+        "3": {
+          "customName": "Sending Application (RadIS)",
+          "description": "Identifies the RadIS instance sending the message",
+          "notes": "Configured in Carestream integration settings. Value should match the application name registered in the receiving system."
+        },
+        "9": {
+          "description": "ORM^O01 for orders, ORU^R01 for results"
+        }
+      }
+    },
+    "PID": {
+      "description": "Patient demographics from the HIS",
+      "fields": {
+        "3": {
+          "customName": "Patient MRN",
+          "description": "Medical Record Number from the HIS patient master index",
+          "notes": "Component 4 (Assigning Authority) must match the authority configured in Carestream. Component 5 (Identifier Type Code) should be 'PI' for patient internal identifier.",
+          "components": {
+            "1": { "description": "MRN value (numeric, up to 20 chars)" },
+            "4": { "description": "Assigning authority - must be 'MIRTH' or 'HIS'" },
+            "5": { "description": "Always 'PI' (Patient Internal Identifier)" }
+          }
+        },
+        "5": {
+          "customName": "Patient Name",
+          "description": "Patient's legal name in XPN format",
+          "components": {
+            "1": { "description": "Family/surname" },
+            "2": { "description": "Given/first name" },
+            "7": { "description": "Name type code: L=Legal, D=Display, M=Maiden" }
+          }
+        },
+        "8": {
+          "customName": "Sex",
+          "description": "Administrative sex code",
+          "valueMap": {
+            "M": "Male",
+            "F": "Female",
+            "O": "Other",
+            "U": "Unknown"
+          }
+        }
+      }
+    },
+    "OBR": {
+      "description": "Observation Request - procedure details for PACS",
+      "fields": {
+        "4": {
+          "customName": "Procedure Code",
+          "description": "Contains the PACS procedure code from the RadIS procedure catalog",
+          "notes": "Mapped from internal procedure code table. Component 1 is the procedure code, component 2 is the procedure description.",
+          "valueMap": {
+            "CR": "Computed Radiography",
+            "US": "Ultrasound",
+            "CT": "Computed Tomography",
+            "MR": "Magnetic Resonance",
+            "XR": "X-Ray"
+          },
+          "components": {
+            "1": { "description": "RadIS procedure code" },
+            "2": { "description": "Procedure description text" },
+            "3": { "description": "Coding system (usually 'L' for local)" }
+          }
+        },
+        "16": {
+          "customName": "Referring Physician",
+          "description": "Ordering/referring physician from the HIS",
+          "notes": "XCN format. Must include physician code in component 1 for Carestream matching."
+        },
+        "25": {
+          "customName": "Result Status",
+          "description": "Status of the examination result",
+          "valueMap": {
+            "P": "Preliminary",
+            "F": "Final",
+            "C": "Corrected",
+            "X": "Cancelled"
+          }
+        }
+      }
+    },
+    "OBX": {
+      "description": "Observation/Result segments carry report text and findings",
+      "fields": {
+        "2": {
+          "description": "Value type indicator",
+          "valueMap": {
+            "ST": "String (short text)",
+            "TX": "Text (long text/report)",
+            "FT": "Formatted text",
+            "CE": "Coded element",
+            "NM": "Numeric",
+            "ED": "Encapsulated data (PDF/image)"
+          }
+        },
+        "3": {
+          "customName": "Report Section ID",
+          "description": "Identifies the type of report content",
+          "notes": "Component 1 contains the section code, component 2 the section name"
+        },
+        "5": {
+          "customName": "Report Content",
+          "description": "The actual report text or data content"
+        },
+        "11": {
+          "customName": "Result Status",
+          "valueMap": {
+            "P": "Preliminary",
+            "F": "Final result",
+            "C": "Correction/amendment",
+            "R": "Results entered, not verified",
+            "X": "Cancelled"
+          }
+        }
+      }
+    },
+    "ZDS": {
+      "description": "DICOM Study reference (custom Z-segment used by Carestream)",
+      "custom": true,
+      "fields": {
+        "1": {
+          "customName": "Study Instance UID",
+          "dt": "RP",
+          "description": "DICOM Study Instance UID as a Reference Pointer. Component 1 contains the UID value, component 2 the PACS application ID.",
+          "notes": "Format: StudyUID^Application^DICOM. The Study Instance UID is used to link the HL7 order to the DICOM study in PACS."
+        }
+      }
+    }
+  }
+}

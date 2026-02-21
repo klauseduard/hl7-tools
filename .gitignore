@@ -1,0 +1,12 @@
+*.class
+.classpath
+.project
+.hg/
+.hgignore
+.claude/
+.playwright-mcp/
+HL7MessageViewer.java
+HL7MessageViewer.class
+hl7_message_viewer
+hl7_message_viewer_clipboard
+__pycache__/

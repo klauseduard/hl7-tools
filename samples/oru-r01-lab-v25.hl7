@@ -1,0 +1,11 @@
+MSH|^~\&|LAB|CENTRAL_HOSP|LAB_RECV|CENTRAL_HOSP|20260220124500||ORU^R01|LAB20260220001|P|2.5|||AL|NE|EST|UNICODE UTF-8
+PID|1||PAT78432^^^CENTRAL_HOSP^PI||Tamm^Kristjan^Aleksander^Jr||19920715|M
+PV1|1|O|LAB^100^^CENTRAL_HOSP||||10483^Kask^Andres^^^Dr
+ORC|RE|ORD50012^HIS|LAB70034^LAB|||||||||10483^Kask^Andres^^^Dr
+OBR|1|ORD50012^HIS|LAB70034^LAB|24331-1^Comprehensive Metabolic Panel^LN|||20260220083000|||||||||10483^Kask^Andres^^^Dr||||||20260220120000|||F
+OBX|1|NM|2345-7^Glucose^LN||5.4|mmol/L|3.9-6.1||||F
+OBX|2|CE|882-1^ABO+Rh Group^LN||A+^A Rh Positive^L||||||F
+OBX|3|ST|XXX-0^Clinical Comment^L||Patient fasting for 12 hours prior to collection||||||F
+OBX|4|FT|XXX-1^Clinical Notes^L||First line of notes\.br\Second line with additional detail\.br\\H\Important:\N\ Monitor glucose levels weekly||||||F
+OBX|5|ST|XXX-2^Known Allergies^L||Penicillin~Sulfonamides~Latex||||||F
+NTE|1||Blood sample collected from left antecubital vein. No hemolysis observed.

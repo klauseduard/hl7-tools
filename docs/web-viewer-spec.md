@@ -1,0 +1,207 @@
+# HL7 Web Viewer — Implementation-Specific Features
+
+Supplements `hl7-viewer-spec.md` (the base functional specification) with features
+and constraints specific to the browser-based HTML/JS implementation.
+
+Reference implementation: `hl7-viewer.html`
+
+---
+
+## 1. Architecture
+
+### 1.1 Single-file, zero-dependency
+
+- Entire viewer is one self-contained HTML file (HTML + CSS + JS)
+- No build step, no external dependencies, no framework
+- Works from `file://` protocol — no web server required
+- Open directly in Firefox (primary target) or any modern browser
+
+### 1.2 No server-side component
+
+- All processing is client-side JavaScript
+- No data leaves the browser — important for patient data privacy
+- No persistent storage (no localStorage, no cookies)
+- State exists only in memory for the duration of the page session
+
+---
+
+## 2. Layout
+
+### 2.1 Three-panel layout
+
+Fixed layout, no resizable panes:
+
+- **Left panel** (62% width): tabbed — Input | Parsed | Raw
+- **Right panel** (remaining): field detail
+- **Toolbar** (top): version selector, buttons, search, profile indicator
+- **Encoding info bar** (below toolbar, shown after parsing)
+- **Anonymization indicator bar** (below toolbar, shown when active)
+
+### 2.2 Tab switching
+
+Three tabs in the left panel, switched by clicking tab headers:
+- **Input tab**: textarea for message input + action buttons (Parse, Clear, Sample)
+- **Parsed tab**: field table (primary working view)
+- **Raw tab**: syntax-colored raw segments
+
+After parsing, auto-switches to the Parsed tab.
+
+---
+
+## 3. Input Methods
+
+### 3.1 Textarea paste
+
+- Paste HL7 message into textarea
+- Press **Parse** button or **Ctrl+Enter** to parse
+- Input source tracked as "paste" for encoding display
+
+### 3.2 File Open button
+
+- Toolbar **Open** button triggers a hidden `<input type="file">`
+- Accepts `.hl7`, `.txt`, `.dat`, `.msg` extensions
+- File is read as `ArrayBuffer` for byte-level encoding detection
+- Decoded using detected encoding (not browser default UTF-8)
+- Input source tracked as "file" with encoding metadata
+
+### 3.3 Drag and drop
+
+- Drag a file onto the textarea
+- Visual feedback: border turns green, subtle background change
+- Drop triggers the same file-reading path as Open button
+- Dragleave restores normal appearance
+
+### 3.4 Embedded sample message
+
+- **Sample** button loads a hardcoded ADR^A19 v2.5 message
+- 5 segments: MSH, MSA, QRD, PID, PV1
+- Input source tracked as "sample"
+
+### 3.5 Clear
+
+- **Clear** button resets all state: input, parsed data, raw view, detail panel,
+  encoding info, anonymization, profile remains loaded
+
+---
+
+## 4. Toolbar
+
+Left to right:
+1. **Version selector** — dropdown: Auto-detect, v2.3, v2.5
+2. **Open** button — file picker
+3. **Load Profile** button — JSON file picker
+4. **Profile indicator** — shown when profile loaded (name + unload ✕ button)
+5. **Anon** button — toggle anonymization (highlighted yellow when active)
+6. **Non-ASCII** checkbox — toggle Estonian name pool for anonymization
+7. **?** button — opens help modal
+8. **Search input** — text field for live filtering
+9. **Title** — "HL7 Message Viewer" (right-aligned)
+
+---
+
+## 5. Interaction Model
+
+### 5.1 Click-driven selection
+
+- Click a field row in parsed table → selects it, shows detail, highlights in raw view
+- Click a field span in raw view → selects it, switches to parsed tab, scrolls to row, shows detail
+- Click segment header → no detail, but can collapse/expand
+- Click expand icon (▶/▼) → toggle component sub-rows
+- Click data type link in detail panel → browse data type definition
+
+### 5.2 Keyboard shortcuts
+
+| Shortcut | Context | Action |
+|----------|---------|--------|
+| `↑` / `↓` | Parsed tab focused | Navigate field rows |
+| `Enter` | Field row selected | Expand/collapse components |
+| `Esc` | Search focused | Clear search and blur |
+| `Esc` | Help modal open | Close help modal |
+| `Ctrl+C` | Field row selected | Copy value to clipboard |
+| `Ctrl+Shift+A` | Any context | Toggle anonymization |
+| `Ctrl+Enter` | Textarea focused | Parse message |
+
+Keyboard navigation skips hidden rows (search-filtered or collapsed).
+
+### 5.3 Search
+
+- Typing in the search input triggers live filtering
+- Matches against the full text content of each field row (address, name, type, value)
+- Non-matching rows hidden; segment headers hidden if no children match
+- Case-insensitive
+
+---
+
+## 6. Visual Theme
+
+### 6.1 Dark theme (Catppuccin Mocha palette)
+
+Fixed dark theme, not configurable:
+
+| Element | Color variable | Hex |
+|---------|---------------|-----|
+| Background | `--bg` | #1e1e2e |
+| Surface/borders | `--surface` | #45475a |
+| Text | `--text` | #cdd6f4 |
+| Subdued text | `--subtext` | #a6adc8 |
+| Segment names | `--rose` | #f38ba8 |
+| Field names | `--green` | #a6e3a1 |
+| Data types | `--orange` | #fab387 |
+| Addresses | `--blue` | #89b4fa |
+| Escape sequences | `--yellow` | #f9e2af |
+| Profile badges | `--mauve` | #cba6f7 |
+| Errors/warnings | `--red` / `--orange` | #f38ba8 / #fab387 |
+
+### 6.2 Typography
+
+- Monospace font stack: JetBrains Mono, Fira Code, Cascadia Code, Consolas
+- Base size: 13px
+- Component rows: 12px
+- Toolbar/status: 11–12px
+
+### 6.3 Custom scrollbars
+
+Webkit-styled scrollbars matching the dark theme (thin, surface-colored thumb).
+
+---
+
+## 7. Help Modal
+
+- Opened by **?** button in toolbar
+- Overlay with centered modal (750px wide, max 85vh height, scrollable)
+- Close via ✕ button, Esc key, or clicking outside the modal
+
+**Content:**
+- What profiles are and how they work
+- Profile JSON schema documentation with examples
+- Field definition reference table (customName, description, notes, dt, valueMap, components)
+- Z-segment example
+- Keyboard shortcuts reference
+
+---
+
+## 8. Limitations (browser-imposed)
+
+### 8.1 No raw TCP
+
+- Cannot open TCP sockets from browser JavaScript
+- **MLLP send/receive is not possible** — no way to send HL7 messages to a listening port or act as an MLLP server
+- Workaround would require a local bridge process (breaks the single-file model)
+
+### 8.2 No filesystem access
+
+- Cannot read files without user action (Open button or drag-and-drop)
+- Cannot save/write files (only clipboard copy)
+- Cannot watch a directory for new messages
+
+### 8.3 No persistent state
+
+- Closing the tab loses everything
+- No settings persistence, no recent files, no saved profiles
+- Profile must be reloaded each session
+
+### 8.4 Single message at a time
+
+- No batch processing of multiple files
+- No message queue or history navigation
+- Loading a new message replaces the current one

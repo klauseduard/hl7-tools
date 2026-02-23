@@ -1,11 +1,12 @@
 # HL7 Tools
 
-HL7 v2.x message parsing and inspection toolkit with two independent viewers:
+HL7 v2.x message parsing and inspection toolkit:
 
-- **[Web Viewer](#web-viewer)** — single HTML file, open in any browser
+- **[Web Viewer](#web-viewer)** — single HTML file, open in any browser, no dependencies
 - **[Terminal Viewer](#terminal-viewer)** — Python CLI + interactive TUI
+- **[MCP Server](#mcp-server)** — exposes HL7 tools to AI agents via Model Context Protocol
 
-Both share the same parsing logic, segment/field definitions (v2.3 and v2.5), and Catppuccin dark theme.
+All three share the same parsing logic, segment/field definitions (v2.3 and v2.5), and integration profile support.
 
 ![HL7 Message Viewer — parsed view](docs/screenshots/patient_query_with_IK_parsed.png)
 
@@ -208,12 +209,60 @@ The TUI automatically applies matching config when sending to a configured host:
 
 ---
 
+## MCP Server
+
+**File:** `hl7view/mcp_server.py` — exposes HL7 tools to LLM agents via [Model Context Protocol](https://modelcontextprotocol.io/).
+
+### Setup
+
+```bash
+python3 -m venv venv
+venv/bin/pip install -r requirements-mcp.txt
+```
+
+### Registration (Claude Code)
+
+Add to `~/.claude.json` under `mcpServers`:
+
+```json
+"hl7": {
+  "type": "stdio",
+  "command": "/path/to/hl7-tools/venv/bin/python3",
+  "args": ["-m", "hl7view.mcp_server", "--transport", "stdio"],
+  "cwd": "/path/to/hl7-tools",
+  "env": {}
+}
+```
+
+### Tools
+
+| Tool | Description |
+|------|-------------|
+| `hl7_parse` | Parse raw HL7 into structured JSON with definitions and profile overlays |
+| `hl7_get_field` | Extract a specific field by address (e.g. `PID-5`, `MSH-9.1`, `OBX[2]-5`) |
+| `hl7_validate` | Check for structural issues: missing required fields, length violations, unknown segments |
+| `hl7_anonymize` | Strip PHI from PID/NK1 segments with random replacements |
+| `hl7_transform` | Modify field values by address (e.g. `{"PID-5": "DOE^JOHN"}`) |
+| `hl7_send` | Send message via MLLP with optional TLS/mTLS, return ACK |
+| `hl7_explain` | Look up HL7 definitions (segments, fields, data types) without a message |
+
+### Resources
+
+| URI | Description |
+|-----|-------------|
+| `hl7://samples/{name}` | Sample HL7 messages from `samples/` directory |
+| `hl7://profiles/{name}` | Integration profiles from `profiles/` directory |
+| `hl7://definitions/{version}` | HL7 v2.3/v2.5 definition summaries |
+
+---
+
 ## Integration Profiles
 
 Both viewers support integration profiles — JSON files that overlay custom field names, descriptions, notes, and value maps onto the parsed view.
 
 - **Web viewer:** load via the toolbar **Load Profile** button
-- **Terminal viewer:** web-only for now
+- **Terminal viewer:** `python3 -m hl7view --profile profiles/sample-profile.json message.hl7`
+- **MCP server:** pass profile name to `hl7_parse` or `hl7_validate`
 
 See [`profiles/sample-profile.json`](profiles/sample-profile.json) for the documented schema.
 

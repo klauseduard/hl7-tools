@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-HL7 message parsing tools: a legacy CLI Java utility and an interactive browser-based viewer.
+HL7 v2.x message toolkit: web viewer, terminal TUI, Python parsing library, and MCP server for AI agents.
 
 ## Tools
 
@@ -29,27 +29,12 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 - `profiles/sample-profile.json` — documented example showing all supported schema options
 - Profiles are loaded via the toolbar file picker; work from `file://` protocol
 
-### Legacy CLI Tool (`HL7MessageViewer.java`) — not in repo
-
-```bash
-javac HL7MessageViewer.java
-java -cp . HL7MessageViewer <file.hl7>
-```
-
-**Known issue:** MSH-1 (field separator `|`) is never output, and MSH-2 (encoding chars `^~\&`) is mislabeled as MSH-1. The interactive viewer fixes this.
-
-### Shell Wrappers — not in repo
-
-- `hl7_message_viewer` — processes one or more HL7 files passed as arguments
-- `hl7_message_viewer_clipboard` — reads HL7 content from X clipboard (via `xclip -o`) and pipes to the viewer
-
 ### MCP Server (`hl7view/mcp_server.py`)
 
 Exposes HL7 parsing capabilities to LLM agents via the Model Context Protocol (MCP).
 
 **Setup:**
 ```bash
-cd /home/klaus/bin/hl7tools
 python3 -m venv venv
 venv/bin/pip install -r requirements-mcp.txt
 ```
@@ -77,8 +62,9 @@ venv/bin/pip install -r requirements-mcp.txt
 - Repeated segments use bracket notation: `PID[2]-3`
 - `replaceIllegalNewLines` / `normalizeMessage` handles HL7 messages where `\r` segment delimiters have been mixed with `\n` characters
 
-## Test Messages
+## Sample Messages
 
-Sample HL7 messages for testing (not included in repo):
-- ADR^A19 response (v2.5), 5 segments: MSH, MSA, QRD, PID, PV1
-- QRY^A19 query (v2.3.1), 2 segments: MSH, QRD
+`samples/` directory — included in repo:
+- `adt-a01-admit-v25.hl7` — ADT^A01 admission (v2.5), 5 segments: MSH, EVN, PID, NK1, PV1
+- `orm-o01-order-v23.hl7` — ORM^O01 radiology order (v2.3.1), 6 segments including ZDS custom segment, non-ASCII Estonian names, ISO-8859-1 charset
+- `oru-r01-lab-v25.hl7` — ORU^R01 lab results (v2.5), 11 segments with 5 OBX (numeric, coded, string, formatted text with escape sequences, repeating values), NTE

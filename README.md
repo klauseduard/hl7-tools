@@ -294,9 +294,10 @@ Profile schema summary:
 }
 ```
 
-Profile validation (via `hl7_validate` with profile parameter):
-- **`required: true`** — flags an error if the field is empty
-- **`valueMap`** — warns if the field value is not one of the expected coded values
+Profile validation (web viewer: inline icons + summary bar; MCP server: `hl7_validate` with profile parameter):
+- **`required: true`** — flags an error if the field is empty (red indicator)
+- **`valueMap`** — warns if the field value is not one of the expected coded values (orange indicator)
+- **Missing segments** — profile defines a segment not present in the message (summary bar)
 
 ## Sample Messages
 

@@ -154,6 +154,7 @@ border-left:3px solid var(--yellow);font-size:11px;line-height:1.6;color:var(--s
 .esc-note code{color:var(--yellow);background:var(--bg2);padding:0 3px;border-radius:2px}
 .esc-note .esc-warn{color:var(--orange)}
 .val-warn{color:var(--red);cursor:help;margin-right:4px;font-size:14px}
+.val-warn-orange{color:var(--orange);cursor:help;margin-right:4px;font-size:14px}
 .dtype-resolved{font-size:9px;color:var(--blue);margin-left:2px;vertical-align:super}
 
 /* Keyboard hints */
@@ -202,6 +203,12 @@ border-bottom:1px solid var(--surface);font-weight:500}
 #anonIndicator{display:none;align-items:center;padding:3px 12px;
 background:rgba(249,226,175,0.1);border-bottom:1px solid var(--bg3);
 font-size:11px;color:var(--yellow);flex-shrink:0}
+#profileValidation{display:none;align-items:center;padding:3px 12px;
+background:rgba(243,139,168,0.1);border-bottom:1px solid var(--bg3);
+font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
+#profileValidation .pv-red{color:var(--red)}
+#profileValidation .pv-orange{color:var(--orange)}
+#profileValidation .pv-blue{color:var(--blue)}
 </style>
 </head>
 <body>
@@ -229,6 +236,7 @@ font-size:11px;color:var(--yellow);flex-shrink:0}
 <span><span class="enc-label">MSH-18: </span><span id="encDeclared">-</span></span>
 <span id="encWarning"></span>
 </div>
+<div id="profileValidation"></div>
 
 <div id="main">
 <div id="leftPanel">
@@ -1535,6 +1543,7 @@ function parseMessage() {
   renderParsedTable();
   renderRawView();
   updateEncodingDisplay();
+  runProfileValidation();
   switchTab(document.querySelector('[data-tab="parsedTab"]'));
   clearDetail();
 }
@@ -1592,6 +1601,19 @@ function renderParsedTable() {
         }
         if (field.fieldNum === 5 && displayDt === 'NM' && displayValue && !/^\s*[+-]?\d*\.?\d+([eE][+-]?\d+)?\s*$/.test(displayValue)) {
           valWarning = '<span class="val-warn" title="OBX-2 declares NM (Numeric) but value is not a valid number">&#9888;</span>';
+        }
+      }
+
+      // Profile validation warnings
+      if (pField) {
+        if (pField.required && !displayValue) {
+          valWarning += '<span class="val-warn" title="Required by profile but empty">&#9679;</span>';
+        }
+        if (pField.valueMap && displayValue) {
+          const testVal = field.components && field.components.length > 0 ? field.components[0].value : displayValue;
+          if (testVal && !(testVal in pField.valueMap) && !(displayValue in pField.valueMap)) {
+            valWarning += '<span class="val-warn-orange" title="Value not in profile value map">&#9679;</span>';
+          }
         }
       }
 
@@ -1666,6 +1688,61 @@ function renderParsedTable() {
   }
 
   applySearch();
+}
+
+function runProfileValidation() {
+  const bar = document.getElementById('profileValidation');
+  if (!currentProfile || !parsedMessage || !currentProfile.segments) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  const msgSegNames = new Set(parsedMessage.segments.map(s => s.name));
+  const missingSegs = [];
+  let requiredEmpty = 0;
+  let valueMapMismatch = 0;
+
+  for (const [segName, segDef] of Object.entries(currentProfile.segments)) {
+    if (!msgSegNames.has(segName)) {
+      missingSegs.push(segName);
+      continue;
+    }
+    if (!segDef.fields) continue;
+    for (const seg of parsedMessage.segments) {
+      if (seg.name !== segName) continue;
+      for (const [fieldNum, pField] of Object.entries(segDef.fields)) {
+        const field = seg.fields.find(f => f.fieldNum === parseInt(fieldNum));
+        const val = field ? (field.value || '') : '';
+        if (pField.required && !val) {
+          requiredEmpty++;
+        }
+        if (pField.valueMap && val) {
+          const testVal = field && field.components && field.components.length > 0 ? field.components[0].value : val;
+          if (testVal && !(testVal in pField.valueMap) && !(val in pField.valueMap)) {
+            valueMapMismatch++;
+          }
+        }
+      }
+    }
+  }
+
+  if (missingSegs.length === 0 && requiredEmpty === 0 && valueMapMismatch === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  let html = '&#9888; Profile validation:';
+  if (requiredEmpty > 0) {
+    html += ' <span class="pv-red">' + requiredEmpty + ' required field' + (requiredEmpty > 1 ? 's' : '') + ' empty</span>';
+  }
+  if (valueMapMismatch > 0) {
+    html += ' <span class="pv-orange">' + valueMapMismatch + ' value' + (valueMapMismatch > 1 ? 's' : '') + ' not in map</span>';
+  }
+  if (missingSegs.length > 0) {
+    html += ' <span class="pv-blue">Missing segments: ' + missingSegs.join(', ') + '</span>';
+  }
+  bar.innerHTML = html;
+  bar.style.display = 'flex';
 }
 
 function renderRawView() {
@@ -1827,6 +1904,20 @@ function showDetail(segName, fieldNum, fieldData, segKey, segIdx) {
     }
   }
 
+  // Profile validation warnings
+  if (pField) {
+    if (pField.required && !rawVal) {
+      html += '<div class="esc-note" style="border-left-color:var(--red)"><span class="esc-warn">&#9679; Required by profile</span> — this field is marked as required in the integration profile but has no value.</div>';
+    }
+    if (pField.valueMap && rawVal) {
+      const testVal = fieldData.components && fieldData.components.length > 0 ? fieldData.components[0].value : rawVal;
+      if (testVal && !(testVal in pField.valueMap) && !(rawVal in pField.valueMap)) {
+        const expected = Object.entries(pField.valueMap).map(([k, v]) => '<code>' + esc(k) + '</code> (' + esc(v) + ')').join(', ');
+        html += '<div class="esc-note" style="border-left-color:var(--orange)"><span class="esc-warn">&#9679; Value <code>' + esc(testVal) + '</code> not in profile value map.</span> Expected: ' + expected + '</div>';
+      }
+    }
+  }
+
   // Escape sequence / line break notes for text fields
   if (textDt === 'FT' || textDt === 'TX' || textDt === 'ST' || valHasEscapes) {
     const hasTilde = rawVal.indexOf('~') >= 0 && fDef && fDef.rep;
@@ -1951,6 +2042,9 @@ function showDetail(segName, fieldNum, fieldData, segKey, segIdx) {
         html += '<td class="vm-meaning">' + esc(meaning) + '</td></tr>';
       }
       html += '</table>';
+      if (currentVal && !(currentVal in pField.valueMap)) {
+        html += '<div style="margin-top:4px;font-size:11px;color:var(--orange)">&#9679; Current value <strong>' + esc(currentVal) + '</strong> is not in the value map</div>';
+      }
     }
     html += '</div>';
   }
@@ -2169,6 +2263,7 @@ function loadProfile(file) {
 
       if (parsedMessage) {
         renderParsedTable();
+        runProfileValidation();
         clearDetail();
       }
     } catch (err) {
@@ -2184,6 +2279,7 @@ function unloadProfile() {
   setStatus('Profile unloaded');
   if (parsedMessage) {
     renderParsedTable();
+    runProfileValidation();
     clearDetail();
   }
 }
@@ -2275,6 +2371,7 @@ function clearAll() {
   document.getElementById('anonBtn').classList.remove('active');
   document.getElementById('anonIndicator').style.display = 'none';
   document.getElementById('encodingInfo').style.display = 'none';
+  document.getElementById('profileValidation').style.display = 'none';
   clearDetail();
   setStatus('');
   switchTab(document.querySelector('[data-tab="inputTab"]'));

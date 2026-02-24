@@ -65,6 +65,17 @@ venv/bin/pip install -r requirements-mcp.txt
 - Repeated segments use bracket notation: `PID[2]-3`
 - `replaceIllegalNewLines` / `normalizeMessage` handles HL7 messages where `\r` segment delimiters have been mixed with `\n` characters
 
+## Tests
+
+```bash
+venv/bin/pytest tests/ -v
+```
+
+42 tests covering core modules (parser, encoding, profile, anonymize, definitions). Uses all 3 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+
+- `pytest.ini` sets `pythonpath = .` so no install step needed
+- `tests/conftest.py` — shared fixtures (parsed messages, sample profile)
+
 ## Sample Messages
 
 `samples/` directory — included in repo:

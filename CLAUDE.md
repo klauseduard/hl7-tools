@@ -23,9 +23,11 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 - Dark theme with color coding: segments (rose), field names (green), data types (orange), addresses (blue)
 - Encoding/charset awareness: byte-level detection (UTF-8/Latin-1/ASCII via BOM + heuristic), MSH-18 parsing, mismatch warnings in encoding info bar
 - File Open button reads files as ArrayBuffer with automatic encoding detection (not just UTF-8)
+- localStorage integration: external components can inject messages via `hl7viewer.pending` key (raw text or base64 bytes + optional profile)
 
 **Integration Profiles** (`profiles/` directory):
 - JSON files that overlay custom field names, descriptions, notes, and value maps onto the parsed view
+- Profile fields support `required: true` (enforced by `hl7_validate`) and `valueMap` validation
 - `profiles/sample-profile.json` — documented example showing all supported schema options
 - Profiles are loaded via the toolbar file picker; work from `file://` protocol
 
@@ -44,7 +46,7 @@ venv/bin/pip install -r requirements-mcp.txt
 **Tools (7):**
 - `hl7_parse` — Parse raw HL7 into structured JSON with definitions and profile overlays
 - `hl7_get_field` — Extract a specific field by address (e.g. "PID-5", "MSH-9.1")
-- `hl7_validate` — Check message for structural issues (missing required fields, length violations, unknown segments)
+- `hl7_validate` — Check message for structural issues (missing required fields, length violations, unknown segments); with a profile: enforces `required` fields and `valueMap` value checks
 - `hl7_anonymize` — Strip PHI from PID/NK1 segments
 - `hl7_transform` — Modify field values by address (e.g. `{"PID-5": "DOE^JOHN"}`)
 - `hl7_send` — Send message via MLLP with optional TLS/mTLS

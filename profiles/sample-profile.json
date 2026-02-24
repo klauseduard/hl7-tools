@@ -21,6 +21,7 @@
       "fields": {
         "3": {
           "customName": "Patient MRN",
+          "required": true,
           "description": "Medical Record Number from the HIS patient master index",
           "notes": "Component 4 (Assigning Authority) must match the authority configured in Carestream. Component 5 (Identifier Type Code) should be 'PI' for patient internal identifier.",
           "components": {

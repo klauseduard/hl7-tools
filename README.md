@@ -258,7 +258,7 @@ Add to `~/.claude.json` under `mcpServers`:
 
 ## Integration Profiles
 
-Both viewers support integration profiles — JSON files that overlay custom field names, descriptions, notes, and value maps onto the parsed view.
+Both viewers support integration profiles — JSON files that overlay custom field names, descriptions, notes, and value maps onto the parsed view. When used with `hl7_validate`, profiles also drive validation: required field checks and value map enforcement.
 
 - **Web viewer:** load via the toolbar **Load Profile** button
 - **Terminal viewer:** `python3 -m hl7view --profile profiles/sample-profile.json message.hl7`
@@ -278,6 +278,7 @@ Profile schema summary:
       "fields": {
         "9": {
           "customName": "Override field name",
+          "required": true,
           "description": "Field description shown in detail panel",
           "notes": "Implementation notes",
           "valueMap": { "ADT^A01": "Admission", "ADT^A08": "Update" }
@@ -292,6 +293,10 @@ Profile schema summary:
   }
 }
 ```
+
+Profile validation (via `hl7_validate` with profile parameter):
+- **`required: true`** — flags an error if the field is empty
+- **`valueMap`** — warns if the field value is not one of the expected coded values
 
 ## Sample Messages
 

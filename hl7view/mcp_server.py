@@ -378,19 +378,71 @@ def hl7_validate(message: str, profile: str = "") -> str:
                     "description": f"Required field {fdef['name']} is empty",
                 })
 
-    # Profile-aware: check fields the profile defines but are missing
+    # Profile-aware validation
     if prof and prof.get("segments"):
         for seg_name_p, seg_prof in prof["segments"].items():
             if "fields" not in seg_prof:
                 continue
-            # Find matching segment in message
-            seg_found = any(s.name == seg_name_p for s in parsed.segments)
-            if not seg_found and not seg_prof.get("custom"):
-                issues.append({
-                    "severity": "info",
-                    "field": seg_name_p,
-                    "description": f"Profile expects segment {seg_name_p} but it is not in the message",
-                })
+            # Find matching segments in message
+            matching_segs = [s for s in parsed.segments if s.name == seg_name_p]
+            if not matching_segs:
+                if seg_prof.get("custom"):
+                    # Custom/Z-segments: only info-level
+                    issues.append({
+                        "severity": "info",
+                        "field": seg_name_p,
+                        "description": f"Profile defines custom segment {seg_name_p} but it is not in the message",
+                    })
+                else:
+                    issues.append({
+                        "severity": "info",
+                        "field": seg_name_p,
+                        "description": f"Profile expects segment {seg_name_p} but it is not in the message",
+                    })
+                continue
+
+            # Check each field the profile defines
+            for fnum_str, fprof in seg_prof["fields"].items():
+                try:
+                    fnum = int(fnum_str)
+                except ValueError:
+                    continue
+
+                for seg in matching_segs:
+                    addr = f"{seg.name}-{fnum}"
+                    if seg.rep_index > 1:
+                        addr = f"{seg.name}[{seg.rep_index}]-{fnum}"
+
+                    # Find field value in this segment
+                    fld_value = None
+                    for fld in seg.fields:
+                        if fld.field_num == fnum:
+                            fld_value = fld.raw_value
+                            break
+
+                    display_name = fprof.get("customName", addr)
+
+                    # Required field check
+                    if fprof.get("required") and not fld_value:
+                        issues.append({
+                            "severity": "error",
+                            "field": addr,
+                            "description": f"Profile requires {display_name} but it is empty",
+                        })
+
+                    # Value map check — warn if value is not in the expected set
+                    if fld_value and fprof.get("valueMap"):
+                        # For composite fields, check the raw value and first component
+                        check_values = [fld_value]
+                        if "^" in fld_value:
+                            check_values.append(fld_value.split("^")[0])
+                        if not any(v in fprof["valueMap"] for v in check_values):
+                            expected = ", ".join(fprof["valueMap"].keys())
+                            issues.append({
+                                "severity": "warning",
+                                "field": addr,
+                                "description": f"Value '{fld_value}' not in profile value map for {display_name}. Expected: {expected}",
+                            })
 
     # Encoding mismatch check
     if parsed.declared_charset:

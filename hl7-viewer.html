@@ -2418,6 +2418,56 @@ function showHelp() {
 function hideHelp() {
   document.getElementById('helpOverlay').classList.remove('visible');
 }
+
+// External integration: load message from localStorage if available
+// Contract: localStorage key 'hl7viewer.pending' = JSON with:
+//   raw: string (decoded message text)
+//   rawBytes: string (base64-encoded original bytes, optional — enables encoding analysis)
+//   profile: object|null (integration profile)
+//   timestamp: number (epoch ms, must be < 30s old)
+(function() {
+  try {
+    var json = localStorage.getItem('hl7viewer.pending');
+    if (!json) return;
+    var data = JSON.parse(json);
+    localStorage.removeItem('hl7viewer.pending');
+    if (!data.timestamp || Date.now() - data.timestamp > 30000) return;
+    if (!data.raw && !data.rawBytes) return;
+    if (data.profile && data.profile.segments) {
+      currentProfile = data.profile;
+      var ind = document.getElementById('profileIndicator');
+      if (ind) {
+        var nameEl = ind.querySelector('.profile-name');
+        if (nameEl) nameEl.textContent = data.profile.name || 'HIS Profile';
+        ind.style.display = 'flex';
+      }
+    }
+    if (data.rawBytes) {
+      // Decode base64 to ArrayBuffer, run encoding detection (same as file loading)
+      var binaryStr = atob(data.rawBytes);
+      var bytes = new Uint8Array(binaryStr.length);
+      for (var i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+      var enc = detectEncoding(bytes.buffer);
+      var decoder = new TextDecoder(enc.decoderLabel);
+      var text = decoder.decode(bytes.buffer);
+      document.getElementById('msgInput').value = text;
+      fileEncodingInfo = {
+        source: 'file',
+        fileName: 'HIS message',
+        encoding: enc.encoding,
+        decoderLabel: enc.decoderLabel,
+        hasBOM: enc.hasBOM,
+        hasHighBytes: enc.hasHighBytes,
+        hasMultibyteUTF8: enc.hasMultibyteUTF8
+      };
+    } else {
+      document.getElementById('msgInput').value = data.raw;
+    }
+    parseMessage();
+  } catch (e) {
+    // Viewer remains fully functional if anything fails
+  }
+})();
 </script>
 
 <div id="helpOverlay" onclick="if(event.target===this)hideHelp()">

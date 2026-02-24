@@ -45,6 +45,25 @@ def _resolve_obx5_type(fields):
     return None
 
 
+def _check_field_validation(p_fld, fld):
+    """Check a field against profile validation rules.
+
+    Returns (is_required_empty, is_value_mismatch).
+    """
+    required_empty = False
+    value_mismatch = False
+    if not p_fld:
+        return required_empty, value_mismatch
+    val = fld.value or "" if fld else ""
+    if p_fld.get("required") and not val:
+        required_empty = True
+    if p_fld.get("valueMap") and val:
+        test_val = fld.components[0].value if fld.components else val
+        if test_val and test_val not in p_fld["valueMap"] and val not in p_fld["valueMap"]:
+            value_mismatch = True
+    return required_empty, value_mismatch
+
+
 def _field_data_type(seg_name, field, field_def, obx5_type):
     """Determine effective data type for a field."""
     if not field_def:
@@ -402,6 +421,39 @@ class HL7ViewerApp(App):
         self._load_message(parsed, os.path.basename(path), enc_info)
         self.notify(f"Loaded {os.path.basename(path)}", timeout=2)
 
+    def _profile_validation_counts(self):
+        """Count profile validation issues: (required_empty, value_mismatch, missing_segs).
+
+        Same logic as runProfileValidation() in the web viewer.
+        """
+        if not self._profile or not self._profile.get("segments"):
+            return 0, 0, []
+        msg_seg_names = {s.name for s in self.parsed.segments}
+        missing_segs = []
+        required_empty = 0
+        value_mismatch = 0
+        for seg_name, seg_def in self._profile["segments"].items():
+            if seg_name not in msg_seg_names:
+                missing_segs.append(seg_name)
+                continue
+            if not seg_def.get("fields"):
+                continue
+            for seg in self.parsed.segments:
+                if seg.name != seg_name:
+                    continue
+                for field_num, p_fld in seg_def["fields"].items():
+                    fld = None
+                    for f in seg.fields:
+                        if f.field_num == int(field_num):
+                            fld = f
+                            break
+                    req, mis = _check_field_validation(p_fld, fld)
+                    if req:
+                        required_empty += 1
+                    if mis:
+                        value_mismatch += 1
+        return required_empty, value_mismatch, missing_segs
+
     def _update_header(self) -> None:
         msg_type = self.parsed.message_type or "???"
         ver_raw = self.parsed.version or "?"
@@ -433,6 +485,16 @@ class HL7ViewerApp(App):
             parts.append("[A\u2192a]")
         if self._profile:
             parts.append(f"[Profile:{self._profile['name']}]")
+            req_empty, val_mis, miss_segs = self._profile_validation_counts()
+            vparts = []
+            if req_empty:
+                vparts.append(f"{req_empty}req")
+            if val_mis:
+                vparts.append(f"{val_mis}map")
+            if miss_segs:
+                vparts.append(f"{len(miss_segs)}miss")
+            if vparts:
+                parts.append(f"[{' '.join(vparts)}]")
         if self._modified:
             parts.append("[MODIFIED]")
         if self.show_empty:
@@ -530,6 +592,13 @@ class HL7ViewerApp(App):
                 # Repetition badge
                 if fld.repetitions and len(fld.repetitions) > 1:
                     fld_label.append(f" [{len(fld.repetitions)}x]", style=YELLOW)
+                # Profile validation badges
+                if p_fld:
+                    req_empty, val_mis = _check_field_validation(p_fld, fld)
+                    if req_empty:
+                        fld_label.append(" \u25cf", style=ROSE)
+                    if val_mis:
+                        fld_label.append(" \u25cf", style=ORANGE)
 
                 fld_node = seg_node.add(
                     fld_label,
@@ -709,7 +778,21 @@ class HL7ViewerApp(App):
                     vm_text.append(marker)
                     vm_text.append(f"{code:<6}", style=YELLOW)
                     vm_text.append(f"{meaning}\n", style="#cdd6f4")
+                # "Not in map" note if current value not in map
+                _, val_mis = _check_field_validation(p_fld, fld)
+                if val_mis:
+                    test_val = fld.components[0].value if fld.components else fld.value
+                    vm_text.append(f"\u25cf {test_val} not in map", style=ORANGE)
                 spec.add_row("Value Map", vm_text)
+            # Profile validation warnings
+            if p_fld:
+                req_empty, val_mis = _check_field_validation(p_fld, fld)
+                if req_empty:
+                    spec.add_row("\u26a0 Required", Text("Required by profile but empty", style=ROSE))
+                if val_mis:
+                    test_val = fld.components[0].value if fld.components else fld.value
+                    expected = ", ".join(f"{k} ({v})" for k, v in p_fld["valueMap"].items())
+                    spec.add_row("\u26a0 Not in Map", Text(f"Value {test_val} not in map. Expected: {expected}", style=ORANGE))
             spec_w.update(spec)
 
             # Components table

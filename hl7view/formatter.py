@@ -6,7 +6,7 @@ import sys
 from .definitions import (
     DATA_TYPES, get_seg_def, get_field_def, resolve_version, MSH18_TO_ENCODING,
 )
-from .profile import get_profile_segment, get_profile_field
+from .profile import get_profile_segment, get_profile_field, get_profile_component
 
 # ========== ANSI COLOR CODES ==========
 # Catppuccin-inspired palette matching the web viewer
@@ -39,6 +39,56 @@ def _resolve_obx5_type(seg_fields):
         if f.field_num == 2 and f.value:
             return f.value
     return None
+
+
+def _check_field_validation(p_fld, fld):
+    """Check a field against profile validation rules.
+
+    Returns (is_required_empty, is_value_mismatch).
+    """
+    required_empty = False
+    value_mismatch = False
+    if not p_fld:
+        return required_empty, value_mismatch
+    val = fld.value or "" if fld else ""
+    if p_fld.get("required") and not val:
+        required_empty = True
+    if p_fld.get("valueMap") and val:
+        test_val = fld.components[0].value if fld.components else val
+        if test_val and test_val not in p_fld["valueMap"] and val not in p_fld["valueMap"]:
+            value_mismatch = True
+    return required_empty, value_mismatch
+
+
+def _profile_validation_counts(parsed, profile):
+    """Count profile validation issues: (required_empty, value_mismatch, missing_segs)."""
+    if not profile or not profile.get("segments"):
+        return 0, 0, []
+    msg_seg_names = {s.name for s in parsed.segments}
+    missing_segs = []
+    required_empty = 0
+    value_mismatch = 0
+    for seg_name, seg_def in profile["segments"].items():
+        if seg_name not in msg_seg_names:
+            missing_segs.append(seg_name)
+            continue
+        if not seg_def.get("fields"):
+            continue
+        for seg in parsed.segments:
+            if seg.name != seg_name:
+                continue
+            for field_num, p_fld in seg_def["fields"].items():
+                fld = None
+                for f in seg.fields:
+                    if f.field_num == int(field_num):
+                        fld = f
+                        break
+                req, mis = _check_field_validation(p_fld, fld)
+                if req:
+                    required_empty += 1
+                if mis:
+                    value_mismatch += 1
+    return required_empty, value_mismatch, missing_segs
 
 
 def format_encoding_header(enc_info, declared_charset, use_color):
@@ -82,6 +132,19 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
     if profile:
         header += f' | {_c(_TEAL, "Profile: " + profile["name"], use_color)}'
     lines.append(header)
+
+    # Profile validation summary
+    if profile:
+        req_empty, val_mis, miss_segs = _profile_validation_counts(parsed, profile)
+        vparts = []
+        if req_empty:
+            vparts.append(_c(_RED, f'{req_empty} required field{"s" if req_empty > 1 else ""} empty', use_color))
+        if val_mis:
+            vparts.append(_c(_ORANGE, f'{val_mis} value{"s" if val_mis > 1 else ""} not in map', use_color))
+        if miss_segs:
+            vparts.append(_c(_BLUE, f'Missing segments: {", ".join(miss_segs)}', use_color))
+        if vparts:
+            lines.append(f'\u26a0 Profile validation: {" | ".join(vparts)}')
 
     # Full-width rule
     rule_char = '\u2550'  # ═
@@ -151,11 +214,20 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
             if fld.repetitions and len(fld.repetitions) > 1:
                 rep_badge = _c(_YELLOW, f' [{len(fld.repetitions)}x]', use_color)
 
+            # Profile validation badges
+            val_badge = ''
+            if p_fld:
+                req_empty, val_mis = _check_field_validation(p_fld, fld)
+                if req_empty:
+                    val_badge += ' ' + _c(_RED, '\u25cfrequired', use_color)
+                if val_mis:
+                    val_badge += ' ' + _c(_ORANGE, '\u25cfnot in map', use_color)
+
             # Format the row
             addr_col = _c(_BLUE, f'{fld.address:<10}', use_color)
             name_col = _c(_GREEN, f'{fname:<32}', use_color) if fname else f'{"":32}'
             dt_col = _c(_ORANGE, f'{dt}{dt_suffix:<5}', use_color) if dt else f'{"":5}'
-            val_col = display_val + rep_badge
+            val_col = display_val + rep_badge + val_badge
 
             lines.append(f'{addr_col} {name_col} {dt_col} {val_col}')
 

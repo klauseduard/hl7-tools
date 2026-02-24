@@ -276,7 +276,7 @@ Profiles do **not** replace spec definitions — they add to them.
 
 ### 5.6 Profile-driven validation
 
-When a profile is loaded, validation is performed inline (web viewer: warning icons on field rows, summary bar, detail panel notes; MCP server: `hl7_validate` tool):
+When a profile is loaded, validation is performed inline (all interfaces: warning icons on field rows, summary counts in header/toolbar, detail panel notes; MCP server: `hl7_validate` tool):
 
 | Check | Severity | Condition |
 |-------|----------|-----------|

@@ -28,7 +28,7 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 
 **Integration Profiles** (`profiles/` directory):
 - JSON files that overlay custom field names, descriptions, notes, and value maps onto the parsed view
-- Profile fields support `required: true` (enforced by `hl7_validate`) and `valueMap` validation
+- Profile fields support `required: true` and `valueMap` validation (enforced in web viewer, TUI, CLI output, and MCP `hl7_validate`)
 - `profiles/sample-profile.json` — documented example showing all supported schema options
 - Profiles are loaded via the toolbar file picker; work from `file://` protocol
 

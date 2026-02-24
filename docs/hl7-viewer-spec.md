@@ -246,6 +246,7 @@ Profiles do **not** replace spec definitions — they add to them.
       "fields": {
         "FIELD_NUM": {
           "customName": "Override field name",
+          "required": true,
           "description": "Field description",
           "notes": "Implementation notes",
           "dt": "DATA_TYPE",
@@ -265,12 +266,25 @@ Profiles do **not** replace spec definitions — they add to them.
 | Profile property | Effect |
 |-----------------|--------|
 | `customName` | Replaces standard field name in parsed view; marked with a badge |
+| `required` | Marks field as required for this integration (used for validation) |
 | `description` | Shown in detail panel under profile section |
 | `notes` | Implementation notes shown in detail panel |
 | `dt` | Overrides data type (essential for Z-segment fields) |
-| `valueMap` | Maps coded values to descriptions; current value highlighted |
+| `valueMap` | Maps coded values to descriptions; current value highlighted; used for validation |
 | `components` | Overrides component descriptions |
 | `custom: true` | Z-segments get "Custom Segment" label instead of "Unknown" |
+
+### 5.6 Profile-driven validation
+
+When a profile is loaded and validation is performed (currently MCP server only):
+
+| Check | Severity | Condition |
+|-------|----------|-----------|
+| Required field empty | Error | `required: true` and field has no value |
+| Unexpected coded value | Warning | `valueMap` defined and field value not in map |
+| Expected segment missing | Info | Profile defines a segment not present in message |
+
+For composite fields, the value map check matches against both the full raw value and the first component (e.g., `ORM^O01` matches both `ORM^O01` and `ORM`).
 
 ### 5.5 Profile indicator
 

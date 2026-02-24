@@ -194,14 +194,54 @@ Webkit-styled scrollbars matching the dark theme (thin, surface-colored thumb).
 - Cannot save/write files (only clipboard copy)
 - Cannot watch a directory for new messages
 
-### 8.3 No persistent state
+### 8.3 Limited persistent state
 
-- Closing the tab loses everything
+- Closing the tab loses all in-memory state
 - No settings persistence, no recent files, no saved profiles
 - Profile must be reloaded each session
+- **Exception**: external integration via `localStorage` (see section 9)
 
 ### 8.4 Single message at a time
 
 - No batch processing of multiple files
 - No message queue or history navigation
 - Loading a new message replaces the current one
+
+---
+
+## 9. External Integration (localStorage)
+
+### 9.1 Purpose
+
+Allows external components (e.g., a HIS application) to inject HL7 messages into the viewer without user file interaction. The viewer checks `localStorage` on page load and consumes any pending message.
+
+### 9.2 Contract
+
+The external component writes a JSON object to `localStorage` key `hl7viewer.pending`:
+
+```json
+{
+  "raw": "MSH|^~\\&|...",
+  "rawBytes": "<base64-encoded original bytes>",
+  "profile": { ... },
+  "timestamp": 1740000000000
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `raw` | One of `raw`/`rawBytes` | Decoded message text (UTF-8 string) |
+| `rawBytes` | One of `raw`/`rawBytes` | Base64-encoded original bytes — enables byte-level encoding detection |
+| `profile` | No | Integration profile object (same schema as profile JSON files) |
+| `timestamp` | Yes | Unix epoch milliseconds — message must be < 30 seconds old |
+
+### 9.3 Behavior
+
+1. On page load, check for `localStorage.getItem('hl7viewer.pending')`
+2. If found, parse JSON and immediately remove the key
+3. Reject if timestamp is older than 30 seconds (stale message)
+4. If `rawBytes` is provided, decode base64 to `ArrayBuffer` and run byte-level encoding detection (same path as file loading)
+5. If only `raw` is provided, use the text directly
+6. If `profile` is provided, activate it (same as loading via toolbar)
+7. Populate the textarea and trigger parsing
+8. If anything fails, the viewer remains functional with no message loaded

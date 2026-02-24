@@ -209,6 +209,7 @@ font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
 #profileValidation .pv-red{color:var(--red)}
 #profileValidation .pv-orange{color:var(--orange)}
 #profileValidation .pv-blue{color:var(--blue)}
+#profileValidation .pv-yellow{color:var(--yellow)}
 </style>
 </head>
 <body>
@@ -1571,7 +1572,8 @@ function renderParsedTable() {
     hdr.innerHTML = '<td colspan="4"><span class="seg-toggle" onclick="toggleSegment(\'' +
       escAttr(segKey) + '\',event)">&#9660;</span>' +
       '<span class="addr">' + esc(addrPrefix) + '</span> ' + esc(segLabel) +
-      (profileSeg ? '<span class="custom-badge">Profile</span>' : '') + '</td>';
+      (profileSeg ? '<span class="custom-badge">Profile</span>' : '') +
+      (currentProfile && currentProfile.segments && !(seg.name in currentProfile.segments) ? '<span class="custom-badge" style="color:var(--yellow)">Unexpected</span>' : '') + '</td>';
     tbody.appendChild(hdr);
 
     for (const field of seg.fields) {
@@ -1726,7 +1728,12 @@ function runProfileValidation() {
     }
   }
 
-  if (missingSegs.length === 0 && requiredEmpty === 0 && valueMapMismatch === 0) {
+  // Unexpected segments: in message but not in profile
+  const profileSegNames = new Set(Object.keys(currentProfile.segments));
+  const unexpectedSegs = [...new Set(parsedMessage.segments.map(s => s.name))]
+    .filter(n => !profileSegNames.has(n));
+
+  if (missingSegs.length === 0 && requiredEmpty === 0 && valueMapMismatch === 0 && unexpectedSegs.length === 0) {
     bar.style.display = 'none';
     return;
   }
@@ -1740,6 +1747,9 @@ function runProfileValidation() {
   }
   if (missingSegs.length > 0) {
     html += ' <span class="pv-blue">Missing segments: ' + missingSegs.join(', ') + '</span>';
+  }
+  if (unexpectedSegs.length > 0) {
+    html += ' <span class="pv-yellow">Unexpected segments: ' + unexpectedSegs.join(', ') + '</span>';
   }
   bar.innerHTML = html;
   bar.style.display = 'flex';

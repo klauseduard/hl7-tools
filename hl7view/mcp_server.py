@@ -444,6 +444,19 @@ def hl7_validate(message: str, profile: str = "") -> str:
                                 "description": f"Value '{fld_value}' not in profile value map for {display_name}. Expected: {expected}",
                             })
 
+    # Check for unexpected segments (in message but not in profile)
+    if prof and prof.get("segments"):
+        profile_seg_names = set(prof["segments"].keys())
+        seen_unexpected = set()
+        for seg in parsed.segments:
+            if seg.name not in profile_seg_names and seg.name not in seen_unexpected:
+                seen_unexpected.add(seg.name)
+                issues.append({
+                    "severity": "info",
+                    "field": seg.name,
+                    "description": f"Segment {seg.name} present in message but not defined in profile",
+                })
+
     # Encoding mismatch check
     if parsed.declared_charset:
         from hl7view.definitions import MSH18_TO_ENCODING

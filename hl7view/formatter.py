@@ -61,16 +61,23 @@ def _check_field_validation(p_fld, fld):
 
 
 def _profile_validation_counts(parsed, profile):
-    """Count profile validation issues: (required_empty, value_mismatch, missing_segs)."""
+    """Count profile validation issues: (required_empty, value_mismatch, missing_segs, unexpected_segs)."""
     if not profile or not profile.get("segments"):
-        return 0, 0, []
+        return 0, 0, [], []
+    profile_seg_names = set(profile["segments"].keys())
     msg_seg_names = {s.name for s in parsed.segments}
-    missing_segs = []
+    missing_segs = [s for s in profile_seg_names if s not in msg_seg_names]
+    # Deduplicated unexpected segments (preserve message order)
+    seen = set()
+    unexpected_segs = []
+    for seg in parsed.segments:
+        if seg.name not in profile_seg_names and seg.name not in seen:
+            seen.add(seg.name)
+            unexpected_segs.append(seg.name)
     required_empty = 0
     value_mismatch = 0
     for seg_name, seg_def in profile["segments"].items():
         if seg_name not in msg_seg_names:
-            missing_segs.append(seg_name)
             continue
         if not seg_def.get("fields"):
             continue
@@ -88,7 +95,7 @@ def _profile_validation_counts(parsed, profile):
                     required_empty += 1
                 if mis:
                     value_mismatch += 1
-    return required_empty, value_mismatch, missing_segs
+    return required_empty, value_mismatch, missing_segs, unexpected_segs
 
 
 def format_encoding_header(enc_info, declared_charset, use_color):
@@ -135,7 +142,7 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
 
     # Profile validation summary
     if profile:
-        req_empty, val_mis, miss_segs = _profile_validation_counts(parsed, profile)
+        req_empty, val_mis, miss_segs, unexp_segs = _profile_validation_counts(parsed, profile)
         vparts = []
         if req_empty:
             vparts.append(_c(_RED, f'{req_empty} required field{"s" if req_empty > 1 else ""} empty', use_color))
@@ -143,6 +150,8 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
             vparts.append(_c(_ORANGE, f'{val_mis} value{"s" if val_mis > 1 else ""} not in map', use_color))
         if miss_segs:
             vparts.append(_c(_BLUE, f'Missing segments: {", ".join(miss_segs)}', use_color))
+        if unexp_segs:
+            vparts.append(_c(_YELLOW, f'Unexpected segments: {", ".join(unexp_segs)}', use_color))
         if vparts:
             lines.append(f'\u26a0 Profile validation: {" | ".join(vparts)}')
 
@@ -161,6 +170,10 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
         # Segment header line
         seg_label = f'{seg.name}{rep_label}'
         profile_badge = f' {_c(_TEAL, "[Profile]", use_color)}' if p_seg else ''
+        unexpected_badge = ''
+        if profile and profile.get('segments') and seg.name not in profile['segments']:
+            unexpected_badge = f' {_c(_YELLOW, "[Unexpected]", use_color)}'
+        profile_badge += unexpected_badge
         if seg_desc:
             seg_header = f'\u2500\u2500 {_c(_ROSE + _BOLD, seg_label, use_color)}  {_c(_ROSE, seg_desc, use_color)}{profile_badge} '
         else:

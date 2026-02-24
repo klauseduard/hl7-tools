@@ -422,19 +422,29 @@ class HL7ViewerApp(App):
         self.notify(f"Loaded {os.path.basename(path)}", timeout=2)
 
     def _profile_validation_counts(self):
-        """Count profile validation issues: (required_empty, value_mismatch, missing_segs).
+        """Count profile validation issues.
 
-        Same logic as runProfileValidation() in the web viewer.
+        Returns (required_empty, value_mismatch, missing_segs, unexpected_segs).
         """
         if not self._profile or not self._profile.get("segments"):
-            return 0, 0, []
+            return 0, 0, [], []
+        profile_seg_names = set(self._profile["segments"].keys())
         msg_seg_names = {s.name for s in self.parsed.segments}
-        missing_segs = []
+        missing_segs = [s for s in profile_seg_names if s not in msg_seg_names]
+        unexpected_segs = [s.name for s in self.parsed.segments
+                          if s.name not in profile_seg_names]
+        # Deduplicate unexpected (repeated segments)
+        seen = set()
+        unique_unexpected = []
+        for name in unexpected_segs:
+            if name not in seen:
+                seen.add(name)
+                unique_unexpected.append(name)
+        unexpected_segs = unique_unexpected
         required_empty = 0
         value_mismatch = 0
         for seg_name, seg_def in self._profile["segments"].items():
             if seg_name not in msg_seg_names:
-                missing_segs.append(seg_name)
                 continue
             if not seg_def.get("fields"):
                 continue
@@ -452,7 +462,7 @@ class HL7ViewerApp(App):
                         required_empty += 1
                     if mis:
                         value_mismatch += 1
-        return required_empty, value_mismatch, missing_segs
+        return required_empty, value_mismatch, missing_segs, unexpected_segs
 
     def _update_header(self) -> None:
         msg_type = self.parsed.message_type or "???"
@@ -485,7 +495,7 @@ class HL7ViewerApp(App):
             parts.append("[A\u2192a]")
         if self._profile:
             parts.append(f"[Profile:{self._profile['name']}]")
-            req_empty, val_mis, miss_segs = self._profile_validation_counts()
+            req_empty, val_mis, miss_segs, unexp_segs = self._profile_validation_counts()
             vparts = []
             if req_empty:
                 vparts.append(f"{req_empty}req")
@@ -493,6 +503,8 @@ class HL7ViewerApp(App):
                 vparts.append(f"{val_mis}map")
             if miss_segs:
                 vparts.append(f"{len(miss_segs)}miss")
+            if unexp_segs:
+                vparts.append(f"{len(unexp_segs)}unexp")
             if vparts:
                 parts.append(f"[{' '.join(vparts)}]")
         if self._modified:
@@ -553,6 +565,8 @@ class HL7ViewerApp(App):
                 seg_label.append(f"  {self._tx(seg_desc)}", style=ROSE)
             if p_seg:
                 seg_label.append("  Profile", style=TEAL)
+            if self._profile and self._profile.get("segments") and seg.name not in self._profile["segments"]:
+                seg_label.append("  Unexpected", style=YELLOW)
             seg_node = tree.root.add(
                 seg_label,
                 data={"type": "segment", "segment": seg, "seg_def": seg_def},
@@ -702,6 +716,8 @@ class HL7ViewerApp(App):
                     spec.add_row("Profile", Text(p_seg["description"], style=TEAL))
                 if p_seg.get("custom"):
                     spec.add_row("Custom", Text("Yes (Z-segment)", style=TEAL))
+            if self._profile and self._profile.get("segments") and seg.name not in self._profile["segments"]:
+                spec.add_row("\u26a0 Unexpected", Text("Segment not defined in profile", style=YELLOW))
             spec_w.update(spec)
             comp_w.update("")
             # Show raw segment line

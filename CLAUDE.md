@@ -13,7 +13,8 @@ HL7 v2.x message toolkit: web viewer, terminal TUI, Python parsing library, and 
 Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` works, no server needed).
 
 **Features:**
-- Three-panel layout: Input (paste/drag-drop/Open button) | Parsed table | Field detail
+- Three-panel layout: Input (paste/drag-drop/Open button) | Parsed table | Field detail | Compare (field-level diff)
+- **Compare tab**: paste/open a second message, get a field-by-field diff with summary bar, filter toggle, and side-by-side component breakdown in detail panel
 - Embedded HL7 v2.3 and v2.5 segment/field definitions (~23 segments each) with data type component breakdowns (~30 composite types)
 - Auto-detects HL7 version from MSH-12 (v2.3.1 maps to v2.3 definitions)
 - Correct MSH field numbering: MSH-1 = `|` (field separator), MSH-2 = encoding characters
@@ -44,13 +45,14 @@ venv/bin/pip install -r requirements-mcp.txt
 
 **Run:** Registered in `~/.claude.json` under `mcpServers.hl7` — starts automatically with Claude Code.
 
-**Tools (7):**
+**Tools (8):**
 - `hl7_parse` — Parse raw HL7 into structured JSON with definitions and profile overlays
 - `hl7_get_field` — Extract a specific field by address (e.g. "PID-5", "MSH-9.1")
 - `hl7_validate` — Check message for structural issues (missing required fields, length violations, unknown segments); with a profile: enforces `required` fields and `valueMap` value checks
 - `hl7_anonymize` — Strip PHI from PID/NK1 segments
 - `hl7_transform` — Modify field values by address (e.g. `{"PID-5": "DOE^JOHN"}`)
 - `hl7_send` — Send message via MLLP with optional TLS/mTLS
+- `hl7_diff` — Compare two messages field-by-field, returns structured JSON diff with per-field status and values
 - `hl7_explain` — Look up HL7 definitions (segments, fields, data types) without a message
 
 **Resources (3):**
@@ -71,7 +73,7 @@ venv/bin/pip install -r requirements-mcp.txt
 venv/bin/pytest tests/ -v
 ```
 
-42 tests covering core modules (parser, encoding, profile, anonymize, definitions). Uses all 3 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+63 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff). Uses all 3 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
 
 - `pytest.ini` sets `pythonpath = .` so no install step needed
 - `tests/conftest.py` — shared fixtures (parsed messages, sample profile)

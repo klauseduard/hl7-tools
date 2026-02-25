@@ -21,6 +21,7 @@ from hl7view.definitions import (
     resolve_version, HL7_V23, HL7_V25, HL7_DEFS,
 )
 from hl7view.anonymize import anonymize_message
+from hl7view.diff import diff_messages
 from hl7view.mllp import mllp_send, reconstruct_message
 from hl7view.profile import load_profile, get_profile_field, get_profile_segment
 from hl7view.formatter import format_field_value
@@ -710,6 +711,83 @@ def hl7_explain(item: str, version: str = "2.5") -> str:
         return json.dumps(result, ensure_ascii=False)
 
     return json.dumps({"error": f"Unknown item: {item}. Try a segment name (PID), field address (PID-5), or data type (XPN)."})
+
+
+@mcp.tool()
+def hl7_diff(message_a: str, message_b: str, show_identical: bool = False) -> str:
+    """Compare two HL7 messages field-by-field and return differences.
+
+    Useful for debugging integration issues — shows exactly which fields
+    differ between two messages at the HL7 field level with addresses and names.
+
+    Args:
+        message_a: First raw HL7 message text.
+        message_b: Second raw HL7 message text.
+        show_identical: If true, include identical fields in output (default: false).
+
+    Returns:
+        JSON with summary counts, message metadata, and per-segment field diffs.
+        Each field diff includes address, field name, status, and both values.
+    """
+    parsed_a = parse_hl7(message_a)
+    if not parsed_a:
+        return json.dumps({"error": "Could not parse message A — no valid segments found"})
+
+    parsed_b = parse_hl7(message_b)
+    if not parsed_b:
+        return json.dumps({"error": "Could not parse message B — no valid segments found"})
+
+    version_a = resolve_version(parsed_a.version)
+    version_b = resolve_version(parsed_b.version)
+
+    diff = diff_messages(parsed_a, parsed_b)
+
+    result = {
+        "summary": diff.summary,
+        "message_a": {"type": diff.type_a, "version": diff.version_a},
+        "message_b": {"type": diff.type_b, "version": diff.version_b},
+        "segments": [],
+    }
+
+    for seg_diff in diff.segment_diffs:
+        # Use whichever version is available for definitions
+        version = version_a if seg_diff.status != 'b_only' else version_b
+        seg_def = get_seg_def(seg_diff.name, version)
+
+        seg_out = {
+            "name": seg_diff.name,
+            "status": seg_diff.status,
+        }
+        if seg_def:
+            seg_out["description"] = seg_def["name"]
+        if seg_diff.rep_index > 1:
+            seg_out["repetition"] = seg_diff.rep_index
+
+        fields = []
+        for fd in seg_diff.field_diffs:
+            if not show_identical and fd.status == 'identical':
+                continue
+
+            fld_def = get_field_def(seg_diff.name, fd.field_num, version)
+            field_out = {
+                "address": fd.address,
+                "status": fd.status,
+            }
+            if fld_def:
+                field_out["name"] = fld_def["name"]
+
+            if fd.value_a is not None:
+                field_out["value_a"] = fd.value_a
+            if fd.value_b is not None:
+                field_out["value_b"] = fd.value_b
+
+            fields.append(field_out)
+
+        if fields:
+            seg_out["fields"] = fields
+            result["segments"].append(seg_out)
+
+    return json.dumps(result, ensure_ascii=False)
 
 
 # ---------------------------------------------------------------------------

@@ -9,7 +9,7 @@ import sys
 from . import __version__
 from .encoding import detect_encoding
 from .definitions import resolve_version, MSH18_TO_ENCODING
-from .formatter import format_encoding_header, format_field_value, format_message, format_raw
+from .formatter import format_diff, format_encoding_header, format_field_value, format_message, format_raw
 from .mllp import mllp_send, reconstruct_message
 from .parser import parse_hl7
 from .profile import load_profile
@@ -192,8 +192,8 @@ def _wants_interactive(args):
     # Flags that imply non-interactive output
     if args.no_interactive or args.field or args.raw or args.verbose or args.no_color:
         return False
-    # --send implies non-interactive
-    if args.send:
+    # --send / --diff implies non-interactive
+    if args.send or args.diff:
         return False
     # --anon flags imply non-interactive
     if args.anon or args.anon_non_ascii:
@@ -278,6 +278,8 @@ def main():
                         help='client private key PEM')
     parser.add_argument('--tls-insecure', action='store_true',
                         help='skip server certificate verification')
+    parser.add_argument('--diff', action='store_true',
+                        help='compare two HL7 files field-by-field (requires exactly 2 files)')
     parser.add_argument('--profile', metavar='PATH',
                         help='load integration profile JSON for custom field names')
     parser.add_argument('--version', dest='hl7_version', metavar='VER',
@@ -305,6 +307,27 @@ def main():
             _launch_tui(text, enc_info, args, filename="(clipboard)")
         else:
             _process_message(text, enc_info, args, use_color)
+        return
+
+    if args.diff:
+        if len(args.files) != 2:
+            print('Error: --diff requires exactly 2 files', file=sys.stderr)
+            sys.exit(1)
+        from .diff import diff_messages
+        texts = []
+        for path in args.files:
+            try:
+                text, _ = read_file(path)
+            except (OSError, IOError) as e:
+                print(f'Error reading {path}: {e}', file=sys.stderr)
+                sys.exit(1)
+            parsed = parse_hl7(text)
+            if not parsed:
+                print(f'Error: no HL7 segments found in {path}', file=sys.stderr)
+                sys.exit(1)
+            texts.append(parsed)
+        diff_result = diff_messages(texts[0], texts[1])
+        print(format_diff(diff_result, no_color=args.no_color, show_identical=args.empty), end='')
         return
 
     if args.files:

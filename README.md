@@ -54,6 +54,7 @@ Switch between Input/Parsed/Raw using the tabs above the left panel.
 - **Anonymization** — toggle PID field anonymization with ASCII or Estonian (non-ASCII) name pools
 - **Live search** — filter fields by address, name, type, or value
 - **Click-to-highlight** — click a parsed row to highlight the corresponding position in raw view
+- **Message comparison** — Compare tab for field-level diff of two messages with summary bar, filter toggle (differences only / all), and side-by-side component breakdown in detail panel
 - **Keyboard navigation** — arrow keys, Enter to expand, Esc to clear search
 
 ### Keyboard Shortcuts (Web)
@@ -147,6 +148,12 @@ python3 -m hl7view file1.hl7 file2.hl7
 
 # Disable colors (for piping)
 python3 -m hl7view --no-color message.hl7
+
+# Compare two messages (field-level diff)
+python3 -m hl7view file1.hl7 file2.hl7 --diff
+
+# Include identical fields in diff output
+python3 -m hl7view file1.hl7 file2.hl7 --diff -e
 ```
 
 ### Anonymization
@@ -250,6 +257,7 @@ Add to `~/.claude.json` under `mcpServers`:
 | `hl7_anonymize` | Strip PHI from PID/NK1 segments with random replacements |
 | `hl7_transform` | Modify field values by address (e.g. `{"PID-5": "DOE^JOHN"}`) |
 | `hl7_send` | Send message via MLLP with optional TLS/mTLS, return ACK |
+| `hl7_diff` | Compare two messages field-by-field, return structured JSON diff |
 | `hl7_explain` | Look up HL7 definitions (segments, fields, data types) without a message |
 
 ### Resources

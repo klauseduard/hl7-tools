@@ -210,6 +210,59 @@ font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
 #profileValidation .pv-orange{color:var(--orange)}
 #profileValidation .pv-blue{color:var(--blue)}
 #profileValidation .pv-yellow{color:var(--yellow)}
+/* Compare tab */
+#compareTab{display:none;flex-direction:column}
+#compareTab.active{display:flex!important}
+#compareInput{padding:8px;border-bottom:1px solid var(--bg3)}
+#compareInput.collapsed{display:none}
+#compareMsgInput{width:100%;height:100px;background:var(--bg2);color:var(--text);border:2px dashed var(--surface);
+border-radius:6px;padding:8px;font-family:inherit;font-size:13px;resize:vertical}
+#compareMsgInput:focus{outline:none;border-color:var(--blue)}
+#compareActions{display:flex;gap:8px;margin-top:6px;align-items:center}
+#compareSummary{display:none;padding:6px 12px;background:var(--bg2);border-bottom:1px solid var(--bg3);
+font-size:12px;color:var(--subtext);align-items:center;gap:12px}
+#compareSummary.active{display:flex}
+#compareSummary .cs-count{color:var(--orange);font-weight:500}
+#compareSummary .cs-modified{color:var(--orange)}
+#compareSummary .cs-a-only{color:var(--red)}
+#compareSummary .cs-b-only{color:var(--green)}
+#compareFilter{margin-left:auto;display:flex;gap:4px;align-items:center}
+#compareFilter label{color:var(--subtext);font-size:11px;cursor:pointer}
+#compareFilter input{accent-color:var(--blue);cursor:pointer}
+#diffTableWrap{flex:1;overflow:auto}
+#diffTable{width:100%;border-collapse:collapse}
+#diffTable th{position:sticky;top:0;background:var(--bg2);color:var(--subtext);
+font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;
+text-align:left;padding:6px 8px;border-bottom:1px solid var(--bg3);z-index:1}
+#diffTable td{padding:4px 8px;border-bottom:1px solid var(--bg3);
+vertical-align:top;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+#diffTable tr{cursor:pointer}
+#diffTable tr:hover{background:var(--bg3)}
+#diffTable tr.selected{background:rgba(137,180,250,0.12)}
+#diffTable tr.diff-seg-header{background:var(--bg2)}
+#diffTable tr.diff-seg-header td{padding:6px 8px;font-weight:700;color:var(--rose);
+border-bottom:1px solid var(--surface)}
+#diffTable tr.diff-modified{border-left:3px solid var(--orange)}
+#diffTable tr.diff-a-only{background:rgba(243,139,168,0.06);border-left:3px solid var(--red)}
+#diffTable tr.diff-b-only{background:rgba(166,227,161,0.06);border-left:3px solid var(--green)}
+#diffTable tr.diff-identical{opacity:0.5}
+.diff-hl{background:rgba(250,179,135,0.3);border-radius:2px;padding:0 1px}
+.diff-hl-ins{background:rgba(166,227,161,0.25);border-radius:2px;padding:0 1px}
+.diff-hl-del{background:rgba(243,139,168,0.25);border-radius:2px;padding:0 1px;text-decoration:line-through;text-decoration-color:rgba(243,139,168,0.5)}
+.comp-table .diff-hl,.comp-table .diff-hl-ins,.comp-table .diff-hl-del{padding:1px 2px}
+#diffTable .addr{color:var(--blue);font-weight:500}
+#diffTable .fname{color:var(--green)}
+#diffTable .fval{color:var(--text);font-family:inherit}
+#diffTable .fval.empty{color:var(--overlay);font-style:italic}
+#diffTable .diff-status{font-size:10px;padding:1px 6px;border-radius:3px;white-space:nowrap}
+#diffTable .diff-status.modified{background:rgba(250,179,135,0.2);color:var(--orange)}
+#diffTable .diff-status.a-only{background:rgba(243,139,168,0.2);color:var(--red)}
+#diffTable .diff-status.b-only{background:rgba(166,227,161,0.2);color:var(--green)}
+#diffTable .diff-status.identical{background:rgba(166,173,200,0.1);color:var(--subtext)}
+#compareIndicator{display:none;align-items:center;gap:6px;background:var(--bg3);
+border-radius:4px;padding:2px 8px;font-size:12px;color:var(--blue)}
+#compareIndicator .unload{cursor:pointer;color:var(--subtext);font-size:14px}
+#compareIndicator .unload:hover{color:var(--red)}
 </style>
 </head>
 <body>
@@ -223,6 +276,7 @@ font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
 <button class="tb-btn" onclick="document.getElementById('profileFile').click()">Load Profile</button>
 <input type="file" id="profileFile" accept=".json">
 <div id="profileIndicator"><span id="profileName"></span><span class="unload" title="Unload profile" onclick="unloadProfile()">&#x2715;</span></div>
+<div id="compareIndicator"><span id="compareLabel"></span><span class="unload" title="Exit compare" onclick="exitCompare()">&#x2715;</span></div>
 <button id="anonBtn" class="tb-btn" onclick="toggleAnonymize()" title="Anonymize patient data (Ctrl+Shift+A)">Anon</button>
 <label class="anon-checkbox" title="Use Estonian non-ASCII names (&#xD5;, &#xD6;, &#xDC;, &#xC4;, &#x17D;, &#x160;)"><input type="checkbox" id="anonNonAscii" onchange="onNonAsciiChange()">Non-ASCII</label>
 <button class="tb-btn" onclick="showHelp()" title="Profile documentation &amp; help">?</button>
@@ -245,6 +299,7 @@ font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
 <div class="tab active" data-tab="inputTab" onclick="switchTab(this)">Input</div>
 <div class="tab" data-tab="parsedTab" onclick="switchTab(this)">Parsed</div>
 <div class="tab" data-tab="rawTab" onclick="switchTab(this)">Raw</div>
+<div class="tab" data-tab="compareTab" onclick="switchTab(this)">Compare</div>
 </div>
 <div id="inputTab" class="tab-content active">
 <div id="inputArea">
@@ -267,6 +322,31 @@ font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
 </div>
 <div id="rawTab" class="tab-content">
 <div id="rawWrap"><div id="rawContent"></div></div>
+</div>
+<div id="compareTab" class="tab-content">
+<div id="compareInput">
+<textarea id="compareMsgInput" placeholder="Paste Message B here, or use Open to load a file..."></textarea>
+<div id="compareActions">
+<button class="tb-btn" onclick="runCompare()">Compare</button>
+<button class="tb-btn" onclick="document.getElementById('compareFile').click()">Open B</button>
+<input type="file" id="compareFile" accept=".hl7,.txt,.dat,.msg" style="display:none">
+<span id="compareStatus" style="color:var(--subtext);font-size:12px;margin-left:8px"></span>
+</div>
+</div>
+<div id="compareSummary">
+<span id="compareSummaryText"></span>
+<div id="compareFilter">
+<button class="tb-btn" onclick="exitCompare()" title="Clear comparison and start over">Reset</button>
+<label><input type="checkbox" id="showIdenticalCheck" onchange="rerenderDiffTable()">Show identical</label>
+</div>
+</div>
+<div id="diffTableWrap">
+<table id="diffTable"><thead><tr>
+<th style="width:100px">Address</th><th style="width:170px">Field Name</th>
+<th style="width:200px">Message A</th><th style="width:200px">Message B</th>
+<th style="width:70px">Status</th>
+</tr></thead><tbody id="diffBody"></tbody></table>
+</div>
 </div>
 </div>
 <div id="rightPanel">
@@ -2382,6 +2462,7 @@ function clearAll() {
   document.getElementById('anonIndicator').style.display = 'none';
   document.getElementById('encodingInfo').style.display = 'none';
   document.getElementById('profileValidation').style.display = 'none';
+  exitCompare();
   clearDetail();
   setStatus('');
   switchTab(document.querySelector('[data-tab="inputTab"]'));
@@ -2398,6 +2479,388 @@ function loadSample() {
   setStatus('Sample message loaded');
 }
 
+// ========== COMPARE / DIFF ==========
+let compareMessage = null;  // parsed message B
+let diffResult = null;      // result of diffMessages()
+let selectedDiffRow = null;
+
+function diffMessages(parsedA, parsedB) {
+  // Index segments by (name, repIndex)
+  const segMapA = new Map();
+  const segOrderA = [];
+  for (const seg of parsedA.segments) {
+    const key = seg.name + '#' + seg.repIndex;
+    segMapA.set(key, seg);
+    segOrderA.push(key);
+  }
+  const segMapB = new Map();
+  const segOrderB = [];
+  for (const seg of parsedB.segments) {
+    const key = seg.name + '#' + seg.repIndex;
+    segMapB.set(key, seg);
+    segOrderB.push(key);
+  }
+
+  // Union of keys preserving order
+  const allKeys = [...segOrderA];
+  const seen = new Set(allKeys);
+  for (const key of segOrderB) {
+    if (!seen.has(key)) { allKeys.push(key); seen.add(key); }
+  }
+
+  const segmentDiffs = [];
+  const counts = {total: 0, identical: 0, modified: 0, a_only: 0, b_only: 0};
+
+  for (const key of allKeys) {
+    const [segName, repIdxStr] = key.split('#');
+    const repIdx = parseInt(repIdxStr);
+    const segA = segMapA.get(key);
+    const segB = segMapB.get(key);
+
+    if (segA && !segB) {
+      const fieldDiffs = segA.fields.map(f => {
+        counts.a_only++; counts.total++;
+        return {address: makeAddr(segName, repIdx, f.fieldNum), fieldNum: f.fieldNum,
+          status: 'a_only', valueA: f.rawValue, valueB: null, fieldA: f, fieldB: null};
+      });
+      segmentDiffs.push({name: segName, repIndex: repIdx, status: 'a_only', fieldDiffs});
+    } else if (segB && !segA) {
+      const fieldDiffs = segB.fields.map(f => {
+        counts.b_only++; counts.total++;
+        return {address: makeAddr(segName, repIdx, f.fieldNum), fieldNum: f.fieldNum,
+          status: 'b_only', valueA: null, valueB: f.rawValue, fieldA: null, fieldB: f};
+      });
+      segmentDiffs.push({name: segName, repIndex: repIdx, status: 'b_only', fieldDiffs});
+    } else {
+      const fieldsA = new Map(segA.fields.map(f => [f.fieldNum, f]));
+      const fieldsB = new Map(segB.fields.map(f => [f.fieldNum, f]));
+      const allNums = [...new Set([...fieldsA.keys(), ...fieldsB.keys()])].sort((a, b) => a - b);
+      const fieldDiffs = [];
+      let segStatus = 'identical';
+      for (const fnum of allNums) {
+        const fa = fieldsA.get(fnum);
+        const fb = fieldsB.get(fnum);
+        const addr = makeAddr(segName, repIdx, fnum);
+        let fd;
+        if (fa && !fb) {
+          fd = {address: addr, fieldNum: fnum, status: 'a_only',
+            valueA: fa.rawValue, valueB: null, fieldA: fa, fieldB: null};
+          segStatus = 'modified'; counts.a_only++;
+        } else if (fb && !fa) {
+          fd = {address: addr, fieldNum: fnum, status: 'b_only',
+            valueA: null, valueB: fb.rawValue, fieldA: null, fieldB: fb};
+          segStatus = 'modified'; counts.b_only++;
+        } else if (fa.rawValue === fb.rawValue) {
+          fd = {address: addr, fieldNum: fnum, status: 'identical',
+            valueA: fa.rawValue, valueB: fb.rawValue, fieldA: fa, fieldB: fb};
+          counts.identical++;
+        } else {
+          fd = {address: addr, fieldNum: fnum, status: 'modified',
+            valueA: fa.rawValue, valueB: fb.rawValue, fieldA: fa, fieldB: fb};
+          segStatus = 'modified'; counts.modified++;
+        }
+        counts.total++;
+        fieldDiffs.push(fd);
+      }
+      segmentDiffs.push({name: segName, repIndex: repIdx, status: segStatus, fieldDiffs});
+    }
+  }
+
+  return {
+    segmentDiffs, summary: counts,
+    versionA: parsedA.version, versionB: parsedB.version,
+    typeA: parsedA.messageType, typeB: parsedB.messageType
+  };
+}
+
+function makeAddr(segName, repIndex, fieldNum) {
+  return segName + (repIndex > 1 ? '[' + repIndex + ']' : '') + '-' + fieldNum;
+}
+
+function runCompare() {
+  if (!parsedMessage) {
+    setCompareStatus('Parse Message A first (Input tab)', true);
+    return;
+  }
+  const raw = document.getElementById('compareMsgInput').value;
+  if (!raw.trim()) {
+    setCompareStatus('Paste or open Message B', true);
+    return;
+  }
+  compareMessage = parseHL7(raw);
+  if (!compareMessage || compareMessage.segments.length === 0) {
+    setCompareStatus('Failed to parse Message B', true);
+    return;
+  }
+  diffResult = diffMessages(parsedMessage, compareMessage);
+  const s = diffResult.summary;
+  const diffCount = s.modified + s.a_only + s.b_only;
+  const segCount = diffResult.segmentDiffs.filter(sd => sd.status !== 'identical').length;
+  setCompareStatus('');
+
+  // Update summary bar
+  const summaryEl = document.getElementById('compareSummary');
+  const parts = [];
+  if (s.modified) parts.push('<span class="cs-modified">' + s.modified + ' modified</span>');
+  if (s.a_only) parts.push('<span class="cs-a-only">' + s.a_only + ' A\u2011only</span>');
+  if (s.b_only) parts.push('<span class="cs-b-only">' + s.b_only + ' B\u2011only</span>');
+  document.getElementById('compareSummaryText').innerHTML =
+    '<span class="cs-count">' + diffCount + ' difference' + (diffCount !== 1 ? 's' : '') +
+    '</span> across ' + segCount + ' segment' + (segCount !== 1 ? 's' : '') +
+    (parts.length ? ': ' + parts.join(', ') : '');
+  summaryEl.classList.add('active');
+
+  // Collapse input area
+  document.getElementById('compareInput').classList.add('collapsed');
+
+  // Show indicator in toolbar
+  const typeA = diffResult.typeA || '?';
+  const typeB = diffResult.typeB || '?';
+  const ind = document.getElementById('compareIndicator');
+  document.getElementById('compareLabel').textContent = 'Comparing: ' + typeA + ' vs ' + typeB;
+  ind.style.display = 'flex';
+
+  renderDiffTable();
+}
+
+function exitCompare() {
+  compareMessage = null;
+  diffResult = null;
+  selectedDiffRow = null;
+  document.getElementById('compareIndicator').style.display = 'none';
+  document.getElementById('compareSummary').classList.remove('active');
+  document.getElementById('compareInput').classList.remove('collapsed');
+  document.getElementById('diffBody').innerHTML = '';
+  document.getElementById('compareMsgInput').value = '';
+  setCompareStatus('');
+  clearDetail();
+}
+
+function setCompareStatus(msg, isError) {
+  const el = document.getElementById('compareStatus');
+  el.textContent = msg;
+  el.style.color = isError ? 'var(--red)' : 'var(--green)';
+}
+
+function rerenderDiffTable() {
+  if (diffResult) renderDiffTable();
+}
+
+/** Find the differing middle portion between two strings.
+ *  Returns {prefix, midA, midB, suffixA, suffixB} or null if identical. */
+function charDiff(a, b) {
+  if (a === b) return null;
+  let p = 0;
+  const minLen = Math.min(a.length, b.length);
+  while (p < minLen && a[p] === b[p]) p++;
+  let sa = a.length, sb = b.length;
+  while (sa > p && sb > p && a[sa - 1] === b[sb - 1]) { sa--; sb--; }
+  return { prefix: a.substring(0, p), midA: a.substring(p, sa), midB: b.substring(p, sb),
+    suffixA: a.substring(sa), suffixB: b.substring(sb) };
+}
+
+/** Render a value with character-level diff highlighting and smart truncation.
+ *  side: 'a' or 'b'. Returns HTML string. */
+function highlightDiffVal(val, diff, side, maxLen) {
+  if (!val) return '<span style="color:var(--overlay)">(empty)</span>';
+  if (!diff) return esc(truncVal(val, maxLen));
+  const mid = side === 'a' ? diff.midA : diff.midB;
+  const prefix = diff.prefix;
+  const suffix = side === 'a' ? diff.suffixA : diff.suffixB;
+  const hlClass = mid.length === 0 ? (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') : 'diff-hl';
+  // Fits without truncation
+  if (val.length <= maxLen + 1) {
+    if (mid.length === 0) {
+      // Pure deletion/insertion on this side — mark insertion point
+      return esc(prefix) + '<span class="' + (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') + '">\u2039\u203a</span>' + esc(suffix);
+    }
+    return esc(prefix) + '<span class="' + hlClass + '">' + esc(mid) + '</span>' + esc(suffix);
+  }
+  // Smart truncation: ensure the diff region is visible
+  const midLen = Math.max(mid.length, 1);
+  const budget = maxLen - midLen;
+  if (budget < 4) {
+    // Diff itself exceeds budget
+    return '<span class="' + hlClass + '">' + esc(mid.substring(0, maxLen)) + '</span>\u2026';
+  }
+  const before = Math.min(Math.floor(budget / 2), prefix.length);
+  const after = Math.min(budget - before, suffix.length);
+  let r = '';
+  if (before < prefix.length) r += '\u2026';
+  r += esc(prefix.substring(prefix.length - before));
+  if (mid.length === 0) {
+    r += '<span class="' + (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') + '">\u2039\u203a</span>';
+  } else {
+    const midDisp = mid.length > maxLen - before - after ? mid.substring(0, maxLen - before - after) + '\u2026' : mid;
+    r += '<span class="' + hlClass + '">' + esc(midDisp) + '</span>';
+  }
+  r += esc(suffix.substring(0, after));
+  if (after < suffix.length) r += '\u2026';
+  return r;
+}
+
+/** Render full value with character-level diff highlighting (no truncation, for detail panel). */
+function highlightDiffFull(val, diff, side) {
+  if (!val) return '<em style="color:var(--overlay)">empty</em>';
+  if (!diff) return esc(val);
+  const mid = side === 'a' ? diff.midA : diff.midB;
+  const prefix = diff.prefix;
+  const suffix = side === 'a' ? diff.suffixA : diff.suffixB;
+  if (mid.length === 0) {
+    return esc(prefix) + '<span class="' + (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') + '">\u2039\u203a</span>' + esc(suffix);
+  }
+  const hlClass = 'diff-hl';
+  return esc(prefix) + '<span class="' + hlClass + '">' + esc(mid) + '</span>' + esc(suffix);
+}
+
+function renderDiffTable() {
+  const tbody = document.getElementById('diffBody');
+  tbody.innerHTML = '';
+  if (!diffResult) return;
+
+  const showIdentical = document.getElementById('showIdenticalCheck').checked;
+  const versionA = resolveVersion(parsedMessage);
+  const versionB = resolveVersion(compareMessage);
+
+  for (const sd of diffResult.segmentDiffs) {
+    if (!showIdentical && sd.status === 'identical') continue;
+    const hasDiffs = sd.fieldDiffs.some(fd => fd.status !== 'identical');
+    if (!showIdentical && !hasDiffs) continue;
+
+    const version = sd.status !== 'b_only' ? versionA : versionB;
+    const segDef = getSegDef(sd.name, version);
+    const segDesc = segDef ? segDef.name : (sd.name.startsWith('Z') ? 'Custom Segment' : '');
+    const repLabel = sd.repIndex > 1 ? '[' + sd.repIndex + ']' : '';
+
+    // Segment header row
+    const hdr = document.createElement('tr');
+    hdr.className = 'diff-seg-header';
+    let statusBadge = '';
+    if (sd.status === 'a_only') statusBadge = ' <span style="color:var(--red);font-weight:400;font-size:11px">[A only]</span>';
+    else if (sd.status === 'b_only') statusBadge = ' <span style="color:var(--green);font-weight:400;font-size:11px">[B only]</span>';
+    hdr.innerHTML = '<td colspan="5">' + esc(sd.name + repLabel) +
+      (segDesc ? '  <span style="font-weight:400">' + esc(segDesc) + '</span>' : '') +
+      statusBadge + '</td>';
+    tbody.appendChild(hdr);
+
+    for (const fd of sd.fieldDiffs) {
+      if (!showIdentical && fd.status === 'identical') continue;
+
+      const fDef = getFieldDef(sd.name, fd.fieldNum, version);
+      const fname = fDef ? fDef.name : '';
+      const valA = fd.valueA != null ? fd.valueA : '';
+      const valB = fd.valueB != null ? fd.valueB : '';
+
+      const tr = document.createElement('tr');
+      tr.className = 'diff-' + fd.status;
+      tr.dataset.segName = sd.name;
+      tr.dataset.repIndex = sd.repIndex;
+      tr.dataset.fieldNum = fd.fieldNum;
+      tr.dataset.status = fd.status;
+
+      let dispA, dispB;
+      if (fd.status === 'modified') {
+        const cd = charDiff(valA, valB);
+        dispA = highlightDiffVal(valA, cd, 'a', 28);
+        dispB = highlightDiffVal(valB, cd, 'b', 28);
+      } else if (fd.status === 'b_only') {
+        dispA = '<span style="color:var(--overlay)">\u2014</span>';
+        dispB = esc(truncVal(valB, 28));
+      } else if (fd.status === 'a_only') {
+        dispA = esc(truncVal(valA, 28));
+        dispB = '<span style="color:var(--overlay)">\u2014</span>';
+      } else {
+        dispA = esc(truncVal(valA, 28));
+        dispB = esc(truncVal(valB, 28));
+      }
+      const statusClass = fd.status;
+      const statusLabel = {modified: 'modified', a_only: 'A only', b_only: 'B only', identical: 'identical'}[fd.status];
+
+      tr.innerHTML =
+        '<td class="addr">' + esc(fd.address) + '</td>' +
+        '<td class="fname">' + esc(fname) + '</td>' +
+        '<td class="fval">' + dispA + '</td>' +
+        '<td class="fval">' + dispB + '</td>' +
+        '<td><span class="diff-status ' + statusClass + '">' + statusLabel + '</span></td>';
+
+      tr.addEventListener('click', function() { selectDiffField(this, sd, fd, version); });
+      tbody.appendChild(tr);
+    }
+  }
+}
+
+function truncVal(val, max) {
+  if (!val) return '(empty)';
+  return val.length > max + 1 ? val.substring(0, max) + '\u2026' : val;
+}
+
+function selectDiffField(row, segDiff, fieldDiff, version) {
+  // Deselect previous
+  document.querySelectorAll('#diffTable tr.selected').forEach(r => r.classList.remove('selected'));
+  row.classList.add('selected');
+  selectedDiffRow = row;
+  showDiffDetail(segDiff, fieldDiff, version);
+}
+
+function showDiffDetail(segDiff, fd, version) {
+  const panel = document.getElementById('detailPanel');
+  const noSel = document.getElementById('noSelection');
+  noSel.style.display = 'none';
+  panel.style.display = 'block';
+
+  const fDef = getFieldDef(segDiff.name, fd.fieldNum, version);
+  const segDef = getSegDef(segDiff.name, version);
+
+  let html = '<h3>' + esc(fd.address) + ' <span class="diff-status ' + fd.status + '" style="font-size:11px">' +
+    ({modified:'modified', a_only:'A only', b_only:'B only', identical:'identical'}[fd.status]) + '</span></h3>';
+
+  // Field info
+  html += '<div class="detail-section"><h4>Field</h4><div class="detail-grid">';
+  html += '<span class="lbl">Segment</span><span class="val">' +
+    esc(segDiff.name) + (segDef ? ' - ' + esc(segDef.name) : '') + '</span>';
+  if (fDef) {
+    html += '<span class="lbl">Name</span><span class="val">' + esc(fDef.name) + '</span>';
+    html += '<span class="lbl">Data Type</span><span class="val">' + esc(fDef.dt) +
+      (DATA_TYPES[fDef.dt] ? ' - ' + esc(DATA_TYPES[fDef.dt].name) : '') + '</span>';
+  }
+  html += '</div></div>';
+
+  // Side-by-side values
+  html += '<div class="detail-section"><h4>Values</h4>';
+  html += '<table class="comp-table"><thead><tr><th></th><th>Message A</th><th>Message B</th></tr></thead><tbody>';
+
+  const rawA = fd.valueA != null ? fd.valueA : '';
+  const rawB = fd.valueB != null ? fd.valueB : '';
+  const rawDiff = (fd.status === 'modified') ? charDiff(rawA, rawB) : null;
+  html += '<tr><td class="ct-name">Raw</td><td class="ct-val" style="word-break:break-all">' +
+    highlightDiffFull(rawA, rawDiff, 'a') + '</td><td class="ct-val" style="word-break:break-all">' +
+    highlightDiffFull(rawB, rawDiff, 'b') + '</td></tr>';
+
+  // Component breakdown if composite type
+  const dt = fDef ? fDef.dt : null;
+  const dtDef = dt ? DATA_TYPES[dt] : null;
+  if (dtDef && dtDef.components) {
+    const compsA = fd.fieldA ? fd.fieldA.components : [];
+    const compsB = fd.fieldB ? fd.fieldB.components : [];
+    const maxLen = Math.max(dtDef.components.length, compsA.length, compsB.length);
+    for (let i = 0; i < maxLen; i++) {
+      const cDef = dtDef.components[i];
+      const cValA = i < compsA.length ? compsA[i].value : '';
+      const cValB = i < compsB.length ? compsB[i].value : '';
+      const cName = cDef ? cDef.name : 'Component ' + (i + 1);
+      const changed = cValA !== cValB;
+      const style = changed ? ' style="background:rgba(250,179,135,0.1)"' : '';
+      const cDiff = changed ? charDiff(cValA, cValB) : null;
+      html += '<tr' + style + '><td class="ct-name">' + (i + 1) + '. ' + esc(cName) + '</td>' +
+        '<td class="ct-val">' + highlightDiffFull(cValA, cDiff, 'a') + '</td>' +
+        '<td class="ct-val">' + highlightDiffFull(cValB, cDiff, 'b') + '</td></tr>';
+    }
+  }
+
+  html += '</tbody></table></div>';
+  panel.innerHTML = html;
+}
+
 // ========== EVENT LISTENERS ==========
 document.getElementById('hl7File').addEventListener('change', function(e) {
   if (e.target.files.length > 0) openHL7File(e.target.files[0]);
@@ -2407,6 +2870,22 @@ document.getElementById('hl7File').addEventListener('change', function(e) {
 document.getElementById('profileFile').addEventListener('change', function(e) {
   if (e.target.files.length > 0) loadProfile(e.target.files[0]);
   e.target.value = ''; // reset for re-upload
+});
+
+document.getElementById('compareFile').addEventListener('change', function(e) {
+  if (e.target.files.length > 0) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const bytes = new Uint8Array(ev.target.result);
+      const enc = detectEncoding(bytes.buffer);
+      const decoder = new TextDecoder(enc.decoderLabel);
+      document.getElementById('compareMsgInput').value = decoder.decode(bytes.buffer);
+      setCompareStatus('Loaded: ' + file.name);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  e.target.value = '';
 });
 
 document.getElementById('searchInput').addEventListener('input', applySearch);

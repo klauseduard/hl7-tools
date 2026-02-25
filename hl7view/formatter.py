@@ -6,6 +6,7 @@ import sys
 from .definitions import (
     DATA_TYPES, get_seg_def, get_field_def, resolve_version, MSH18_TO_ENCODING,
 )
+from .diff import MessageDiff
 from .profile import get_profile_segment, get_profile_field, get_profile_component
 
 # ========== ANSI COLOR CODES ==========
@@ -24,6 +25,8 @@ _RED = '\033[38;5;210m'       # errors
 _GRAY = '\033[38;5;245m'      # dim/empty
 _TEAL = '\033[38;5;116m'      # encoding info
 _WHITE = '\033[38;5;252m'     # normal text
+_INVERSE = '\033[7m'          # inverse video (for diff highlights)
+_UNDERLINE = '\033[4m'        # underline
 
 
 def _c(code, text, use_color):
@@ -299,6 +302,192 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
                             c_name = _c(_GREEN, f'{comp_name:<28}', use_color) if comp_name else f'{"":28}'
                             c_dt = _c(_ORANGE, f'{comp_dt:<5}', use_color) if comp_dt else f'{"":5}'
                             lines.append(f'{c_addr}     {c_name} {c_dt} {comp_val}')
+
+    lines.append('')
+    return '\n'.join(lines)
+
+
+def _char_diff_highlight(val_a, val_b, max_val, use_color):
+    """Return (disp_a, disp_b) with ANSI inverse highlighting on changed chars.
+
+    Uses smart truncation to ensure the differing region is visible."""
+    if not use_color:
+        # No color: just truncate normally
+        da = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
+        db = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
+        return da, db
+
+    # Find common prefix/suffix
+    p = 0
+    min_len = min(len(val_a), len(val_b))
+    while p < min_len and val_a[p] == val_b[p]:
+        p += 1
+    sa, sb = len(val_a), len(val_b)
+    while sa > p and sb > p and val_a[sa - 1] == val_b[sb - 1]:
+        sa -= 1
+        sb -= 1
+
+    mid_a = val_a[p:sa]
+    mid_b = val_b[p:sb]
+    prefix = val_a[:p]
+    suf_a = val_a[sa:]
+    suf_b = val_b[sb:]
+
+    hl = _INVERSE + _ORANGE
+
+    def _render_side(prefix, mid, suffix, max_val):
+        total = len(prefix) + len(mid) + len(suffix)
+        if total <= max_val + 1:
+            # Fits: highlight the middle
+            if mid:
+                return prefix + hl + mid + _RESET + suffix
+            else:
+                return prefix + suffix
+        # Smart truncation: ensure diff region is visible
+        mid_len = max(len(mid), 1)
+        budget = max_val - mid_len
+        if budget < 4:
+            return hl + mid[:max_val] + _RESET + '\u2026'
+        before = min(budget // 2, len(prefix))
+        after = min(budget - before, len(suffix))
+        r = ''
+        if before < len(prefix):
+            r += '\u2026'
+        r += prefix[len(prefix) - before:] if before else ''
+        if mid:
+            mid_budget = max_val - before - after
+            if len(mid) > mid_budget:
+                r += hl + mid[:mid_budget] + _RESET + '\u2026'
+            else:
+                r += hl + mid + _RESET
+        r += suffix[:after] if after else ''
+        if after < len(suffix):
+            r += '\u2026'
+        return r
+
+    return _render_side(prefix, mid_a, suf_a, max_val), _render_side(prefix, mid_b, suf_b, max_val)
+
+
+def format_diff(diff_result, no_color=False, show_identical=False):
+    """Format a MessageDiff as a colored terminal table showing differences."""
+    use_color = not no_color and sys.stdout.isatty()
+
+    lines = []
+
+    # Header
+    type_a = diff_result.type_a or '???'
+    type_b = diff_result.type_b or '???'
+    ver_a = f'v{diff_result.version_a}' if diff_result.version_a else 'v?'
+    ver_b = f'v{diff_result.version_b}' if diff_result.version_b else 'v?'
+    lines.append(
+        f'{_c(_BOLD, "Compare:", use_color)} '
+        f'{_c(_ROSE, type_a, use_color)} {ver_a}  vs  '
+        f'{_c(_ROSE, type_b, use_color)} {ver_b}'
+    )
+
+    # Summary
+    s = diff_result.summary
+    diff_count = s['modified'] + s['a_only'] + s['b_only']
+    seg_count = sum(1 for sd in diff_result.segment_diffs if sd.status != 'identical')
+    parts = []
+    if s['modified']:
+        parts.append(_c(_ORANGE, f"{s['modified']} modified", use_color))
+    if s['a_only']:
+        parts.append(_c(_RED, f"{s['a_only']} A-only", use_color))
+    if s['b_only']:
+        parts.append(_c(_GREEN, f"{s['b_only']} B-only", use_color))
+    summary_text = ', '.join(parts) if parts else 'no differences'
+    lines.append(f'{diff_count} difference{"s" if diff_count != 1 else ""} across {seg_count} segment{"s" if seg_count != 1 else ""}: {summary_text}')
+
+    # Rule
+    rule_char = '\u2550'
+    lines.append(rule_char * 90)
+
+    # Column headers
+    hdr = (
+        f'{_c(_DIM, f"{"Address":<12} {"Field Name":<28} {"Message A":<20} {"Message B":<20} Status", use_color)}'
+    )
+    lines.append(hdr)
+    lines.append('\u2500' * 90)
+
+    version_a = resolve_version(diff_result.version_a)
+    version_b = resolve_version(diff_result.version_b)
+
+    for seg_diff in diff_result.segment_diffs:
+        # Skip fully identical segments unless show_identical
+        if not show_identical and seg_diff.status == 'identical':
+            continue
+
+        # Check if there are any non-identical fields to show
+        has_diffs = any(fd.status != 'identical' for fd in seg_diff.field_diffs)
+        if not show_identical and not has_diffs:
+            continue
+
+        # Segment header
+        version = version_a if seg_diff.status != 'b_only' else version_b
+        seg_def = get_seg_def(seg_diff.name, version)
+        seg_desc = seg_def['name'] if seg_def else ''
+        rep_label = f'[{seg_diff.rep_index}]' if seg_diff.rep_index > 1 else ''
+        seg_label = f'{seg_diff.name}{rep_label}'
+
+        status_badge = ''
+        if seg_diff.status == 'a_only':
+            status_badge = _c(_RED, ' [A only]', use_color)
+        elif seg_diff.status == 'b_only':
+            status_badge = _c(_GREEN, ' [B only]', use_color)
+
+        if seg_desc:
+            seg_header = f'\u2500\u2500 {_c(_ROSE + _BOLD, seg_label, use_color)}  {_c(_ROSE, seg_desc, use_color)}{status_badge} '
+        else:
+            seg_header = f'\u2500\u2500 {_c(_ROSE + _BOLD, seg_label, use_color)}{status_badge} '
+        visible_len = len(f'── {seg_label}  {seg_desc} ') if seg_desc else len(f'── {seg_label} ')
+        seg_header += '\u2500' * max(0, 90 - visible_len)
+        lines.append(seg_header)
+
+        for fd in seg_diff.field_diffs:
+            if not show_identical and fd.status == 'identical':
+                continue
+
+            fld_def = get_field_def(seg_diff.name, fd.field_num, version)
+            fname = fld_def['name'] if fld_def else ''
+
+            val_a = fd.value_a if fd.value_a is not None else ''
+            val_b = fd.value_b if fd.value_b is not None else ''
+
+            # Truncate long values for table display
+            max_val = 18
+
+            # Status label with color
+            if fd.status == 'modified':
+                status_str = _c(_ORANGE, 'modified', use_color)
+                border = _c(_ORANGE, '\u2502 ', use_color)
+                disp_a, disp_b = _char_diff_highlight(val_a, val_b, max_val, use_color)
+            elif fd.status == 'a_only':
+                status_str = _c(_RED, 'A only', use_color)
+                border = _c(_RED, '\u2502 ', use_color)
+                disp_a = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
+                disp_b = _c(_GRAY, '\u2014', use_color)
+            elif fd.status == 'b_only':
+                status_str = _c(_GREEN, 'B only', use_color)
+                border = _c(_GREEN, '\u2502 ', use_color)
+                disp_a = _c(_GRAY, '\u2014', use_color)
+                disp_b = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
+            else:
+                status_str = _c(_GRAY, 'identical', use_color)
+                border = '  '
+                disp_a = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
+                disp_b = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
+
+            addr_col = _c(_BLUE, f'{fd.address:<12}', use_color)
+            name_col = _c(_GREEN, f'{fname:<28}', use_color) if fname else f'{"":28}'
+
+            # Pad based on visible length (ANSI codes don't count)
+            vis_a = len(re.sub(r'\033\[[^m]*m', '', disp_a))
+            vis_b = len(re.sub(r'\033\[[^m]*m', '', disp_b))
+            pad_a = disp_a + ' ' * max(0, 20 - vis_a)
+            pad_b = disp_b + ' ' * max(0, 20 - vis_b)
+
+            lines.append(f'{border}{addr_col}{name_col}{pad_a} {pad_b} {status_str}')
 
     lines.append('')
     return '\n'.join(lines)

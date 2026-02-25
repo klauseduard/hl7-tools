@@ -12,4 +12,4 @@ hl7_message_viewer_clipboard
 __pycache__/
 venv/
 anon-active.png
-profiles/agfaei-*.json
+profiles/local/

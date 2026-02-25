@@ -2586,7 +2586,7 @@ function hideHelp() {
 <div class="help-body">
 
 <h3>What are profiles?</h3>
-<p>Integration profiles are JSON files that overlay integration-specific context onto the standard HL7 field definitions. When working with a specific system (e.g., Carestream PACS, Agfa EI, Schiller ECG), a profile tells the viewer how that system uses each field &mdash; custom names, expected values, component meanings, and implementation notes.</p>
+<p>Integration profiles are JSON files that overlay integration-specific context onto the standard HL7 field definitions. When working with a specific system (e.g., Acme PACS, Agfa EI, Schiller ECG), a profile tells the viewer how that system uses each field &mdash; custom names, expected values, component meanings, and implementation notes.</p>
 <p>Profiles do not replace the HL7 spec definitions; they add to them. A loaded profile shows <code>Custom</code> badges next to overridden fields and adds notes/value maps in the detail panel.</p>
 
 <h3>Creating a profile</h3>
@@ -2626,7 +2626,7 @@ function hideHelp() {
 <p>Each key under <code>fields</code> is the HL7 field number as a string. The value is an object with any combination of:</p>
 <pre>"4": {
   "customName": "Procedure Code",
-  "description": "PACS procedure code from RadIS catalog",
+  "description": "PACS procedure code from RIS catalog",
   "notes": "Component 1 is the code, component 2 is description",
   "dt": "CE",
   "valueMap": {
@@ -2635,7 +2635,7 @@ function hideHelp() {
     "CT": "Computed Tomography"
   },
   "components": {
-    "1": { "description": "RadIS procedure code" },
+    "1": { "description": "RIS procedure code" },
     "2": { "description": "Procedure description text" }
   }
 }</pre>
@@ -2690,7 +2690,7 @@ function hideHelp() {
 <p>1. <strong>Start from a real message.</strong> Parse a sample message in the viewer, then note which fields your integration actually populates. Only document those fields.</p>
 <p>2. <strong>Use field numbers from the viewer.</strong> The address column shows the exact field number to use as the key (e.g., <code>MSH-3</code> &rarr; key <code>"3"</code>).</p>
 <p>3. <strong>Focus on non-obvious fields.</strong> Standard fields like PID-5 (Patient Name) rarely need profiles. Document fields with integration-specific meaning: custom procedure codes, device references, local value sets.</p>
-<p>4. <strong>One profile per integration system.</strong> Separate profiles for Carestream, Agfa, Schiller, etc. The profile name appears in the toolbar when loaded.</p>
+<p>4. <strong>One profile per integration system.</strong> Separate profiles for Acme PACS, Agfa, Schiller, etc. The profile name appears in the toolbar when loaded.</p>
 <p>5. <strong>Component descriptions</strong> are useful when the integration uses specific subfields (e.g., PID-3.4 Assigning Authority must be a specific value).</p>
 
 <h3>Loading profiles</h3>

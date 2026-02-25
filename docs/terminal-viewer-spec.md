@@ -119,7 +119,7 @@ Full-screen terminal UI:
 
 ```
 ┌─ Toolbar ──────────────────────────────────────────────────────┐
-│ v2.5 (auto) │ file.hl7 │ [Profile: Carestream] │ [ANON]       │
+│ v2.5 (auto) │ file.hl7 │ [Profile: Acme PACS] │ [ANON]       │
 ├─ Field List (scrollable) ──────────┬─ Detail ─────────────────┤
 │ ── MSH  Message Header ──────     │ PID-5                     │
 │ MSH-1   Field Separator    ST |   │                           │

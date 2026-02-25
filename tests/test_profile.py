@@ -10,7 +10,7 @@ from hl7view.formatter import _profile_validation_counts
 
 
 def test_load_profile(sample_profile):
-    assert sample_profile["name"] == "Carestream v2.3 ORM/ORU"
+    assert sample_profile["name"] == "Acme PACS v2.3 ORM/ORU"
     assert "segments" in sample_profile
 
 
@@ -24,7 +24,7 @@ def test_get_profile_segment(sample_profile):
 def test_get_profile_field(sample_profile):
     fld = get_profile_field(sample_profile, "MSH", 3)
     assert fld is not None
-    assert fld["customName"] == "Sending Application (RadIS)"
+    assert fld["customName"] == "Sending Application (RIS)"
     assert get_profile_field(sample_profile, "MSH", 999) is None
 
 

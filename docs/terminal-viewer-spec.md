@@ -106,6 +106,7 @@ PID-5     Patient Name             XPN  Tamm^Kristjan^Aleksander^Jr
 | `--json` | JSON representation of parsed message |
 | `-e`, `--empty` | Include empty fields |
 | `-f`, `--field SEG-N` | Single field value only (e.g., `-f PID-3`) — for scripting |
+| `--diff` | Compare two files field-by-field (requires exactly 2 files); character-level highlighting on modified fields |
 
 `--anon` and `--anon-non-ascii` combinable with any output format.
 
@@ -303,6 +304,7 @@ Display:
       --raw                    Show raw segment lines
       --json                   Output as JSON
       --no-color               Disable ANSI colors
+      --diff                   Compare two files field-by-field (requires 2 files)
 
 Parsing:
       --version 2.3|2.5        Force HL7 version

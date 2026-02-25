@@ -14,7 +14,7 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 
 **Features:**
 - Three-panel layout: Input (paste/drag-drop/Open button) | Parsed table | Field detail | Compare (field-level diff)
-- **Compare tab**: paste/open a second message, get a field-by-field diff with summary bar, filter toggle, and side-by-side component breakdown in detail panel
+- **Compare tab**: paste/open a second message, get a field-by-field diff with character-level highlighting of changed characters, summary bar, filter toggle, and side-by-side component breakdown in detail panel
 - Embedded HL7 v2.3 and v2.5 segment/field definitions (~23 segments each) with data type component breakdowns (~30 composite types)
 - Auto-detects HL7 version from MSH-12 (v2.3.1 maps to v2.3 definitions)
 - Correct MSH field numbering: MSH-1 = `|` (field separator), MSH-2 = encoding characters

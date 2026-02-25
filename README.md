@@ -7,7 +7,7 @@ HL7 v2 messages. Three interfaces, zero external service dependencies:
   from `file://` in any browser, no server or build step
 - **[Terminal Viewer](#terminal-viewer)** — Python CLI + interactive TUI with Textual
 - **[MCP Server](#mcp-server)** — exposes all tools to AI agents via Model Context Protocol
-  (parse, validate, anonymize, transform, send, explain)
+  (parse, validate, anonymize, transform, diff, send, explain)
 
 Built-in segment/field definitions for HL7 v2.3 and v2.5 (~23 segments, ~30
 composite data types). Supports integration profiles (JSON overlays for custom
@@ -30,16 +30,17 @@ field names, validation rules, value maps), byte-level encoding detection
 
 ### Layout
 
-Three-panel interface:
+Four-tab interface:
 
 | Panel | Content |
 |-------|---------|
 | **Left — Input** | Textarea (paste/drag-drop), Parse/Clear/Sample buttons |
 | **Left — Parsed** | Field table: Address, Name, Data Type, Value |
 | **Left — Raw** | Syntax-colored segment lines (click fields to highlight) |
+| **Left — Compare** | Field-level diff of two messages with character-level highlighting |
 | **Right — Detail** | Specification, component breakdown, repetitions, profile overlay |
 
-Switch between Input/Parsed/Raw using the tabs above the left panel.
+Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 
 ### Features
 
@@ -54,7 +55,7 @@ Switch between Input/Parsed/Raw using the tabs above the left panel.
 - **Anonymization** — toggle PID field anonymization with ASCII or Estonian (non-ASCII) name pools
 - **Live search** — filter fields by address, name, type, or value
 - **Click-to-highlight** — click a parsed row to highlight the corresponding position in raw view
-- **Message comparison** — Compare tab for field-level diff of two messages with summary bar, filter toggle (differences only / all), and side-by-side component breakdown in detail panel
+- **Message comparison** — Compare tab for field-level diff of two messages with character-level highlighting of changed characters, summary bar, filter toggle (differences only / all), and side-by-side component breakdown in detail panel
 - **Keyboard navigation** — arrow keys, Enter to expand, Esc to clear search
 
 ### Keyboard Shortcuts (Web)

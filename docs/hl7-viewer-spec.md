@@ -135,7 +135,7 @@ OBX-5 (Observation Value) has the special data type `*` — resolved at runtime:
 
 ### 4.1 Views
 
-The viewer provides three views of the message:
+The viewer provides four views of the message:
 
 **Input view:**
 - Shows the raw message text as entered/loaded
@@ -154,6 +154,16 @@ The viewer provides three views of the message:
 - Segment names highlighted
 - Field separators visually distinct
 - Individual fields are selectable (clicking highlights corresponding parsed row)
+
+**Compare view:**
+- Input area for a second message (Message B) with paste and file open
+- Field-by-field diff table with columns: **Address** | **Field Name** | **Message A** | **Message B** | **Status**
+- Character-level highlighting of changed characters within modified fields, with smart truncation that keeps the diff region visible in long values
+- Summary bar showing difference counts (modified, A-only, B-only) with Reset button
+- Filter toggle to show all fields or differences only
+- Segment headers as grouping rows with status badges (A only / B only)
+- Color coding: modified (orange border), A-only (red tint), B-only (green tint), identical (dimmed)
+- Clicking a diff row shows side-by-side values in the detail panel with character-level highlighting in raw values and component breakdown
 
 ### 4.2 Detail panel
 
@@ -177,6 +187,11 @@ Selecting a field shows full details:
 
 **Repetition list** (if field has `~` repetitions):
 - Shows each repetition's value
+
+**Comparison view** (if comparing two messages):
+- Side-by-side values for Message A and Message B
+- Character-level highlighting on differing characters
+- Component breakdown with per-component diff highlighting
 
 **Profile overlay** (if profile loaded, see section 5):
 - Custom name, description, notes

@@ -27,22 +27,23 @@ Reference implementation: `hl7-viewer.html`
 
 ## 2. Layout
 
-### 2.1 Three-panel layout
+### 2.1 Four-tab layout
 
 Fixed layout, no resizable panes:
 
-- **Left panel** (62% width): tabbed — Input | Parsed | Raw
+- **Left panel** (62% width): tabbed — Input | Parsed | Raw | Compare
 - **Right panel** (remaining): field detail
-- **Toolbar** (top): version selector, buttons, search, profile indicator
+- **Toolbar** (top): version selector, buttons, search, profile indicator, compare indicator
 - **Encoding info bar** (below toolbar, shown after parsing)
 - **Anonymization indicator bar** (below toolbar, shown when active)
 
 ### 2.2 Tab switching
 
-Three tabs in the left panel, switched by clicking tab headers:
+Four tabs in the left panel, switched by clicking tab headers:
 - **Input tab**: textarea for message input + action buttons (Parse, Clear, Sample)
 - **Parsed tab**: field table (primary working view)
 - **Raw tab**: syntax-colored raw segments
+- **Compare tab**: field-level diff of two messages
 
 After parsing, auto-switches to the Parsed tab.
 
@@ -180,42 +181,79 @@ Webkit-styled scrollbars matching the dark theme (thin, surface-colored thumb).
 
 ---
 
-## 8. Limitations (browser-imposed)
+## 8. Message Comparison (Compare Tab)
 
-### 8.1 No raw TCP
+### 8.1 Workflow
+
+1. Parse Message A normally (paste/open) — appears in Parsed/Raw tabs
+2. Click **Compare** tab
+3. Paste or open Message B in the input area
+4. Click **Compare** — diff renders, input area collapses
+5. Toolbar shows "Comparing A vs B" indicator with ✕ to exit
+6. Parsed/Raw tabs still show Message A — user can switch freely
+7. Click **Reset** in the summary bar to clear the comparison and re-enter a new Message B
+
+### 8.2 Diff table
+
+- 5 columns: Address | Field Name | Message A | Message B | Status
+- Segments indexed by `(name, occurrence)`, fields compared by `field_num` using exact `raw_value` match
+- Status values: `modified`, `a_only`, `b_only`, `identical`
+- Character-level highlighting on modified fields: the exact differing characters are highlighted with an orange/peach background
+- Smart truncation for long values: ensures the diff region is visible even when the value exceeds the column width
+- Segment header rows with status badges for A-only / B-only segments
+
+### 8.3 Detail panel (compare mode)
+
+Clicking a diff row shows:
+- Field metadata (segment, name, data type)
+- Side-by-side values table with character-level highlighting on the raw row
+- Component breakdown with per-component character-level highlighting for changed components
+
+### 8.4 Filter and summary
+
+- Summary bar: "N differences across M segments: X modified, Y A-only, Z B-only"
+- "Show identical" checkbox to toggle visibility of unchanged fields
+- Reset button to clear comparison and allow entering a new Message B
+
+---
+
+## 9. Limitations (browser-imposed)
+
+### 9.1 No raw TCP
 
 - Cannot open TCP sockets from browser JavaScript
 - **MLLP send/receive is not possible** — no way to send HL7 messages to a listening port or act as an MLLP server
 - Workaround would require a local bridge process (breaks the single-file model)
 
-### 8.2 No filesystem access
+### 9.2 No filesystem access
 
 - Cannot read files without user action (Open button or drag-and-drop)
 - Cannot save/write files (only clipboard copy)
 - Cannot watch a directory for new messages
 
-### 8.3 Limited persistent state
+### 9.3 Limited persistent state
 
 - Closing the tab loses all in-memory state
 - No settings persistence, no recent files, no saved profiles
 - Profile must be reloaded each session
 - **Exception**: external integration via `localStorage` (see section 9)
 
-### 8.4 Single message at a time
+### 9.4 Single message at a time
 
 - No batch processing of multiple files
 - No message queue or history navigation
 - Loading a new message replaces the current one
+- **Exception**: Compare tab allows loading a second message (Message B) for field-level diff against the current message (Message A)
 
 ---
 
-## 9. External Integration (localStorage)
+## 10. External Integration (localStorage)
 
-### 9.1 Purpose
+### 10.1 Purpose
 
 Allows external components (e.g., a HIS application) to inject HL7 messages into the viewer without user file interaction. The viewer checks `localStorage` on page load and consumes any pending message.
 
-### 9.2 Contract
+### 10.2 Contract
 
 The external component writes a JSON object to `localStorage` key `hl7viewer.pending`:
 
@@ -235,7 +273,7 @@ The external component writes a JSON object to `localStorage` key `hl7viewer.pen
 | `profile` | No | Integration profile object (same schema as profile JSON files) |
 | `timestamp` | Yes | Unix epoch milliseconds — message must be < 30 seconds old |
 
-### 9.3 Behavior
+### 10.3 Behavior
 
 1. On page load, check for `localStorage.getItem('hl7viewer.pending')`
 2. If found, parse JSON and immediately remove the key

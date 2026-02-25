@@ -246,6 +246,10 @@ border-bottom:1px solid var(--surface)}
 #diffTable tr.diff-a-only{background:rgba(243,139,168,0.06);border-left:3px solid var(--red)}
 #diffTable tr.diff-b-only{background:rgba(166,227,161,0.06);border-left:3px solid var(--green)}
 #diffTable tr.diff-identical{opacity:0.5}
+.diff-hl{background:rgba(250,179,135,0.3);border-radius:2px;padding:0 1px}
+.diff-hl-ins{background:rgba(166,227,161,0.25);border-radius:2px;padding:0 1px}
+.diff-hl-del{background:rgba(243,139,168,0.25);border-radius:2px;padding:0 1px;text-decoration:line-through;text-decoration-color:rgba(243,139,168,0.5)}
+.comp-table .diff-hl,.comp-table .diff-hl-ins,.comp-table .diff-hl-del{padding:1px 2px}
 #diffTable .addr{color:var(--blue);font-weight:500}
 #diffTable .fname{color:var(--green)}
 #diffTable .fval{color:var(--text);font-family:inherit}
@@ -2642,6 +2646,73 @@ function rerenderDiffTable() {
   if (diffResult) renderDiffTable();
 }
 
+/** Find the differing middle portion between two strings.
+ *  Returns {prefix, midA, midB, suffixA, suffixB} or null if identical. */
+function charDiff(a, b) {
+  if (a === b) return null;
+  let p = 0;
+  const minLen = Math.min(a.length, b.length);
+  while (p < minLen && a[p] === b[p]) p++;
+  let sa = a.length, sb = b.length;
+  while (sa > p && sb > p && a[sa - 1] === b[sb - 1]) { sa--; sb--; }
+  return { prefix: a.substring(0, p), midA: a.substring(p, sa), midB: b.substring(p, sb),
+    suffixA: a.substring(sa), suffixB: b.substring(sb) };
+}
+
+/** Render a value with character-level diff highlighting and smart truncation.
+ *  side: 'a' or 'b'. Returns HTML string. */
+function highlightDiffVal(val, diff, side, maxLen) {
+  if (!val) return '<span style="color:var(--overlay)">(empty)</span>';
+  if (!diff) return esc(truncVal(val, maxLen));
+  const mid = side === 'a' ? diff.midA : diff.midB;
+  const prefix = diff.prefix;
+  const suffix = side === 'a' ? diff.suffixA : diff.suffixB;
+  const hlClass = mid.length === 0 ? (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') : 'diff-hl';
+  // Fits without truncation
+  if (val.length <= maxLen + 1) {
+    if (mid.length === 0) {
+      // Pure deletion/insertion on this side — mark insertion point
+      return esc(prefix) + '<span class="' + (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') + '">\u2039\u203a</span>' + esc(suffix);
+    }
+    return esc(prefix) + '<span class="' + hlClass + '">' + esc(mid) + '</span>' + esc(suffix);
+  }
+  // Smart truncation: ensure the diff region is visible
+  const midLen = Math.max(mid.length, 1);
+  const budget = maxLen - midLen;
+  if (budget < 4) {
+    // Diff itself exceeds budget
+    return '<span class="' + hlClass + '">' + esc(mid.substring(0, maxLen)) + '</span>\u2026';
+  }
+  const before = Math.min(Math.floor(budget / 2), prefix.length);
+  const after = Math.min(budget - before, suffix.length);
+  let r = '';
+  if (before < prefix.length) r += '\u2026';
+  r += esc(prefix.substring(prefix.length - before));
+  if (mid.length === 0) {
+    r += '<span class="' + (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') + '">\u2039\u203a</span>';
+  } else {
+    const midDisp = mid.length > maxLen - before - after ? mid.substring(0, maxLen - before - after) + '\u2026' : mid;
+    r += '<span class="' + hlClass + '">' + esc(midDisp) + '</span>';
+  }
+  r += esc(suffix.substring(0, after));
+  if (after < suffix.length) r += '\u2026';
+  return r;
+}
+
+/** Render full value with character-level diff highlighting (no truncation, for detail panel). */
+function highlightDiffFull(val, diff, side) {
+  if (!val) return '<em style="color:var(--overlay)">empty</em>';
+  if (!diff) return esc(val);
+  const mid = side === 'a' ? diff.midA : diff.midB;
+  const prefix = diff.prefix;
+  const suffix = side === 'a' ? diff.suffixA : diff.suffixB;
+  if (mid.length === 0) {
+    return esc(prefix) + '<span class="' + (side === 'a' ? 'diff-hl-del' : 'diff-hl-ins') + '">\u2039\u203a</span>' + esc(suffix);
+  }
+  const hlClass = 'diff-hl';
+  return esc(prefix) + '<span class="' + hlClass + '">' + esc(mid) + '</span>' + esc(suffix);
+}
+
 function renderDiffTable() {
   const tbody = document.getElementById('diffBody');
   tbody.innerHTML = '';
@@ -2687,8 +2758,21 @@ function renderDiffTable() {
       tr.dataset.fieldNum = fd.fieldNum;
       tr.dataset.status = fd.status;
 
-      const dispA = fd.status === 'b_only' ? '<span style="color:var(--overlay)">\u2014</span>' : esc(truncVal(valA, 28));
-      const dispB = fd.status === 'a_only' ? '<span style="color:var(--overlay)">\u2014</span>' : esc(truncVal(valB, 28));
+      let dispA, dispB;
+      if (fd.status === 'modified') {
+        const cd = charDiff(valA, valB);
+        dispA = highlightDiffVal(valA, cd, 'a', 28);
+        dispB = highlightDiffVal(valB, cd, 'b', 28);
+      } else if (fd.status === 'b_only') {
+        dispA = '<span style="color:var(--overlay)">\u2014</span>';
+        dispB = esc(truncVal(valB, 28));
+      } else if (fd.status === 'a_only') {
+        dispA = esc(truncVal(valA, 28));
+        dispB = '<span style="color:var(--overlay)">\u2014</span>';
+      } else {
+        dispA = esc(truncVal(valA, 28));
+        dispB = esc(truncVal(valB, 28));
+      }
       const statusClass = fd.status;
       const statusLabel = {modified: 'modified', a_only: 'A only', b_only: 'B only', identical: 'identical'}[fd.status];
 
@@ -2747,11 +2831,10 @@ function showDiffDetail(segDiff, fd, version) {
 
   const rawA = fd.valueA != null ? fd.valueA : '';
   const rawB = fd.valueB != null ? fd.valueB : '';
-  const rawADisp = rawA || '<em style="color:var(--overlay)">empty</em>';
-  const rawBDisp = rawB || '<em style="color:var(--overlay)">empty</em>';
+  const rawDiff = (fd.status === 'modified') ? charDiff(rawA, rawB) : null;
   html += '<tr><td class="ct-name">Raw</td><td class="ct-val" style="word-break:break-all">' +
-    (rawA ? esc(rawA) : rawADisp) + '</td><td class="ct-val" style="word-break:break-all">' +
-    (rawB ? esc(rawB) : rawBDisp) + '</td></tr>';
+    highlightDiffFull(rawA, rawDiff, 'a') + '</td><td class="ct-val" style="word-break:break-all">' +
+    highlightDiffFull(rawB, rawDiff, 'b') + '</td></tr>';
 
   // Component breakdown if composite type
   const dt = fDef ? fDef.dt : null;
@@ -2767,9 +2850,10 @@ function showDiffDetail(segDiff, fd, version) {
       const cName = cDef ? cDef.name : 'Component ' + (i + 1);
       const changed = cValA !== cValB;
       const style = changed ? ' style="background:rgba(250,179,135,0.1)"' : '';
+      const cDiff = changed ? charDiff(cValA, cValB) : null;
       html += '<tr' + style + '><td class="ct-name">' + (i + 1) + '. ' + esc(cName) + '</td>' +
-        '<td class="ct-val">' + (cValA ? esc(cValA) : '<em style="color:var(--overlay)">empty</em>') + '</td>' +
-        '<td class="ct-val">' + (cValB ? esc(cValB) : '<em style="color:var(--overlay)">empty</em>') + '</td></tr>';
+        '<td class="ct-val">' + highlightDiffFull(cValA, cDiff, 'a') + '</td>' +
+        '<td class="ct-val">' + highlightDiffFull(cValB, cDiff, 'b') + '</td></tr>';
     }
   }
 

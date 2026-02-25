@@ -25,6 +25,8 @@ _RED = '\033[38;5;210m'       # errors
 _GRAY = '\033[38;5;245m'      # dim/empty
 _TEAL = '\033[38;5;116m'      # encoding info
 _WHITE = '\033[38;5;252m'     # normal text
+_INVERSE = '\033[7m'          # inverse video (for diff highlights)
+_UNDERLINE = '\033[4m'        # underline
 
 
 def _c(code, text, use_color):
@@ -305,6 +307,67 @@ def format_message(parsed, version=None, verbose=False, show_empty=False, no_col
     return '\n'.join(lines)
 
 
+def _char_diff_highlight(val_a, val_b, max_val, use_color):
+    """Return (disp_a, disp_b) with ANSI inverse highlighting on changed chars.
+
+    Uses smart truncation to ensure the differing region is visible."""
+    if not use_color:
+        # No color: just truncate normally
+        da = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
+        db = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
+        return da, db
+
+    # Find common prefix/suffix
+    p = 0
+    min_len = min(len(val_a), len(val_b))
+    while p < min_len and val_a[p] == val_b[p]:
+        p += 1
+    sa, sb = len(val_a), len(val_b)
+    while sa > p and sb > p and val_a[sa - 1] == val_b[sb - 1]:
+        sa -= 1
+        sb -= 1
+
+    mid_a = val_a[p:sa]
+    mid_b = val_b[p:sb]
+    prefix = val_a[:p]
+    suf_a = val_a[sa:]
+    suf_b = val_b[sb:]
+
+    hl = _INVERSE + _ORANGE
+
+    def _render_side(prefix, mid, suffix, max_val):
+        total = len(prefix) + len(mid) + len(suffix)
+        if total <= max_val + 1:
+            # Fits: highlight the middle
+            if mid:
+                return prefix + hl + mid + _RESET + suffix
+            else:
+                return prefix + suffix
+        # Smart truncation: ensure diff region is visible
+        mid_len = max(len(mid), 1)
+        budget = max_val - mid_len
+        if budget < 4:
+            return hl + mid[:max_val] + _RESET + '\u2026'
+        before = min(budget // 2, len(prefix))
+        after = min(budget - before, len(suffix))
+        r = ''
+        if before < len(prefix):
+            r += '\u2026'
+        r += prefix[len(prefix) - before:] if before else ''
+        if mid:
+            mid_budget = max_val - before - after
+            if len(mid) > mid_budget:
+                r += hl + mid[:mid_budget] + _RESET + '\u2026'
+            else:
+                r += hl + mid + _RESET
+        r += suffix[:after] if after else ''
+        if after < len(suffix):
+            r += '\u2026'
+        return r
+
+    return _render_side(prefix, mid_a, suf_a, max_val), _render_side(prefix, mid_b, suf_b, max_val)
+
+
 def format_diff(diff_result, no_color=False, show_identical=False):
     """Format a MessageDiff as a colored terminal table showing differences."""
     use_color = not no_color and sys.stdout.isatty()
@@ -393,29 +456,38 @@ def format_diff(diff_result, no_color=False, show_identical=False):
 
             # Truncate long values for table display
             max_val = 18
-            disp_a = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
-            disp_b = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
 
             # Status label with color
             if fd.status == 'modified':
                 status_str = _c(_ORANGE, 'modified', use_color)
                 border = _c(_ORANGE, '\u2502 ', use_color)
+                disp_a, disp_b = _char_diff_highlight(val_a, val_b, max_val, use_color)
             elif fd.status == 'a_only':
                 status_str = _c(_RED, 'A only', use_color)
                 border = _c(_RED, '\u2502 ', use_color)
+                disp_a = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
                 disp_b = _c(_GRAY, '\u2014', use_color)
             elif fd.status == 'b_only':
                 status_str = _c(_GREEN, 'B only', use_color)
                 border = _c(_GREEN, '\u2502 ', use_color)
                 disp_a = _c(_GRAY, '\u2014', use_color)
+                disp_b = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
             else:
                 status_str = _c(_GRAY, 'identical', use_color)
                 border = '  '
+                disp_a = (val_a[:max_val] + '\u2026') if len(val_a) > max_val + 1 else val_a
+                disp_b = (val_b[:max_val] + '\u2026') if len(val_b) > max_val + 1 else val_b
 
             addr_col = _c(_BLUE, f'{fd.address:<12}', use_color)
             name_col = _c(_GREEN, f'{fname:<28}', use_color) if fname else f'{"":28}'
 
-            lines.append(f'{border}{addr_col}{name_col}{disp_a:<20} {disp_b:<20} {status_str}')
+            # Pad based on visible length (ANSI codes don't count)
+            vis_a = len(re.sub(r'\033\[[^m]*m', '', disp_a))
+            vis_b = len(re.sub(r'\033\[[^m]*m', '', disp_b))
+            pad_a = disp_a + ' ' * max(0, 20 - vis_a)
+            pad_b = disp_b + ' ' * max(0, 20 - vis_b)
+
+            lines.append(f'{border}{addr_col}{name_col}{pad_a} {pad_b} {status_str}')
 
     lines.append('')
     return '\n'.join(lines)

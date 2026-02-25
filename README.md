@@ -1,12 +1,18 @@
 # HL7 Tools
 
-HL7 v2.x message parsing and inspection toolkit:
+HL7 v2.x message toolkit — parse, inspect, validate, anonymize, and transmit
+HL7 v2 messages. Three interfaces, zero external service dependencies:
 
-- **[Web Viewer](#web-viewer)** — single HTML file, open in any browser, no dependencies
-- **[Terminal Viewer](#terminal-viewer)** — Python CLI + interactive TUI
-- **[MCP Server](#mcp-server)** — exposes HL7 tools to AI agents via Model Context Protocol
+- **[Web Viewer](#web-viewer)** (`hl7-viewer.html`) — single self-contained HTML file, works
+  from `file://` in any browser, no server or build step
+- **[Terminal Viewer](#terminal-viewer)** — Python CLI + interactive TUI with Textual
+- **[MCP Server](#mcp-server)** — exposes all tools to AI agents via Model Context Protocol
+  (parse, validate, anonymize, transform, send, explain)
 
-All three share the same parsing logic, segment/field definitions (v2.3 and v2.5), and integration profile support.
+Built-in segment/field definitions for HL7 v2.3 and v2.5 (~23 segments, ~30
+composite data types). Supports integration profiles (JSON overlays for custom
+field names, validation rules, value maps), byte-level encoding detection
+(UTF-8/ISO-8859-1/ASCII with BOM), and PHI anonymization of PID/NK1 segments.
 
 ![HL7 Message Viewer — parsed view](docs/screenshots/patient_query_with_IK_parsed.png)
 

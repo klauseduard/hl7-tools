@@ -2645,6 +2645,7 @@ function hideHelp() {
 <tr><td>description</td><td>string</td><td>Shown in the detail panel under "Profile Description"</td></tr>
 <tr><td>notes</td><td>string</td><td>Implementation notes shown in the detail panel under "Profile Notes"</td></tr>
 <tr><td>dt</td><td>string</td><td>Override data type (useful for Z-segment fields where the type is not in the spec)</td></tr>
+<tr><td>required</td><td>boolean</td><td>When <code>true</code>, validation flags this field if empty (red indicator in parsed table, counted in validation summary)</td></tr>
 <tr><td>valueMap</td><td>object</td><td>Maps coded values to human-readable descriptions. Current value is highlighted in the detail panel</td></tr>
 <tr><td>components</td><td>object</td><td>Component-level descriptions keyed by component number (as string, 1-based)</td></tr>
 </table>

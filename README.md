@@ -16,6 +16,8 @@ field names, validation rules, value maps), byte-level encoding detection
 
 ![HL7 Message Viewer — parsed view](docs/screenshots/patient_query_with_IK_parsed.png)
 
+![HL7 Message Viewer — compare view](docs/screenshots/compare_view.png)
+
 ---
 
 ## Web Viewer

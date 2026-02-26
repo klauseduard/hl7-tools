@@ -215,6 +215,9 @@ font-size:11px;color:var(--subtext);flex-shrink:0;gap:12px}
 #compareTab.active{display:flex!important}
 #compareInput{padding:8px;border-bottom:1px solid var(--bg3)}
 #compareInput.collapsed{display:none}
+#compareMsgA{font-size:12px;color:var(--subtext);margin-bottom:6px}
+#compareMsgA .msg-a-type{color:var(--green);font-weight:500}
+#compareMsgA .msg-a-none{color:var(--red)}
 #compareMsgInput{width:100%;height:100px;background:var(--bg2);color:var(--text);border:2px dashed var(--surface);
 border-radius:6px;padding:8px;font-family:inherit;font-size:13px;resize:vertical}
 #compareMsgInput:focus{outline:none;border-color:var(--blue)}
@@ -325,6 +328,7 @@ border-radius:4px;padding:2px 8px;font-size:12px;color:var(--blue)}
 </div>
 <div id="compareTab" class="tab-content">
 <div id="compareInput">
+<div id="compareMsgA"></div>
 <textarea id="compareMsgInput" placeholder="Paste Message B here, or use Open to load a file..."></textarea>
 <div id="compareActions">
 <button class="tb-btn" onclick="runCompare()">Compare</button>
@@ -2300,6 +2304,8 @@ function toggleComponents(fieldKey, event) {
 // ========== SEARCH ==========
 function applySearch() {
   const term = document.getElementById('searchInput').value.toLowerCase().trim();
+
+  // Filter parsed table
   const tbody = document.getElementById('parsedBody');
   const matchingSegKeys = new Set();
 
@@ -2330,6 +2336,36 @@ function applySearch() {
   }
 
   applyCollapse();
+
+  // Filter diff table
+  const diffBody = document.getElementById('diffBody');
+  if (!diffBody) return;
+  const matchingDiffSegs = new Set();
+
+  for (const row of diffBody.children) {
+    if (row.classList.contains('diff-seg-header')) continue;
+    if (!term) {
+      row.classList.remove('hidden-search');
+      continue;
+    }
+    const text = row.textContent.toLowerCase();
+    if (text.indexOf(term) >= 0) {
+      row.classList.remove('hidden-search');
+      matchingDiffSegs.add(row.dataset.segName);
+    } else {
+      row.classList.add('hidden-search');
+    }
+  }
+
+  for (const row of diffBody.children) {
+    if (!row.classList.contains('diff-seg-header')) continue;
+    if (!term) {
+      row.classList.remove('hidden-search');
+    } else {
+      const segName = row.textContent.trim().split(/\s/)[0];
+      row.classList.toggle('hidden-search', !matchingDiffSegs.has(segName));
+    }
+  }
 }
 
 // ========== PROFILE MANAGER ==========
@@ -2382,6 +2418,20 @@ function switchTab(tabEl) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   tabEl.classList.add('active');
   document.getElementById(tabId).classList.add('active');
+  if (tabId === 'compareTab') updateCompareMsgA();
+}
+
+function updateCompareMsgA() {
+  const el = document.getElementById('compareMsgA');
+  if (!el) return;
+  if (parsedMessage) {
+    const mt = parsedMessage.messageType || '?';
+    const sc = parsedMessage.segments.length;
+    el.innerHTML = 'Message A: <span class="msg-a-type">' + esc(mt) +
+      '</span> (' + sc + ' segment' + (sc !== 1 ? 's' : '') + ') — from parsed input';
+  } else {
+    el.innerHTML = '<span class="msg-a-none">No message parsed yet — go to Input tab and parse a message first</span>';
+  }
 }
 
 // ========== UTILITIES ==========

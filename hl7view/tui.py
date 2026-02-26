@@ -6,7 +6,8 @@ import subprocess
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, ScrollableContainer
+from textual.containers import Horizontal, ScrollableContainer, VerticalScroll
+from textual.screen import Screen
 from textual.widgets import DirectoryTree, Footer, Header, Input, Static, Tree
 from textual.widget import Widget
 from textual import work
@@ -115,6 +116,83 @@ class ProfileDirectoryTree(DirectoryTree):
 
     def filter_paths(self, paths):
         return [p for p in paths if p.is_dir() or p.suffix.lower() == '.json']
+
+
+class HelpScreen(Screen):
+    """Modal help overlay showing all keybindings."""
+
+    BINDINGS = [
+        Binding("escape", "dismiss", "Close", show=False),
+        Binding("question_mark", "dismiss", "Close", show=False),
+        Binding("q", "dismiss", "Close", show=False),
+    ]
+
+    CSS = """
+    HelpScreen {
+        align: center middle;
+    }
+    #help-container {
+        width: 64;
+        max-height: 80%;
+        background: #181825;
+        border: solid #89b4fa;
+        padding: 1 2;
+    }
+    """
+
+    def compose(self) -> ComposeResult:
+        help_text = Text()
+        help_text.append("Keyboard Shortcuts\n\n", style="bold #89b4fa")
+
+        sections = [
+            ("Navigation", [
+                ("\u2191/\u2193", "Move up/down in field tree"),
+                ("j / k", "Move down/up (vi-style)"),
+                ("Enter", "Expand/collapse or edit field"),
+                ("b / f", "History: back / forward"),
+            ]),
+            ("File Operations", [
+                ("o", "Open .hl7 file"),
+                ("p", "Paste from clipboard"),
+            ]),
+            ("Display", [
+                ("/", "Search fields by address, name, type, or value"),
+                ("v", "Cycle HL7 version (auto / v2.3 / v2.5)"),
+                ("e", "Toggle display of empty fields"),
+                ("r", "Toggle raw segment view"),
+                ("c", "Copy selected field value to clipboard"),
+            ]),
+            ("Anonymization", [
+                ("a", "Toggle anonymization on/off"),
+                ("n", "Switch name pool: ASCII / Estonian"),
+                ("t", "Transliterate non-ASCII to ASCII equivalents"),
+            ]),
+            ("Integration", [
+                ("i", "Load integration profile (.json)"),
+                ("s", "Send message via MLLP"),
+                ("l", "Load MLLP response into viewer (after send)"),
+            ]),
+            ("General", [
+                ("?", "Show this help screen"),
+                ("Esc", "Close overlay / cancel input / exit view"),
+                ("q", "Quit"),
+            ]),
+        ]
+
+        for section_name, bindings in sections:
+            help_text.append(f"  {section_name}\n", style="bold #f9e2af")
+            for key, desc in bindings:
+                help_text.append(f"    {key:<10}", style="#a6e3a1")
+                help_text.append(f"{desc}\n", style="#cdd6f4")
+            help_text.append("\n")
+
+        help_text.append("Press Esc or ? to close", style="dim")
+
+        with VerticalScroll(id="help-container"):
+            yield Static(help_text)
+
+    def action_dismiss(self) -> None:
+        self.app.pop_screen()
 
 
 class HL7ViewerApp(App):
@@ -255,11 +333,12 @@ class HL7ViewerApp(App):
         Binding("r", "toggle_raw", "Raw"),
         Binding("s", "send", "Send"),
         Binding("a", "toggle_anon", "Anon"),
-        Binding("n", "toggle_non_ascii", "A/Est"),
-        Binding("t", "toggle_transliterate", "A\u2192a"),
+        Binding("n", "toggle_non_ascii", "Names"),
+        Binding("t", "toggle_transliterate", "Translit"),
         Binding("i", "load_profile", "Profile"),
         Binding("b", "go_back", "Back"),
         Binding("f", "go_forward", "Forward"),
+        Binding("question_mark", "show_help", "Help", key_display="?"),
         Binding("l", "load_response", show=False),
         Binding("p", "paste_clipboard", show=False),
         Binding("j", "cursor_down", "Down", show=False),
@@ -904,6 +983,9 @@ class HL7ViewerApp(App):
 
     # ---- Key binding actions ----
 
+    def action_show_help(self) -> None:
+        self.push_screen(HelpScreen())
+
     def action_search(self) -> None:
         search_bar = self.query_one("#search-bar", Input)
         search_bar.add_class("visible")
@@ -1110,6 +1192,13 @@ class HL7ViewerApp(App):
 
     def action_toggle_anon(self) -> None:
         """Toggle anonymization on/off."""
+        if not self._anon_active and self._modified:
+            self.notify(
+                "Cannot anonymize: message has unsaved edits. "
+                "Reload the file to discard edits first.",
+                severity="warning", timeout=5,
+            )
+            return
         if self._anon_active:
             # Restore original
             self._anon_active = False

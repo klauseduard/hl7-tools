@@ -10,6 +10,7 @@ HL7MessageViewer.class
 hl7_message_viewer
 hl7_message_viewer_clipboard
 __pycache__/
+*.egg-info/
 venv/
 anon-active.png
 profiles/local/

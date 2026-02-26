@@ -498,13 +498,13 @@ class HL7ViewerApp(App):
             req_empty, val_mis, miss_segs, unexp_segs = self._profile_validation_counts()
             vparts = []
             if req_empty:
-                vparts.append(f"{req_empty}req")
+                vparts.append(f"{req_empty} required")
             if val_mis:
-                vparts.append(f"{val_mis}map")
+                vparts.append(f"{val_mis} valuemap")
             if miss_segs:
-                vparts.append(f"{len(miss_segs)}miss")
+                vparts.append(f"{len(miss_segs)} missing")
             if unexp_segs:
-                vparts.append(f"{len(unexp_segs)}unexp")
+                vparts.append(f"{len(unexp_segs)} unexpected")
             if vparts:
                 parts.append(f"[{' '.join(vparts)}]")
         if self._modified:

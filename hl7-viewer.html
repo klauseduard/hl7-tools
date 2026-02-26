@@ -336,6 +336,7 @@ border-radius:4px;padding:2px 8px;font-size:12px;color:var(--blue)}
 <div id="compareSummary">
 <span id="compareSummaryText"></span>
 <div id="compareFilter">
+<button class="tb-btn" onclick="toggleCompareInput()" id="toggleCompareInputBtn" title="Show or hide the message input area">Edit</button>
 <button class="tb-btn" onclick="exitCompare()" title="Clear comparison and start over">Reset</button>
 <label><input type="checkbox" id="showIdenticalCheck" onchange="rerenderDiffTable()">Show identical</label>
 </div>
@@ -2621,6 +2622,11 @@ function runCompare() {
   ind.style.display = 'flex';
 
   renderDiffTable();
+}
+
+function toggleCompareInput() {
+  const el = document.getElementById('compareInput');
+  el.classList.toggle('collapsed');
 }
 
 function exitCompare() {

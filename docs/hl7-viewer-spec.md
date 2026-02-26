@@ -466,6 +466,7 @@ When a repeatable text field (FT, TX) contains `~` separators, warn that the rep
 - Non-matching field rows are hidden
 - Segment headers remain visible if any child field matches; hidden if no children match
 - Component/sub-rows follow their parent field's visibility
+- Search applies to both the parsed field table and the compare diff table
 - Clearing the search term restores full view
 
 ---

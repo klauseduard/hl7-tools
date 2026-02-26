@@ -129,6 +129,7 @@ Keyboard navigation skips hidden rows (search-filtered or collapsed).
 - Typing in the search input triggers live filtering
 - Matches against the full text content of each field row (address, name, type, value)
 - Non-matching rows hidden; segment headers hidden if no children match
+- Works in both Parsed tab and Compare tab (filters diff rows the same way)
 - Case-insensitive
 
 ---
@@ -186,12 +187,13 @@ Webkit-styled scrollbars matching the dark theme (thin, surface-colored thumb).
 ### 8.1 Workflow
 
 1. Parse Message A normally (paste/open) — appears in Parsed/Raw tabs
-2. Click **Compare** tab
+2. Click **Compare** tab — Message A info shown automatically (type + segment count from parsed input)
 3. Paste or open Message B in the input area
 4. Click **Compare** — diff renders, input area collapses
 5. Toolbar shows "Comparing A vs B" indicator with ✕ to exit
 6. Parsed/Raw tabs still show Message A — user can switch freely
-7. Click **Reset** in the summary bar to clear the comparison and re-enter a new Message B
+7. Click **Edit** in the summary bar to show/hide the input area (to modify Message B and re-compare)
+8. Click **Reset** to clear the comparison entirely and start over
 
 ### 8.2 Diff table
 

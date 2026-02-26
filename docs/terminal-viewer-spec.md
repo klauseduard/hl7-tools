@@ -144,22 +144,28 @@ Full-screen terminal UI:
 
 ### 4.2 Keyboard bindings
 
-| Key | Action |
-|-----|--------|
-| `↑` / `↓` / `j` / `k` | Navigate field rows |
-| `Enter` | Expand/collapse components on field row; toggle collapse on segment header |
-| `Tab` | Switch focus between panels |
-| `/` | Start search (filter fields) |
-| `Esc` | Clear search / cancel input |
-| `c` | Copy current field value to clipboard (`xclip`) |
-| `a` | Toggle anonymization |
-| `n` | Toggle non-ASCII anonymization names |
-| `r` | Toggle raw view |
-| `v` | Cycle version: auto → 2.3 → 2.5 → auto |
-| `s` | Open send dialog (see section 5) |
-| `l` | Open listen dialog (see section 6) |
-| `?` | Show help overlay |
-| `q` | Quit |
+| Key | Action | Shown in footer |
+|-----|--------|-----------------|
+| `↑` / `↓` | Navigate field rows | no (implicit) |
+| `j` / `k` | Navigate field rows (vi-style) | no |
+| `Enter` | Expand/collapse components; edit field value | no (implicit) |
+| `/` | Start search (filter by address, name, type, value) | yes |
+| `Esc` | Close overlay / cancel input / exit view (context-dependent) | no |
+| `v` | Cycle version: auto → 2.3 → 2.5 → auto | yes |
+| `c` | Copy current field value to clipboard (`xclip`) | yes |
+| `e` | Toggle display of empty fields | yes |
+| `o` | Open .hl7 file (file browser) | yes |
+| `p` | Paste from clipboard (`xclip -o`) | no |
+| `r` | Toggle raw segment view | yes |
+| `s` | Send message via MLLP (prompts for host:port) | yes |
+| `a` | Toggle anonymization (blocked if unsaved edits) | yes |
+| `n` | Switch anonymization name pool: ASCII / Estonian | yes |
+| `t` | Transliterate non-ASCII characters to ASCII equivalents | yes |
+| `i` | Load integration profile (.json file browser) | yes |
+| `b` / `f` | History: navigate back / forward between loaded messages | yes |
+| `l` | Load MLLP response into viewer (after send) | no |
+| `?` | Show help overlay with all keybindings | yes |
+| `q` | Quit | yes |
 
 ### 4.3 Multiple files
 

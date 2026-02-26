@@ -60,6 +60,23 @@ venv/bin/pip install -r requirements-mcp.txt
 - `hl7://profiles/{name}` — Integration profiles from `profiles/` directory
 - `hl7://definitions/{version}` — HL7 v2.3/v2.5 definition summaries
 
+### Terminal TUI (`hl7view/tui.py`)
+
+Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
+
+**Keybindings:**
+- Navigation: `↑`/`↓` or `j`/`k` (vi-style), `Enter` expand/edit, `b`/`f` history back/forward
+- File: `o` open file, `p` paste from clipboard
+- Display: `/` search, `v` cycle HL7 version, `e` toggle empty fields, `r` raw view, `c` copy value
+- Anonymization: `a` toggle anon, `n` switch name pool (ASCII/Estonian), `t` transliterate non-ASCII
+- Integration: `i` load profile, `s` send via MLLP, `l` load MLLP response
+- General: `?` help screen, `Esc` close overlay/cancel, `q` quit
+
+**CLI non-interactive mode** (when piped or with flags):
+- `--field SEG-N` extract single field, `--raw` raw segments, `--verbose` with components
+- `--diff FILE_A FILE_B` field-level comparison, `--anon` anonymize, `--profile PATH` load profile
+- `--send host:port` send via MLLP with optional `--tls`/`--tls-insecure`
+
 ## HL7 Parsing Notes
 
 - MSH-1 is the field separator `|` (implicit, not in pipe-split output). MSH-2 is encoding characters. MSH-3 onwards = `fields[2], fields[3], ...` with field number = array index + 1

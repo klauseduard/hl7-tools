@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hl7-tools"
+dynamic = ["version"]
+description = "HL7 v2.x message toolkit: viewer, TUI, parser, and MCP server"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=2.0.0",
+    "typer>=0.9.0",
+    "textual",
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+hl7view = "hl7view.cli:main"
+hl7view-mcp = "hl7view.mcp_server:app"
+
+[tool.setuptools.dynamic]
+version = {attr = "hl7view.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["hl7view*"]

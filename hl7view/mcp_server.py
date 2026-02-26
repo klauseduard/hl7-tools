@@ -12,9 +12,6 @@ from enum import Enum
 import typer
 from fastmcp import FastMCP
 
-# Ensure hl7view package is importable
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 from hl7view.parser import parse_hl7, reparse_field, rebuild_raw_line
 from hl7view.definitions import (
     get_seg_def, get_field_def, DATA_TYPES,

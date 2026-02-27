@@ -103,6 +103,7 @@ background:rgba(203,166,247,0.2);color:var(--mauve);margin-left:4px}
 .hidden-row{display:none!important}
 .hidden-search{display:none!important}
 .hidden-collapse{display:none!important}
+.hidden-empty{display:none!important}
 
 /* Raw tab */
 #rawWrap{flex:1;overflow:auto;padding:12px}
@@ -282,6 +283,7 @@ border-radius:4px;padding:2px 8px;font-size:12px;color:var(--blue)}
 <div id="compareIndicator"><span id="compareLabel"></span><span class="unload" title="Exit compare" onclick="exitCompare()">&#x2715;</span></div>
 <button id="anonBtn" class="tb-btn" onclick="toggleAnonymize()" title="Anonymize patient data (Ctrl+Shift+A)">Anon</button>
 <label class="anon-checkbox" title="Use Estonian non-ASCII names (&#xD5;, &#xD6;, &#xDC;, &#xC4;, &#x17D;, &#x160;)"><input type="checkbox" id="anonNonAscii" onchange="onNonAsciiChange()">Non-ASCII</label>
+<button id="emptyBtn" class="tb-btn" onclick="toggleShowEmpty()" title="Toggle empty fields (E)">Empty</button>
 <button class="tb-btn" onclick="showHelp()" title="Profile documentation &amp; help">?</button>
 <input type="text" id="searchInput" placeholder="Search addresses, names, values...">
 <div style="flex:1"></div>
@@ -364,6 +366,7 @@ border-radius:4px;padding:2px 8px;font-size:12px;color:var(--blue)}
 <span class="kbd">Esc</span> Clear search
 <span class="kbd">Ctrl+C</span> Copy value
 <span class="kbd">Ctrl+Shift+A</span> Anonymize
+<span class="kbd">E</span> Toggle empty
 </p>
 <p style="margin-top:16px;font-size:11px;color:var(--subtext)">
 Click <span class="kbd">?</span> in the toolbar for<br>profile creation guide
@@ -997,6 +1000,7 @@ let fileEncodingInfo = null;
 let anonymized = false;
 let originalRawMessage = null;
 let anonReplacements = null;
+let showEmpty = localStorage.getItem('hl7viewer.showEmpty') !== 'false';
 
 // ========== NAME POOLS ==========
 const ASCII_NAMES = [
@@ -1775,6 +1779,7 @@ function renderParsedTable() {
   }
 
   applySearch();
+  applyEmptyFilter();
 }
 
 function runProfileValidation() {
@@ -2301,6 +2306,77 @@ function toggleComponents(fieldKey, event) {
   icon.innerHTML = expanding ? '&#9660;' : '&#9654;';
 }
 
+// ========== EMPTY FIELD FILTER ==========
+function toggleShowEmpty() {
+  showEmpty = !showEmpty;
+  localStorage.setItem('hl7viewer.showEmpty', showEmpty);
+  document.getElementById('emptyBtn').classList.toggle('active', !showEmpty);
+  applyEmptyFilter();
+}
+
+function applyEmptyFilter() {
+  const tbody = document.getElementById('parsedBody');
+  if (!tbody) return;
+
+  const hiddenSegKeys = new Set();
+  const allSegKeys = new Set();
+
+  for (const row of tbody.children) {
+    if (row.classList.contains('seg-header')) continue;
+    const segKey = row.dataset.segKey;
+    if (segKey) allSegKeys.add(segKey);
+
+    if (showEmpty) {
+      row.classList.remove('hidden-empty');
+      continue;
+    }
+
+    // Hide field-rows and comp-rows whose value is empty
+    if (row.classList.contains('field-row') || row.classList.contains('comp-row')) {
+      const valCell = row.querySelector('.fval');
+      if (valCell && valCell.classList.contains('empty')) {
+        row.classList.add('hidden-empty');
+        if (segKey) hiddenSegKeys.add(segKey);
+      } else {
+        row.classList.remove('hidden-empty');
+      }
+    }
+  }
+
+  // Hide segment headers if ALL their field-rows are hidden (empty + search + collapse combined)
+  if (!showEmpty) {
+    for (const row of tbody.children) {
+      if (!row.classList.contains('seg-header')) continue;
+      const segKey = row.dataset.segKey;
+      if (!segKey) continue;
+      // Check if any visible field-row exists for this segment
+      const hasVisible = Array.from(tbody.querySelectorAll('tr.field-row[data-seg-key="' + CSS.escape(segKey) + '"]'))
+        .some(r => !r.classList.contains('hidden-empty') && !r.classList.contains('hidden-search') && !r.classList.contains('hidden-collapse'));
+      row.classList.toggle('hidden-empty', !hasVisible);
+    }
+  } else {
+    for (const row of tbody.children) {
+      if (row.classList.contains('seg-header')) row.classList.remove('hidden-empty');
+    }
+  }
+
+  // Apply to diff table too
+  const diffBody = document.getElementById('diffBody');
+  if (!diffBody) return;
+  for (const row of diffBody.children) {
+    if (row.classList.contains('diff-seg-header')) continue;
+    if (showEmpty) {
+      row.classList.remove('hidden-empty');
+      continue;
+    }
+    if (row.dataset.emptyBoth === 'true') {
+      row.classList.add('hidden-empty');
+    } else {
+      row.classList.remove('hidden-empty');
+    }
+  }
+}
+
 // ========== SEARCH ==========
 function applySearch() {
   const term = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -2813,6 +2889,7 @@ function renderDiffTable() {
       tr.dataset.repIndex = sd.repIndex;
       tr.dataset.fieldNum = fd.fieldNum;
       tr.dataset.status = fd.status;
+      if (!valA && !valB) tr.dataset.emptyBoth = 'true';
 
       let dispA, dispB;
       if (fd.status === 'modified') {
@@ -2843,6 +2920,7 @@ function renderDiffTable() {
       tbody.appendChild(tr);
     }
   }
+  applyEmptyFilter();
 }
 
 function truncVal(val, max) {
@@ -3002,6 +3080,11 @@ document.addEventListener('keydown', function(e) {
   // Don't intercept when typing in inputs
   if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
 
+  if (e.key === 'e') {
+    toggleShowEmpty();
+    return;
+  }
+
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
     e.preventDefault();
     navigateRows(e.key === 'ArrowDown' ? 1 : -1);
@@ -3024,7 +3107,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 function navigateRows(direction) {
-  const rows = Array.from(document.querySelectorAll('#parsedBody tr.field-row:not(.hidden-search):not(.hidden-collapse)'));
+  const rows = Array.from(document.querySelectorAll('#parsedBody tr.field-row:not(.hidden-search):not(.hidden-collapse):not(.hidden-empty)'));
   if (rows.length === 0) return;
 
   let idx = -1;
@@ -3060,6 +3143,9 @@ function showHelp() {
 function hideHelp() {
   document.getElementById('helpOverlay').classList.remove('visible');
 }
+
+// Init empty-field toggle button state from persisted preference
+if (!showEmpty) document.getElementById('emptyBtn').classList.add('active');
 
 // External integration: load message from localStorage if available
 // Contract: localStorage key 'hl7viewer.pending' = JSON with:
@@ -3248,6 +3334,10 @@ function hideHelp() {
 </table>
 <p>Check <strong>Non-ASCII</strong> to use Estonian-style names containing &Otilde;, &Ouml;, &Uuml;, &Auml;, &#x17D;, &#x160; &mdash; useful for testing encoding handling.</p>
 <p>Toggle off to restore the original data. Each toggle-on generates fresh random values. The original message text is preserved in the Input tab and restored exactly when toggling off.</p>
+
+<h3>Hiding empty fields</h3>
+<p>The <strong>Empty</strong> button in the toolbar toggles visibility of empty fields. Segments like PV1 can have ~50 fields, most of which are typically empty. When active (highlighted), empty fields and their components are hidden. Keyboard shortcut: <span class="kbd">E</span>.</p>
+<p>The filter combines with search &mdash; both hidden-by-search and hidden-by-empty rows are skipped during keyboard navigation. Segment headers are hidden if all their fields are empty. The toggle state persists across page reloads via localStorage.</p>
 
 <h3>Line breaks &amp; escape sequences in values</h3>
 <p>HL7 uses <code>\r</code> (0x0D) as the segment terminator, so literal carriage returns cannot appear inside field values. The standard defines escape sequences for special characters:</p>

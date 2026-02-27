@@ -21,7 +21,7 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 - Component (`^`) and subcomponent (`&`) splitting, field repetition (`~`) handling
 - Loadable integration profile JSON files via `<input type="file">` for custom field names, descriptions, notes, value maps
 - Profile-driven validation: required-empty fields (red), value map mismatches (orange), missing segments (summary bar)
-- Live search/filter, collapsible segment groups, keyboard navigation, click-to-highlight raw view correspondence
+- Live search/filter, collapsible segment groups, hide empty fields toggle (`E` key, persisted in localStorage), keyboard navigation, click-to-highlight raw view correspondence
 - Dark theme with color coding: segments (rose), field names (green), data types (orange), addresses (blue)
 - Encoding/charset awareness: byte-level detection (UTF-8/Latin-1/ASCII via BOM + heuristic), MSH-18 parsing, mismatch warnings in encoding info bar
 - File Open button reads files as ArrayBuffer with automatic encoding detection (not just UTF-8)

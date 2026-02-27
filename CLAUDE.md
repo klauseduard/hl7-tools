@@ -15,7 +15,7 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 **Features:**
 - Three-panel layout: Input (paste/drag-drop/Open button) | Parsed table | Field detail | Compare (field-level diff)
 - **Compare tab**: paste/open a second message, get a field-by-field diff with character-level highlighting of changed characters, summary bar, filter toggle, and side-by-side component breakdown in detail panel
-- Embedded HL7 v2.3, v2.5, and v2.8 segment/field definitions (~23–26 segments) with data type component breakdowns (~32 composite types)
+- Embedded HL7 v2.3, v2.5, and v2.8 segment/field definitions (~22–37 segments) with data type component breakdowns (~38 composite types)
 - Auto-detects HL7 version from MSH-12 (v2.3.1 maps to v2.3, v2.8.x maps to v2.8 definitions)
 - Correct MSH field numbering: MSH-1 = `|` (field separator), MSH-2 = encoding characters
 - Component (`^`) and subcomponent (`&`) splitting, field repetition (`~`) handling
@@ -92,7 +92,7 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 venv/bin/pytest tests/ -v
 ```
 
-95 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff) plus performance benchmarks (500-OBX parse/serialize/validate). Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+99 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff) plus performance benchmarks (500-OBX parse/serialize/validate). Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
 
 - `pytest.ini` sets `pythonpath = .` so no install step needed
 - `tests/conftest.py` — shared fixtures (parsed messages, sample profile)

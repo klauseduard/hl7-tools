@@ -9,7 +9,7 @@ HL7 v2 messages. Three interfaces, zero external service dependencies:
 - **[MCP Server](#mcp-server)** — exposes all tools to AI agents via Model Context Protocol
   (parse, validate, anonymize, transform, diff, send, explain)
 
-Built-in segment/field definitions for HL7 v2.3, v2.5, and v2.8 (~23–26 segments, ~32
+Built-in segment/field definitions for HL7 v2.3, v2.5, and v2.8 (~22–37 segments, ~38
 composite data types). Supports integration profiles (JSON overlays for custom
 field names, validation rules, value maps), byte-level encoding detection
 (UTF-8/ISO-8859-1/ASCII with BOM), and PHI anonymization of PID/NK1/GT1/IN1/MRG segments.
@@ -65,7 +65,7 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 
 ### Features
 
-- **HL7 definitions** — ~23–26 segments per version (v2.3, v2.5, v2.8) with ~32 composite data types and named components
+- **HL7 definitions** — ~22–37 segments per version (v2.3, v2.5, v2.8) with ~38 composite data types and named components
 - **Auto-detect version** from MSH-12 (e.g. v2.3.1 maps to v2.3, v2.8.x maps to v2.8 definitions)
 - **Correct MSH numbering** — MSH-1 = `|` (field separator), MSH-2 = encoding characters
 - **Component/subcomponent parsing** — `^` components, `&` subcomponents, `~` field repetitions

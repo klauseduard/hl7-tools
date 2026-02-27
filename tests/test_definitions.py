@@ -102,6 +102,49 @@ def test_v28_obx_extensions():
         assert get_field_def("OBX", fnum, "2.5") is None
 
 
+def test_new_segments_v25():
+    """All 11 new segments exist in v2.5 with correct field counts."""
+    expected = {
+        "RXA": 26, "RXE": 44, "RXO": 28, "RXR": 6,
+        "FT1": 31, "PR1": 20, "PD1": 21, "IN2": 72,
+        "ROL": 12, "DB1": 8, "ACC": 11,
+    }
+    for seg_name, field_count in expected.items():
+        seg = get_seg_def(seg_name, "2.5")
+        assert seg is not None, f"{seg_name} missing from v2.5"
+        assert len(seg["fields"]) == field_count, (
+            f"{seg_name} expected {field_count} fields, got {len(seg['fields'])}")
+
+
+def test_new_segments_v28():
+    """All 11 new segments also exist in v2.8 (inherited via deepcopy)."""
+    for seg_name in ["RXA", "RXE", "RXO", "RXR", "FT1", "PR1",
+                     "PD1", "IN2", "ROL", "DB1", "ACC"]:
+        seg = get_seg_def(seg_name, "2.8")
+        assert seg is not None, f"{seg_name} missing from v2.8"
+
+
+def test_new_segments_ce_to_cwe_v28():
+    """CE fields in new segments become CWE in v2.8."""
+    # RXA-5 is CE in v2.5, CWE in v2.8
+    assert get_field_def("RXA", 5, "2.5")["dt"] == "CE"
+    assert get_field_def("RXA", 5, "2.8")["dt"] == "CWE"
+    # FT1-7 is CE in v2.5, CWE in v2.8
+    assert get_field_def("FT1", 7, "2.5")["dt"] == "CE"
+    assert get_field_def("FT1", 7, "2.8")["dt"] == "CWE"
+    # PR1-3 is CE in v2.5, CWE in v2.8
+    assert get_field_def("PR1", 3, "2.5")["dt"] == "CE"
+    assert get_field_def("PR1", 3, "2.8")["dt"] == "CWE"
+
+
+def test_new_data_types():
+    """New data types JCC, LA1, LA2, RMC, PTA, DDI are defined."""
+    from hl7view.definitions import DATA_TYPES
+    for dt_name in ["JCC", "LA1", "LA2", "RMC", "PTA", "DDI"]:
+        assert dt_name in DATA_TYPES, f"{dt_name} missing from DATA_TYPES"
+        assert "components" in DATA_TYPES[dt_name], f"{dt_name} has no components"
+
+
 def test_v28_does_not_mutate_v25():
     """Deepcopy isolation: v2.8 changes must not affect v2.5."""
     assert "OBX" in HL7_V25

@@ -152,3 +152,33 @@ def test_v28_does_not_mutate_v25():
     assert 22 not in HL7_V25["MSH"]["fields"]
     assert HL7_V25["OBX"]["fields"][3]["dt"] == "CE"
     assert HL7_V25["OBR"]["fields"][4]["dt"] == "CE"
+
+
+# --- JS codegen sync ---
+
+def test_js_defs_in_sync():
+    """hl7-viewer.html JS definitions match Python source of truth."""
+    import os
+    import sys
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.join(project_root, "tools"))
+    from gen_js_defs import generate_js_block, START_MARKER, END_MARKER
+
+    expected = generate_js_block()
+
+    html_path = os.path.join(project_root, "hl7-viewer.html")
+    with open(html_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    start_idx = content.find(START_MARKER)
+    end_idx = content.find(END_MARKER)
+    assert start_idx != -1, f"Marker {START_MARKER} not found in hl7-viewer.html"
+    assert end_idx != -1, f"Marker {END_MARKER} not found in hl7-viewer.html"
+
+    # Extract content between markers (after START_MARKER newline, before END_MARKER)
+    actual = content[start_idx + len(START_MARKER) + 1 : end_idx].rstrip("\n")
+
+    assert actual == expected, (
+        "JS definitions in hl7-viewer.html are out of sync with Python. "
+        "Run: venv/bin/python tools/gen_js_defs.py"
+    )

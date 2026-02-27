@@ -377,6 +377,7 @@ Click <span class="kbd">?</span> in the toolbar for<br>profile creation guide
 </div>
 
 <script>
+// @@GENERATED_DEFS_START@@
 // ========== DATA TYPE DEFINITIONS ==========
 const DATA_TYPES = {
 ST:{name:"String Data",primitive:true},
@@ -392,172 +393,80 @@ TM:{name:"Time",primitive:true},
 CQ:{name:"Composite Quantity with Units",components:[
 {name:"Quantity",dt:"NM"},{name:"Units",dt:"CE"}]},
 HD:{name:"Hierarchic Designator",components:[
-{name:"Namespace ID",dt:"IS"},{name:"Universal ID",dt:"ST"},
-{name:"Universal ID Type",dt:"ID"}]},
+{name:"Namespace ID",dt:"IS"},{name:"Universal ID",dt:"ST"},{name:"Universal ID Type",dt:"ID"}]},
 EI:{name:"Entity Identifier",components:[
-{name:"Entity Identifier",dt:"ST"},{name:"Namespace ID",dt:"IS"},
-{name:"Universal ID",dt:"ST"},{name:"Universal ID Type",dt:"ID"}]},
+{name:"Entity Identifier",dt:"ST"},{name:"Namespace ID",dt:"IS"},{name:"Universal ID",dt:"ST"},{name:"Universal ID Type",dt:"ID"}]},
 CE:{name:"Coded Element",components:[
-{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},
-{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
-{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"}]},
+{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"}]},
 CWE:{name:"Coded with Exceptions",components:[
-{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},
-{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
-{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"},
-{name:"Coding System Version ID",dt:"ST"},{name:"Alternate Coding System Version ID",dt:"ST"},
-{name:"Original Text",dt:"ST"}]},
+{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"},{name:"Coding System Version ID",dt:"ST"},{name:"Alternate Coding System Version ID",dt:"ST"},{name:"Original Text",dt:"ST"}]},
 CNE:{name:"Coded with No Exceptions",components:[
-{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},
-{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
-{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"},
-{name:"Coding System Version ID",dt:"ST"},{name:"Alternate Coding System Version ID",dt:"ST"},
-{name:"Original Text",dt:"ST"}]},
+{name:"Identifier",dt:"ST"},{name:"Text",dt:"ST"},{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},{name:"Alternate Text",dt:"ST"},{name:"Name of Alternate Coding System",dt:"ID"},{name:"Coding System Version ID",dt:"ST"},{name:"Alternate Coding System Version ID",dt:"ST"},{name:"Original Text",dt:"ST"}]},
 CX:{name:"Extended Composite ID with Check Digit",components:[
-{name:"ID Number",dt:"ST"},{name:"Check Digit",dt:"ST"},
-{name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},
-{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
-{name:"Effective Date",dt:"DT"},{name:"Expiration Date",dt:"DT"},
-{name:"Assigning Jurisdiction",dt:"CWE"},{name:"Assigning Agency",dt:"CWE"}]},
+{name:"ID Number",dt:"ST"},{name:"Check Digit",dt:"ST"},{name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},{name:"Effective Date",dt:"DT"},{name:"Expiration Date",dt:"DT"},{name:"Assigning Jurisdiction",dt:"CWE"},{name:"Assigning Agency",dt:"CWE"}]},
 XPN:{name:"Extended Person Name",components:[
-{name:"Family Name",dt:"FN"},{name:"Given Name",dt:"ST"},
-{name:"Second Name",dt:"ST"},{name:"Suffix",dt:"ST"},
-{name:"Prefix",dt:"ST"},{name:"Degree",dt:"IS"},
-{name:"Name Type Code",dt:"ID"},{name:"Name Representation Code",dt:"ID"},
-{name:"Name Context",dt:"CE"},{name:"Name Validity Range",dt:"DR"},
-{name:"Name Assembly Order",dt:"ID"},{name:"Effective Date",dt:"TS"},
-{name:"Expiration Date",dt:"TS"},{name:"Professional Suffix",dt:"ST"}]},
+{name:"Family Name",dt:"FN"},{name:"Given Name",dt:"ST"},{name:"Second Name",dt:"ST"},{name:"Suffix",dt:"ST"},{name:"Prefix",dt:"ST"},{name:"Degree",dt:"IS"},{name:"Name Type Code",dt:"ID"},{name:"Name Representation Code",dt:"ID"},{name:"Name Context",dt:"CE"},{name:"Name Validity Range",dt:"DR"},{name:"Name Assembly Order",dt:"ID"},{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"},{name:"Professional Suffix",dt:"ST"}]},
 XCN:{name:"Extended Composite ID and Name",components:[
-{name:"Person Identifier",dt:"ST"},{name:"Family Name",dt:"FN"},
-{name:"Given Name",dt:"ST"},{name:"Second Name",dt:"ST"},
-{name:"Suffix",dt:"ST"},{name:"Prefix",dt:"ST"},
-{name:"Degree",dt:"IS"},{name:"Source Table",dt:"IS"},
-{name:"Assigning Authority",dt:"HD"},{name:"Name Type Code",dt:"ID"},
-{name:"Identifier Check Digit",dt:"ST"},{name:"Check Digit Scheme",dt:"ID"},
-{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
-{name:"Name Representation Code",dt:"ID"},{name:"Name Context",dt:"CE"},
-{name:"Name Validity Range",dt:"DR"},{name:"Name Assembly Order",dt:"ID"},
-{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"},
-{name:"Professional Suffix",dt:"ST"},{name:"Assigning Jurisdiction",dt:"CWE"},
-{name:"Assigning Agency",dt:"CWE"}]},
+{name:"Person Identifier",dt:"ST"},{name:"Family Name",dt:"FN"},{name:"Given Name",dt:"ST"},{name:"Second Name",dt:"ST"},{name:"Suffix",dt:"ST"},{name:"Prefix",dt:"ST"},{name:"Degree",dt:"IS"},{name:"Source Table",dt:"IS"},{name:"Assigning Authority",dt:"HD"},{name:"Name Type Code",dt:"ID"},{name:"Identifier Check Digit",dt:"ST"},{name:"Check Digit Scheme",dt:"ID"},{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},{name:"Name Representation Code",dt:"ID"},{name:"Name Context",dt:"CE"},{name:"Name Validity Range",dt:"DR"},{name:"Name Assembly Order",dt:"ID"},{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"},{name:"Professional Suffix",dt:"ST"},{name:"Assigning Jurisdiction",dt:"CWE"},{name:"Assigning Agency",dt:"CWE"}]},
 XAD:{name:"Extended Address",components:[
-{name:"Street Address",dt:"SAD"},{name:"Other Designation",dt:"ST"},
-{name:"City",dt:"ST"},{name:"State or Province",dt:"ST"},
-{name:"Zip or Postal Code",dt:"ST"},{name:"Country",dt:"ID"},
-{name:"Address Type",dt:"ID"},{name:"Other Geographic Designation",dt:"ST"},
-{name:"County/Parish Code",dt:"IS"},{name:"Census Tract",dt:"IS"},
-{name:"Address Representation Code",dt:"ID"},{name:"Address Validity Range",dt:"DR"},
-{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"}]},
+{name:"Street Address",dt:"SAD"},{name:"Other Designation",dt:"ST"},{name:"City",dt:"ST"},{name:"State or Province",dt:"ST"},{name:"Zip or Postal Code",dt:"ST"},{name:"Country",dt:"ID"},{name:"Address Type",dt:"ID"},{name:"Other Geographic Designation",dt:"ST"},{name:"County/Parish Code",dt:"IS"},{name:"Census Tract",dt:"IS"},{name:"Address Representation Code",dt:"ID"},{name:"Address Validity Range",dt:"DR"},{name:"Effective Date",dt:"TS"},{name:"Expiration Date",dt:"TS"}]},
 XTN:{name:"Extended Telecommunication Number",components:[
-{name:"Telephone Number",dt:"ST"},{name:"Telecommunication Use Code",dt:"ID"},
-{name:"Equipment Type",dt:"ID"},{name:"Email Address",dt:"ST"},
-{name:"Country Code",dt:"NM"},{name:"Area/City Code",dt:"NM"},
-{name:"Local Number",dt:"NM"},{name:"Extension",dt:"NM"},
-{name:"Any Text",dt:"ST"},{name:"Extension Prefix",dt:"ST"},
-{name:"Speed Dial Code",dt:"ST"},{name:"Unformatted Number",dt:"ST"}]},
+{name:"Telephone Number",dt:"ST"},{name:"Telecommunication Use Code",dt:"ID"},{name:"Equipment Type",dt:"ID"},{name:"Email Address",dt:"ST"},{name:"Country Code",dt:"NM"},{name:"Area/City Code",dt:"NM"},{name:"Local Number",dt:"NM"},{name:"Extension",dt:"NM"},{name:"Any Text",dt:"ST"},{name:"Extension Prefix",dt:"ST"},{name:"Speed Dial Code",dt:"ST"},{name:"Unformatted Number",dt:"ST"}]},
 PL:{name:"Person Location",components:[
-{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},
-{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},
-{name:"Location Status",dt:"IS"},{name:"Person Location Type",dt:"IS"},
-{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},
-{name:"Location Description",dt:"ST"},{name:"Comprehensive Location ID",dt:"EI"},
-{name:"Assigning Authority for Location",dt:"HD"}]},
+{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},{name:"Location Status",dt:"IS"},{name:"Person Location Type",dt:"IS"},{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},{name:"Location Description",dt:"ST"},{name:"Comprehensive Location ID",dt:"EI"},{name:"Assigning Authority for Location",dt:"HD"}]},
 MSG:{name:"Message Type",components:[
-{name:"Message Code",dt:"ID"},{name:"Trigger Event",dt:"ID"},
-{name:"Message Structure",dt:"ID"}]},
+{name:"Message Code",dt:"ID"},{name:"Trigger Event",dt:"ID"},{name:"Message Structure",dt:"ID"}]},
 PT:{name:"Processing Type",components:[
 {name:"Processing ID",dt:"ID"},{name:"Processing Mode",dt:"ID"}]},
 VID:{name:"Version Identifier",components:[
-{name:"Version ID",dt:"ID"},{name:"Internationalization Code",dt:"CE"},
-{name:"International Version ID",dt:"CE"}]},
+{name:"Version ID",dt:"ID"},{name:"Internationalization Code",dt:"CE"},{name:"International Version ID",dt:"CE"}]},
 TS:{name:"Time Stamp",components:[
 {name:"Time",dt:"DTM"},{name:"Degree of Precision",dt:"ID"}]},
 FN:{name:"Family Name",components:[
-{name:"Surname",dt:"ST"},{name:"Own Surname Prefix",dt:"ST"},
-{name:"Own Surname",dt:"ST"},{name:"Surname Prefix from Partner",dt:"ST"},
-{name:"Surname from Partner",dt:"ST"}]},
+{name:"Surname",dt:"ST"},{name:"Own Surname Prefix",dt:"ST"},{name:"Own Surname",dt:"ST"},{name:"Surname Prefix from Partner",dt:"ST"},{name:"Surname from Partner",dt:"ST"}]},
 SAD:{name:"Street Address",components:[
-{name:"Street or Mailing Address",dt:"ST"},{name:"Street Name",dt:"ST"},
-{name:"Dwelling Number",dt:"ST"}]},
+{name:"Street or Mailing Address",dt:"ST"},{name:"Street Name",dt:"ST"},{name:"Dwelling Number",dt:"ST"}]},
 RP:{name:"Reference Pointer",components:[
-{name:"Pointer",dt:"ST"},{name:"Application ID",dt:"HD"},
-{name:"Type of Data",dt:"ID"},{name:"Subtype",dt:"ID"}]},
+{name:"Pointer",dt:"ST"},{name:"Application ID",dt:"HD"},{name:"Type of Data",dt:"ID"},{name:"Subtype",dt:"ID"}]},
 DR:{name:"Date/Time Range",components:[
 {name:"Range Start Date/Time",dt:"TS"},{name:"Range End Date/Time",dt:"TS"}]},
 DLN:{name:"Driver's License Number",components:[
-{name:"License Number",dt:"ST"},{name:"Issuing State",dt:"IS"},
-{name:"Expiration Date",dt:"DT"}]},
+{name:"License Number",dt:"ST"},{name:"Issuing State",dt:"IS"},{name:"Expiration Date",dt:"DT"}]},
 FC:{name:"Financial Class",components:[
 {name:"Financial Class Code",dt:"IS"},{name:"Effective Date",dt:"TS"}]},
 DLD:{name:"Discharge to Location",components:[
 {name:"Discharge Location",dt:"IS"},{name:"Effective Date",dt:"TS"}]},
 CP:{name:"Composite Price",components:[
-{name:"Price",dt:"MO"},{name:"Price Type",dt:"ID"},
-{name:"From Value",dt:"NM"},{name:"To Value",dt:"NM"},
-{name:"Range Units",dt:"CE"},{name:"Range Type",dt:"ID"}]},
+{name:"Price",dt:"MO"},{name:"Price Type",dt:"ID"},{name:"From Value",dt:"NM"},{name:"To Value",dt:"NM"},{name:"Range Units",dt:"CE"},{name:"Range Type",dt:"ID"}]},
 MO:{name:"Money",components:[
 {name:"Quantity",dt:"NM"},{name:"Denomination",dt:"ID"}]},
 SN:{name:"Structured Numeric",components:[
-{name:"Comparator",dt:"ST"},{name:"Num1",dt:"NM"},
-{name:"Separator/Suffix",dt:"ST"},{name:"Num2",dt:"NM"}]},
+{name:"Comparator",dt:"ST"},{name:"Num1",dt:"NM"},{name:"Separator/Suffix",dt:"ST"},{name:"Num2",dt:"NM"}]},
 ED:{name:"Encapsulated Data",components:[
-{name:"Source Application",dt:"HD"},{name:"Type of Data",dt:"ID"},
-{name:"Data Subtype",dt:"ID"},{name:"Encoding",dt:"ID"},
-{name:"Data",dt:"TX"}]},
+{name:"Source Application",dt:"HD"},{name:"Type of Data",dt:"ID"},{name:"Data Subtype",dt:"ID"},{name:"Encoding",dt:"ID"},{name:"Data",dt:"TX"}]},
 CF:{name:"Coded Element with Formatted Values",components:[
-{name:"Identifier",dt:"ST"},{name:"Formatted Text",dt:"FT"},
-{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},
-{name:"Alternate Formatted Text",dt:"FT"},{name:"Name of Alternate Coding System",dt:"ID"}]},
+{name:"Identifier",dt:"ST"},{name:"Formatted Text",dt:"FT"},{name:"Name of Coding System",dt:"ID"},{name:"Alternate Identifier",dt:"ST"},{name:"Alternate Formatted Text",dt:"FT"},{name:"Name of Alternate Coding System",dt:"ID"}]},
 TQ:{name:"Timing/Quantity",components:[
-{name:"Quantity",dt:"CQ"},{name:"Interval",dt:"RI"},
-{name:"Duration",dt:"ST"},{name:"Start Date/Time",dt:"TS"},
-{name:"End Date/Time",dt:"TS"},{name:"Priority",dt:"ST"},
-{name:"Condition",dt:"ST"},{name:"Text",dt:"TX"},
-{name:"Conjunction",dt:"ID"},{name:"Order Sequencing",dt:"OSD"},
-{name:"Occurrence Duration",dt:"CE"},{name:"Total Occurrences",dt:"NM"}]},
+{name:"Quantity",dt:"CQ"},{name:"Interval",dt:"RI"},{name:"Duration",dt:"ST"},{name:"Start Date/Time",dt:"TS"},{name:"End Date/Time",dt:"TS"},{name:"Priority",dt:"ST"},{name:"Condition",dt:"ST"},{name:"Text",dt:"TX"},{name:"Conjunction",dt:"ID"},{name:"Order Sequencing",dt:"OSD"},{name:"Occurrence Duration",dt:"CE"},{name:"Total Occurrences",dt:"NM"}]},
 RI:{name:"Repeat Interval",components:[
 {name:"Repeat Pattern",dt:"IS"},{name:"Explicit Time Interval",dt:"ST"}]},
 XON:{name:"Extended Composite Name for Organizations",components:[
-{name:"Organization Name",dt:"ST"},{name:"Organization Name Type Code",dt:"IS"},
-{name:"ID Number",dt:"NM"},{name:"Check Digit",dt:"NM"},
-{name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},
-{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
-{name:"Name Representation Code",dt:"ID"},{name:"Organization Identifier",dt:"ST"}]},
+{name:"Organization Name",dt:"ST"},{name:"Organization Name Type Code",dt:"IS"},{name:"ID Number",dt:"NM"},{name:"Check Digit",dt:"NM"},{name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},{name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},{name:"Name Representation Code",dt:"ID"},{name:"Organization Identifier",dt:"ST"}]},
 JCC:{name:"Job Code/Class",components:[
-{name:"Job Code",dt:"IS"},{name:"Job Class",dt:"IS"},
-{name:"Job Description Text",dt:"TX"}]},
+{name:"Job Code",dt:"IS"},{name:"Job Class",dt:"IS"},{name:"Job Description Text",dt:"TX"}]},
 LA1:{name:"Location with Address Variation 1",components:[
-{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},
-{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},
-{name:"Location Status",dt:"IS"},{name:"Patient Location Type",dt:"IS"},
-{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},
-{name:"Address",dt:"AD"}]},
+{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},{name:"Location Status",dt:"IS"},{name:"Patient Location Type",dt:"IS"},{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},{name:"Address",dt:"AD"}]},
 LA2:{name:"Location with Address Variation 2",components:[
-{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},
-{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},
-{name:"Location Status",dt:"IS"},{name:"Patient Location Type",dt:"IS"},
-{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},
-{name:"Street Address",dt:"ST"},{name:"Other Designation",dt:"ST"},
-{name:"City",dt:"ST"},{name:"State or Province",dt:"ST"},
-{name:"Zip or Postal Code",dt:"ST"},{name:"Country",dt:"ID"},
-{name:"Address Type",dt:"ID"},{name:"Other Geographic Designation",dt:"ST"}]},
+{name:"Point of Care",dt:"IS"},{name:"Room",dt:"IS"},{name:"Bed",dt:"IS"},{name:"Facility",dt:"HD"},{name:"Location Status",dt:"IS"},{name:"Patient Location Type",dt:"IS"},{name:"Building",dt:"IS"},{name:"Floor",dt:"IS"},{name:"Street Address",dt:"ST"},{name:"Other Designation",dt:"ST"},{name:"City",dt:"ST"},{name:"State or Province",dt:"ST"},{name:"Zip or Postal Code",dt:"ST"},{name:"Country",dt:"ID"},{name:"Address Type",dt:"ID"},{name:"Other Geographic Designation",dt:"ST"}]},
 RMC:{name:"Room Coverage",components:[
-{name:"Room Type",dt:"IS"},{name:"Amount Type",dt:"IS"},
-{name:"Coverage Amount",dt:"NM"}]},
+{name:"Room Type",dt:"IS"},{name:"Amount Type",dt:"IS"},{name:"Coverage Amount",dt:"NM"}]},
 PTA:{name:"Policy Type and Amount",components:[
-{name:"Policy Type",dt:"IS"},{name:"Amount Class",dt:"IS"},
-{name:"Money or Percentage Quantity",dt:"NM"}]},
+{name:"Policy Type",dt:"IS"},{name:"Amount Class",dt:"IS"},{name:"Money or Percentage Quantity",dt:"NM"}]},
 DDI:{name:"Daily Deductible Information",components:[
-{name:"Delay Days",dt:"NM"},{name:"Monetary Amount",dt:"MO"},
-{name:"Number of Days",dt:"NM"}]},
+{name:"Delay Days",dt:"NM"},{name:"Monetary Amount",dt:"MO"},{name:"Number of Days",dt:"NM"}]},
 GTS:{name:"General Timing Specification",primitive:true},
 RPT:{name:"Repeat Pattern",components:[
-{name:"Repeat Pattern Code",dt:"CWE"},{name:"Calendar Alignment",dt:"ID"},
-{name:"Phase Range Begin Value",dt:"NM"},{name:"Phase Range End Value",dt:"NM"},
-{name:"Period Quantity",dt:"NM"},{name:"Period Units",dt:"IS"},
-{name:"Institution Specified Time",dt:"ID"},{name:"Event",dt:"ID"},
-{name:"Event Offset Quantity",dt:"NM"},{name:"Event Offset Units",dt:"IS"},
-{name:"General Timing Specification",dt:"GTS"}]}
+{name:"Repeat Pattern Code",dt:"CWE"},{name:"Calendar Alignment",dt:"ID"},{name:"Phase Range Begin Value",dt:"NM"},{name:"Phase Range End Value",dt:"NM"},{name:"Period Quantity",dt:"NM"},{name:"Period Units",dt:"IS"},{name:"Institution Specified Time",dt:"ID"},{name:"Event",dt:"ID"},{name:"Event Offset Quantity",dt:"NM"},{name:"Event Offset Units",dt:"IS"},{name:"General Timing Specification",dt:"GTS"}]},
 };
 
 // ========== HL7 v2.3 SEGMENT DEFINITIONS ==========
@@ -581,14 +490,16 @@ MSH:{name:"Message Header",fields:{
 16:{name:"Application Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
 17:{name:"Country Code",dt:"ID",opt:"O",rep:false,len:3},
 18:{name:"Character Set",dt:"ID",opt:"O",rep:true,len:16},
-19:{name:"Principal Language of Message",dt:"CE",opt:"O",rep:false,len:250}}},
+19:{name:"Principal Language of Message",dt:"CE",opt:"O",rep:false,len:250}
+}},
 EVN:{name:"Event Type",fields:{
 1:{name:"Event Type Code",dt:"ID",opt:"B",rep:false,len:3},
 2:{name:"Recorded Date/Time",dt:"TS",opt:"R",rep:false,len:26},
 3:{name:"Date/Time Planned Event",dt:"TS",opt:"O",rep:false,len:26},
 4:{name:"Event Reason Code",dt:"IS",opt:"O",rep:false,len:3},
 5:{name:"Operator ID",dt:"XCN",opt:"O",rep:true,len:250},
-6:{name:"Event Occurred",dt:"TS",opt:"O",rep:false,len:26}}},
+6:{name:"Event Occurred",dt:"TS",opt:"O",rep:false,len:26}
+}},
 PID:{name:"Patient Identification",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Patient ID",dt:"CX",opt:"B",rep:false,len:20},
@@ -619,7 +530,8 @@ PID:{name:"Patient Identification",fields:{
 27:{name:"Veterans Military Status",dt:"CE",opt:"O",rep:false,len:250},
 28:{name:"Nationality",dt:"CE",opt:"B",rep:false,len:250},
 29:{name:"Patient Death Date/Time",dt:"TS",opt:"O",rep:false,len:26},
-30:{name:"Patient Death Indicator",dt:"ID",opt:"O",rep:false,len:1}}},
+30:{name:"Patient Death Indicator",dt:"ID",opt:"O",rep:false,len:1}
+}},
 PV1:{name:"Patient Visit",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Patient Class",dt:"IS",opt:"R",rep:false,len:1},
@@ -672,7 +584,8 @@ PV1:{name:"Patient Visit",fields:{
 49:{name:"Total Payments",dt:"NM",opt:"O",rep:false,len:12},
 50:{name:"Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
 51:{name:"Visit Indicator",dt:"IS",opt:"O",rep:false,len:1},
-52:{name:"Other Healthcare Provider",dt:"XCN",opt:"B",rep:true,len:250}}},
+52:{name:"Other Healthcare Provider",dt:"XCN",opt:"B",rep:true,len:250}
+}},
 PV2:{name:"Patient Visit - Additional",fields:{
 1:{name:"Prior Pending Location",dt:"PL",opt:"C",rep:false,len:80},
 2:{name:"Accommodation Code",dt:"CE",opt:"O",rep:false,len:250},
@@ -703,7 +616,8 @@ PV2:{name:"Patient Visit - Additional",fields:{
 27:{name:"Expected Discharge Disposition",dt:"IS",opt:"O",rep:false,len:2},
 28:{name:"Signature on File Date",dt:"DT",opt:"O",rep:false,len:8},
 29:{name:"First Similar Illness Date",dt:"DT",opt:"O",rep:false,len:8},
-30:{name:"Patient Charge Adjustment Code",dt:"CE",opt:"O",rep:false,len:250}}},
+30:{name:"Patient Charge Adjustment Code",dt:"CE",opt:"O",rep:false,len:250}
+}},
 NK1:{name:"Next of Kin",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Name",dt:"XPN",opt:"O",rep:true,len:250},
@@ -717,7 +631,8 @@ NK1:{name:"Next of Kin",fields:{
 10:{name:"Next of Kin Job Title",dt:"ST",opt:"O",rep:false,len:60},
 11:{name:"Next of Kin Job Code/Class",dt:"JCC",opt:"O",rep:false,len:20},
 12:{name:"Next of Kin Employee Number",dt:"CX",opt:"O",rep:false,len:250},
-13:{name:"Organization Name",dt:"XON",opt:"O",rep:true,len:250}}},
+13:{name:"Organization Name",dt:"XON",opt:"O",rep:true,len:250}
+}},
 ORC:{name:"Common Order",fields:{
 1:{name:"Order Control",dt:"ID",opt:"R",rep:false,len:2},
 2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
@@ -737,7 +652,8 @@ ORC:{name:"Common Order",fields:{
 16:{name:"Order Control Code Reason",dt:"CE",opt:"O",rep:false,len:250},
 17:{name:"Entering Organization",dt:"CE",opt:"O",rep:false,len:250},
 18:{name:"Entering Device",dt:"CE",opt:"O",rep:false,len:250},
-19:{name:"Action By",dt:"XCN",opt:"O",rep:true,len:250}}},
+19:{name:"Action By",dt:"XCN",opt:"O",rep:true,len:250}
+}},
 OBR:{name:"Observation Request",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
@@ -781,7 +697,8 @@ OBR:{name:"Observation Request",fields:{
 40:{name:"Transport Arrangement Responsibility",dt:"CE",opt:"O",rep:false,len:250},
 41:{name:"Transport Arranged",dt:"ID",opt:"O",rep:false,len:30},
 42:{name:"Escort Required",dt:"ID",opt:"O",rep:false,len:1},
-43:{name:"Planned Patient Transport Comment",dt:"CE",opt:"O",rep:true,len:250}}},
+43:{name:"Planned Patient Transport Comment",dt:"CE",opt:"O",rep:true,len:250}
+}},
 OBX:{name:"Observation/Result",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Value Type",dt:"ID",opt:"C",rep:false,len:3},
@@ -799,7 +716,8 @@ OBX:{name:"Observation/Result",fields:{
 14:{name:"Date/Time of Observation",dt:"TS",opt:"O",rep:false,len:26},
 15:{name:"Producer's ID",dt:"CE",opt:"O",rep:false,len:250},
 16:{name:"Responsible Observer",dt:"XCN",opt:"O",rep:true,len:250},
-17:{name:"Observation Method",dt:"CE",opt:"O",rep:true,len:250}}},
+17:{name:"Observation Method",dt:"CE",opt:"O",rep:true,len:250}
+}},
 DG1:{name:"Diagnosis",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Diagnosis Coding Method",dt:"ID",opt:"B",rep:false,len:2},
@@ -816,7 +734,8 @@ DG1:{name:"Diagnosis",fields:{
 13:{name:"Outlier Cost",dt:"CP",opt:"B",rep:false,len:12},
 14:{name:"Grouper Version and Type",dt:"ST",opt:"B",rep:false,len:4},
 15:{name:"Diagnosis Priority",dt:"ID",opt:"O",rep:false,len:2},
-16:{name:"Diagnosing Clinician",dt:"XCN",opt:"O",rep:true,len:250}}},
+16:{name:"Diagnosing Clinician",dt:"XCN",opt:"O",rep:true,len:250}
+}},
 IN1:{name:"Insurance",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Insurance Plan ID",dt:"CE",opt:"R",rep:false,len:250},
@@ -839,14 +758,16 @@ IN1:{name:"Insurance",fields:{
 19:{name:"Insured's Address",dt:"XAD",opt:"O",rep:true,len:250},
 20:{name:"Assignment of Benefits",dt:"IS",opt:"O",rep:false,len:2},
 21:{name:"Coordination of Benefits",dt:"IS",opt:"O",rep:false,len:2},
-22:{name:"Coord of Ben. Priority",dt:"ST",opt:"O",rep:false,len:2}}},
+22:{name:"Coord of Ben. Priority",dt:"ST",opt:"O",rep:false,len:2}
+}},
 AL1:{name:"Patient Allergy",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Allergen Type Code",dt:"CE",opt:"O",rep:false,len:250},
 3:{name:"Allergen Code/Description",dt:"CE",opt:"R",rep:false,len:250},
 4:{name:"Allergy Severity Code",dt:"CE",opt:"O",rep:false,len:250},
 5:{name:"Allergy Reaction Code",dt:"ST",opt:"O",rep:true,len:15},
-6:{name:"Identification Date",dt:"DT",opt:"B",rep:false,len:8}}},
+6:{name:"Identification Date",dt:"DT",opt:"B",rep:false,len:8}
+}},
 GT1:{name:"Guarantor",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Guarantor Number",dt:"CX",opt:"O",rep:true,len:250},
@@ -859,21 +780,25 @@ GT1:{name:"Guarantor",fields:{
 9:{name:"Guarantor Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
 10:{name:"Guarantor Type",dt:"IS",opt:"O",rep:false,len:2},
 11:{name:"Guarantor Relationship",dt:"CE",opt:"O",rep:false,len:250},
-12:{name:"Guarantor SSN",dt:"ST",opt:"O",rep:false,len:11}}},
+12:{name:"Guarantor SSN",dt:"ST",opt:"O",rep:false,len:11}
+}},
 NTE:{name:"Notes and Comments",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Source of Comment",dt:"ID",opt:"O",rep:false,len:8},
 3:{name:"Comment",dt:"FT",opt:"O",rep:true,len:65536},
-4:{name:"Comment Type",dt:"CE",opt:"O",rep:false,len:250}}},
+4:{name:"Comment Type",dt:"CE",opt:"O",rep:false,len:250}
+}},
 MSA:{name:"Message Acknowledgment",fields:{
 1:{name:"Acknowledgment Code",dt:"ID",opt:"R",rep:false,len:2},
 2:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
 3:{name:"Text Message",dt:"ST",opt:"O",rep:false,len:80},
 4:{name:"Expected Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
 5:{name:"Delayed Acknowledgment Type",dt:"ID",opt:"B",rep:false,len:1},
-6:{name:"Error Condition",dt:"CE",opt:"O",rep:false,len:250}}},
+6:{name:"Error Condition",dt:"CE",opt:"O",rep:false,len:250}
+}},
 ERR:{name:"Error",fields:{
-1:{name:"Error Code and Location",dt:"CM",opt:"R",rep:true,len:80}}},
+1:{name:"Error Code and Location",dt:"CM",opt:"R",rep:true,len:80}
+}},
 QRD:{name:"Original-Style Query Definition",fields:{
 1:{name:"Query Date/Time",dt:"TS",opt:"R",rep:false,len:26},
 2:{name:"Query Format Code",dt:"ID",opt:"R",rep:false,len:1},
@@ -886,13 +811,15 @@ QRD:{name:"Original-Style Query Definition",fields:{
 9:{name:"What Subject Filter",dt:"CE",opt:"R",rep:true,len:250},
 10:{name:"What Department Data Code",dt:"CE",opt:"R",rep:true,len:250},
 11:{name:"What Data Code Value Qual",dt:"CM",opt:"O",rep:true,len:20},
-12:{name:"Query Results Level",dt:"ID",opt:"O",rep:false,len:1}}},
+12:{name:"Query Results Level",dt:"ID",opt:"O",rep:false,len:1}
+}},
 QRF:{name:"Original-Style Query Filter",fields:{
 1:{name:"Where Subject Filter",dt:"ST",opt:"R",rep:true,len:20},
 2:{name:"When Data Start Date/Time",dt:"TS",opt:"O",rep:false,len:26},
 3:{name:"When Data End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
 4:{name:"What User Qualifier",dt:"ST",opt:"O",rep:true,len:60},
-5:{name:"Other QRY Subject Filter",dt:"ST",opt:"O",rep:true,len:60}}},
+5:{name:"Other QRY Subject Filter",dt:"ST",opt:"O",rep:true,len:60}
+}},
 MRG:{name:"Merge Patient Information",fields:{
 1:{name:"Prior Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
 2:{name:"Prior Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:250},
@@ -900,7 +827,8 @@ MRG:{name:"Merge Patient Information",fields:{
 4:{name:"Prior Patient ID",dt:"CX",opt:"B",rep:false,len:250},
 5:{name:"Prior Visit Number",dt:"CX",opt:"O",rep:false,len:250},
 6:{name:"Prior Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
-7:{name:"Prior Patient Name",dt:"XPN",opt:"O",rep:true,len:250}}},
+7:{name:"Prior Patient Name",dt:"XPN",opt:"O",rep:true,len:250}
+}},
 SCH:{name:"Scheduling Activity",fields:{
 1:{name:"Placer Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
 2:{name:"Filler Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
@@ -926,7 +854,8 @@ SCH:{name:"Scheduling Activity",fields:{
 22:{name:"Entered By Location",dt:"PL",opt:"O",rep:false,len:80},
 23:{name:"Parent Placer Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
 24:{name:"Parent Filler Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
-25:{name:"Filler Status Code",dt:"CE",opt:"O",rep:false,len:250}}},
+25:{name:"Filler Status Code",dt:"CE",opt:"O",rep:false,len:250}
+}},
 TXA:{name:"Transcription Document Header",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Document Type",dt:"IS",opt:"R",rep:false,len:30},
@@ -950,36 +879,371 @@ TXA:{name:"Transcription Document Header",fields:{
 20:{name:"Document Storage Status",dt:"ID",opt:"O",rep:false,len:2},
 21:{name:"Document Change Reason",dt:"ST",opt:"C",rep:false,len:30},
 22:{name:"Authentication Person Time Stamp",dt:"PPN",opt:"C",rep:true,len:250},
-23:{name:"Distributed Copies",dt:"XCN",opt:"O",rep:true,len:250}}},
+23:{name:"Distributed Copies",dt:"XCN",opt:"O",rep:true,len:250}
+}},
 DSP:{name:"Display Data",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Display Level",dt:"SI",opt:"O",rep:false,len:4},
 3:{name:"Data Line",dt:"TX",opt:"R",rep:false,len:300},
 4:{name:"Logical Break Point",dt:"ST",opt:"O",rep:false,len:2},
-5:{name:"Result ID",dt:"TX",opt:"O",rep:false,len:20}}}
+5:{name:"Result ID",dt:"TX",opt:"O",rep:false,len:20}
+}},
 };
 
 // ========== HL7 v2.5 SEGMENT DEFINITIONS ==========
-// Start with v2.3 as base, then override/extend
-const HL7_V25 = JSON.parse(JSON.stringify(HL7_V23));
-
-// MSH v2.5 extensions
-HL7_V25.MSH.fields[20] = {name:"Alternate Character Set Handling",dt:"ID",opt:"O",rep:false,len:20};
-HL7_V25.MSH.fields[21] = {name:"Message Profile Identifier",dt:"EI",opt:"O",rep:true,len:427};
-
-// PID v2.5 extensions
-HL7_V25.PID.fields[31] = {name:"Identity Unknown Indicator",dt:"ID",opt:"O",rep:false,len:1};
-HL7_V25.PID.fields[32] = {name:"Identity Reliability Code",dt:"IS",opt:"O",rep:true,len:20};
-HL7_V25.PID.fields[33] = {name:"Last Update Date/Time",dt:"TS",opt:"O",rep:false,len:26};
-HL7_V25.PID.fields[34] = {name:"Last Update Facility",dt:"HD",opt:"O",rep:false,len:241};
-HL7_V25.PID.fields[35] = {name:"Species Code",dt:"CE",opt:"C",rep:false,len:250};
-HL7_V25.PID.fields[36] = {name:"Breed Code",dt:"CE",opt:"C",rep:false,len:250};
-HL7_V25.PID.fields[37] = {name:"Strain",dt:"ST",opt:"O",rep:false,len:80};
-HL7_V25.PID.fields[38] = {name:"Production Class Code",dt:"CE",opt:"O",rep:false,len:250};
-HL7_V25.PID.fields[39] = {name:"Tribal Citizenship",dt:"CWE",opt:"O",rep:true,len:250};
-
-// ERR v2.5 expanded
-HL7_V25.ERR = {name:"Error",fields:{
+const HL7_V25 = {
+MSH:{name:"Message Header",fields:{
+1:{name:"Field Separator",dt:"ST",opt:"R",rep:false,len:1},
+2:{name:"Encoding Characters",dt:"ST",opt:"R",rep:false,len:4},
+3:{name:"Sending Application",dt:"HD",opt:"O",rep:false,len:180},
+4:{name:"Sending Facility",dt:"HD",opt:"O",rep:false,len:180},
+5:{name:"Receiving Application",dt:"HD",opt:"O",rep:false,len:180},
+6:{name:"Receiving Facility",dt:"HD",opt:"O",rep:false,len:180},
+7:{name:"Date/Time of Message",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Security",dt:"ST",opt:"O",rep:false,len:40},
+9:{name:"Message Type",dt:"MSG",opt:"R",rep:false,len:15},
+10:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
+11:{name:"Processing ID",dt:"PT",opt:"R",rep:false,len:3},
+12:{name:"Version ID",dt:"VID",opt:"R",rep:false,len:60},
+13:{name:"Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
+14:{name:"Continuation Pointer",dt:"ST",opt:"O",rep:false,len:180},
+15:{name:"Accept Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
+16:{name:"Application Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
+17:{name:"Country Code",dt:"ID",opt:"O",rep:false,len:3},
+18:{name:"Character Set",dt:"ID",opt:"O",rep:true,len:16},
+19:{name:"Principal Language of Message",dt:"CE",opt:"O",rep:false,len:250},
+20:{name:"Alternate Character Set Handling",dt:"ID",opt:"O",rep:false,len:20},
+21:{name:"Message Profile Identifier",dt:"EI",opt:"O",rep:true,len:427}
+}},
+EVN:{name:"Event Type",fields:{
+1:{name:"Event Type Code",dt:"ID",opt:"B",rep:false,len:3},
+2:{name:"Recorded Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+3:{name:"Date/Time Planned Event",dt:"TS",opt:"O",rep:false,len:26},
+4:{name:"Event Reason Code",dt:"IS",opt:"O",rep:false,len:3},
+5:{name:"Operator ID",dt:"XCN",opt:"O",rep:true,len:250},
+6:{name:"Event Occurred",dt:"TS",opt:"O",rep:false,len:26}
+}},
+PID:{name:"Patient Identification",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Patient ID",dt:"CX",opt:"B",rep:false,len:20},
+3:{name:"Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
+4:{name:"Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:20},
+5:{name:"Patient Name",dt:"XPN",opt:"R",rep:true,len:250},
+6:{name:"Mother's Maiden Name",dt:"XPN",opt:"O",rep:true,len:250},
+7:{name:"Date/Time of Birth",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
+9:{name:"Patient Alias",dt:"XPN",opt:"B",rep:true,len:250},
+10:{name:"Race",dt:"CE",opt:"O",rep:true,len:250},
+11:{name:"Patient Address",dt:"XAD",opt:"O",rep:true,len:250},
+12:{name:"County Code",dt:"IS",opt:"B",rep:false,len:4},
+13:{name:"Phone Number - Home",dt:"XTN",opt:"O",rep:true,len:250},
+14:{name:"Phone Number - Business",dt:"XTN",opt:"O",rep:true,len:250},
+15:{name:"Primary Language",dt:"CE",opt:"O",rep:false,len:250},
+16:{name:"Marital Status",dt:"CE",opt:"O",rep:false,len:250},
+17:{name:"Religion",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Patient Account Number",dt:"CX",opt:"O",rep:false,len:250},
+19:{name:"SSN Number",dt:"ST",opt:"B",rep:false,len:16},
+20:{name:"Driver's License Number",dt:"DLN",opt:"B",rep:false,len:25},
+21:{name:"Mother's Identifier",dt:"CX",opt:"O",rep:true,len:250},
+22:{name:"Ethnic Group",dt:"CE",opt:"O",rep:true,len:250},
+23:{name:"Birth Place",dt:"ST",opt:"O",rep:false,len:250},
+24:{name:"Multiple Birth Indicator",dt:"ID",opt:"O",rep:false,len:1},
+25:{name:"Birth Order",dt:"NM",opt:"O",rep:false,len:2},
+26:{name:"Citizenship",dt:"CE",opt:"O",rep:true,len:250},
+27:{name:"Veterans Military Status",dt:"CE",opt:"O",rep:false,len:250},
+28:{name:"Nationality",dt:"CE",opt:"B",rep:false,len:250},
+29:{name:"Patient Death Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+30:{name:"Patient Death Indicator",dt:"ID",opt:"O",rep:false,len:1},
+31:{name:"Identity Unknown Indicator",dt:"ID",opt:"O",rep:false,len:1},
+32:{name:"Identity Reliability Code",dt:"IS",opt:"O",rep:true,len:20},
+33:{name:"Last Update Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+34:{name:"Last Update Facility",dt:"HD",opt:"O",rep:false,len:241},
+35:{name:"Species Code",dt:"CE",opt:"C",rep:false,len:250},
+36:{name:"Breed Code",dt:"CE",opt:"C",rep:false,len:250},
+37:{name:"Strain",dt:"ST",opt:"O",rep:false,len:80},
+38:{name:"Production Class Code",dt:"CE",opt:"O",rep:false,len:250},
+39:{name:"Tribal Citizenship",dt:"CWE",opt:"O",rep:true,len:250}
+}},
+PV1:{name:"Patient Visit",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Patient Class",dt:"IS",opt:"R",rep:false,len:1},
+3:{name:"Assigned Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+4:{name:"Admission Type",dt:"IS",opt:"O",rep:false,len:2},
+5:{name:"Preadmit Number",dt:"CX",opt:"O",rep:false,len:250},
+6:{name:"Prior Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+7:{name:"Attending Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+8:{name:"Referring Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+9:{name:"Consulting Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+10:{name:"Hospital Service",dt:"IS",opt:"O",rep:false,len:3},
+11:{name:"Temporary Location",dt:"PL",opt:"O",rep:false,len:80},
+12:{name:"Preadmit Test Indicator",dt:"IS",opt:"O",rep:false,len:2},
+13:{name:"Re-admission Indicator",dt:"IS",opt:"O",rep:false,len:2},
+14:{name:"Admit Source",dt:"IS",opt:"O",rep:false,len:6},
+15:{name:"Ambulatory Status",dt:"IS",opt:"O",rep:true,len:2},
+16:{name:"VIP Indicator",dt:"IS",opt:"O",rep:false,len:2},
+17:{name:"Admitting Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+18:{name:"Patient Type",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Visit Number",dt:"CX",opt:"O",rep:false,len:250},
+20:{name:"Financial Class",dt:"FC",opt:"O",rep:true,len:50},
+21:{name:"Charge Price Indicator",dt:"IS",opt:"O",rep:false,len:2},
+22:{name:"Courtesy Code",dt:"IS",opt:"O",rep:false,len:2},
+23:{name:"Credit Rating",dt:"IS",opt:"O",rep:false,len:2},
+24:{name:"Contract Code",dt:"IS",opt:"O",rep:true,len:2},
+25:{name:"Contract Effective Date",dt:"DT",opt:"O",rep:true,len:8},
+26:{name:"Contract Amount",dt:"NM",opt:"O",rep:true,len:12},
+27:{name:"Contract Period",dt:"NM",opt:"O",rep:true,len:3},
+28:{name:"Interest Code",dt:"IS",opt:"O",rep:false,len:2},
+29:{name:"Transfer to Bad Debt Code",dt:"IS",opt:"O",rep:false,len:1},
+30:{name:"Transfer to Bad Debt Date",dt:"DT",opt:"O",rep:false,len:8},
+31:{name:"Bad Debt Agency Code",dt:"IS",opt:"O",rep:false,len:10},
+32:{name:"Bad Debt Transfer Amount",dt:"NM",opt:"O",rep:false,len:12},
+33:{name:"Bad Debt Recovery Amount",dt:"NM",opt:"O",rep:false,len:12},
+34:{name:"Delete Account Indicator",dt:"IS",opt:"O",rep:false,len:1},
+35:{name:"Delete Account Date",dt:"DT",opt:"O",rep:false,len:8},
+36:{name:"Discharge Disposition",dt:"IS",opt:"O",rep:false,len:3},
+37:{name:"Discharged to Location",dt:"DLD",opt:"O",rep:false,len:25},
+38:{name:"Diet Type",dt:"CE",opt:"O",rep:false,len:250},
+39:{name:"Servicing Facility",dt:"IS",opt:"O",rep:false,len:2},
+40:{name:"Bed Status",dt:"IS",opt:"B",rep:false,len:1},
+41:{name:"Account Status",dt:"IS",opt:"O",rep:false,len:2},
+42:{name:"Pending Location",dt:"PL",opt:"O",rep:false,len:80},
+43:{name:"Prior Temporary Location",dt:"PL",opt:"O",rep:false,len:80},
+44:{name:"Admit Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+45:{name:"Discharge Date/Time",dt:"TS",opt:"O",rep:true,len:26},
+46:{name:"Current Patient Balance",dt:"NM",opt:"O",rep:false,len:12},
+47:{name:"Total Charges",dt:"NM",opt:"O",rep:false,len:12},
+48:{name:"Total Adjustments",dt:"NM",opt:"O",rep:false,len:12},
+49:{name:"Total Payments",dt:"NM",opt:"O",rep:false,len:12},
+50:{name:"Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
+51:{name:"Visit Indicator",dt:"IS",opt:"O",rep:false,len:1},
+52:{name:"Other Healthcare Provider",dt:"XCN",opt:"B",rep:true,len:250}
+}},
+PV2:{name:"Patient Visit - Additional",fields:{
+1:{name:"Prior Pending Location",dt:"PL",opt:"C",rep:false,len:80},
+2:{name:"Accommodation Code",dt:"CE",opt:"O",rep:false,len:250},
+3:{name:"Admit Reason",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Transfer Reason",dt:"CE",opt:"O",rep:false,len:250},
+5:{name:"Patient Valuables",dt:"ST",opt:"O",rep:true,len:25},
+6:{name:"Patient Valuables Location",dt:"ST",opt:"O",rep:false,len:25},
+7:{name:"Visit User Code",dt:"IS",opt:"O",rep:true,len:2},
+8:{name:"Expected Admit Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Expected Discharge Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+10:{name:"Estimated Length of Inpatient Stay",dt:"NM",opt:"O",rep:false,len:3},
+11:{name:"Actual Length of Inpatient Stay",dt:"NM",opt:"O",rep:false,len:3},
+12:{name:"Visit Description",dt:"ST",opt:"O",rep:false,len:50},
+13:{name:"Referral Source Code",dt:"XCN",opt:"O",rep:true,len:250},
+14:{name:"Previous Service Date",dt:"DT",opt:"O",rep:false,len:8},
+15:{name:"Employment Illness Related Indicator",dt:"ID",opt:"O",rep:false,len:1},
+16:{name:"Purge Status Code",dt:"IS",opt:"O",rep:false,len:1},
+17:{name:"Purge Status Date",dt:"DT",opt:"O",rep:false,len:8},
+18:{name:"Special Program Code",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Retention Indicator",dt:"ID",opt:"O",rep:false,len:1},
+20:{name:"Expected Number of Insurance Plans",dt:"NM",opt:"O",rep:false,len:1},
+21:{name:"Visit Publicity Code",dt:"IS",opt:"O",rep:false,len:1},
+22:{name:"Visit Protection Indicator",dt:"ID",opt:"O",rep:false,len:1},
+23:{name:"Clinic Organization Name",dt:"XON",opt:"O",rep:true,len:250},
+24:{name:"Patient Status Code",dt:"IS",opt:"O",rep:false,len:2},
+25:{name:"Visit Priority Code",dt:"IS",opt:"O",rep:false,len:1},
+26:{name:"Previous Treatment Date",dt:"DT",opt:"O",rep:false,len:8},
+27:{name:"Expected Discharge Disposition",dt:"IS",opt:"O",rep:false,len:2},
+28:{name:"Signature on File Date",dt:"DT",opt:"O",rep:false,len:8},
+29:{name:"First Similar Illness Date",dt:"DT",opt:"O",rep:false,len:8},
+30:{name:"Patient Charge Adjustment Code",dt:"CE",opt:"O",rep:false,len:250}
+}},
+NK1:{name:"Next of Kin",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Name",dt:"XPN",opt:"O",rep:true,len:250},
+3:{name:"Relationship",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Address",dt:"XAD",opt:"O",rep:true,len:250},
+5:{name:"Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+6:{name:"Business Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+7:{name:"Contact Role",dt:"CE",opt:"O",rep:false,len:250},
+8:{name:"Start Date",dt:"DT",opt:"O",rep:false,len:8},
+9:{name:"End Date",dt:"DT",opt:"O",rep:false,len:8},
+10:{name:"Next of Kin Job Title",dt:"ST",opt:"O",rep:false,len:60},
+11:{name:"Next of Kin Job Code/Class",dt:"JCC",opt:"O",rep:false,len:20},
+12:{name:"Next of Kin Employee Number",dt:"CX",opt:"O",rep:false,len:250},
+13:{name:"Organization Name",dt:"XON",opt:"O",rep:true,len:250}
+}},
+ORC:{name:"Common Order",fields:{
+1:{name:"Order Control",dt:"ID",opt:"R",rep:false,len:2},
+2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
+3:{name:"Filler Order Number",dt:"EI",opt:"C",rep:false,len:22},
+4:{name:"Placer Group Number",dt:"EI",opt:"O",rep:false,len:22},
+5:{name:"Order Status",dt:"ID",opt:"O",rep:false,len:2},
+6:{name:"Response Flag",dt:"ID",opt:"O",rep:false,len:1},
+7:{name:"Quantity/Timing",dt:"TQ",opt:"O",rep:true,len:200},
+8:{name:"Parent",dt:"EI",opt:"O",rep:false,len:200},
+9:{name:"Date/Time of Transaction",dt:"TS",opt:"O",rep:false,len:26},
+10:{name:"Entered By",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Verified By",dt:"XCN",opt:"O",rep:true,len:250},
+12:{name:"Ordering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+13:{name:"Enterer's Location",dt:"PL",opt:"O",rep:false,len:80},
+14:{name:"Call Back Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+15:{name:"Order Effective Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+16:{name:"Order Control Code Reason",dt:"CE",opt:"O",rep:false,len:250},
+17:{name:"Entering Organization",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Entering Device",dt:"CE",opt:"O",rep:false,len:250},
+19:{name:"Action By",dt:"XCN",opt:"O",rep:true,len:250},
+20:{name:"Advanced Beneficiary Notice Code",dt:"CE",opt:"O",rep:false,len:250},
+21:{name:"Ordering Facility Name",dt:"XON",opt:"O",rep:true,len:250},
+22:{name:"Ordering Facility Address",dt:"XAD",opt:"O",rep:true,len:250},
+23:{name:"Ordering Facility Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+24:{name:"Ordering Provider Address",dt:"XAD",opt:"O",rep:true,len:250},
+25:{name:"Order Status Modifier",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+OBR:{name:"Observation Request",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
+3:{name:"Filler Order Number",dt:"EI",opt:"C",rep:false,len:22},
+4:{name:"Universal Service Identifier",dt:"CE",opt:"R",rep:false,len:250},
+5:{name:"Priority",dt:"ID",opt:"B",rep:false,len:2},
+6:{name:"Requested Date/Time",dt:"TS",opt:"B",rep:false,len:26},
+7:{name:"Observation Date/Time",dt:"TS",opt:"C",rep:false,len:26},
+8:{name:"Observation End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Collection Volume",dt:"CQ",opt:"O",rep:false,len:20},
+10:{name:"Collector Identifier",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Specimen Action Code",dt:"ID",opt:"O",rep:false,len:1},
+12:{name:"Danger Code",dt:"CE",opt:"O",rep:false,len:250},
+13:{name:"Relevant Clinical Information",dt:"ST",opt:"O",rep:false,len:300},
+14:{name:"Specimen Received Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+15:{name:"Specimen Source",dt:"SPS",opt:"O",rep:false,len:300},
+16:{name:"Ordering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+17:{name:"Order Callback Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+18:{name:"Placer Field 1",dt:"ST",opt:"O",rep:false,len:60},
+19:{name:"Placer Field 2",dt:"ST",opt:"O",rep:false,len:60},
+20:{name:"Filler Field 1",dt:"ST",opt:"O",rep:false,len:60},
+21:{name:"Filler Field 2",dt:"ST",opt:"O",rep:false,len:60},
+22:{name:"Results Rpt/Status Chng Date/Time",dt:"TS",opt:"C",rep:false,len:26},
+23:{name:"Charge to Practice",dt:"MOC",opt:"O",rep:false,len:40},
+24:{name:"Diagnostic Service Section ID",dt:"ID",opt:"O",rep:false,len:10},
+25:{name:"Result Status",dt:"ID",opt:"C",rep:false,len:1},
+26:{name:"Parent Result",dt:"PRL",opt:"O",rep:false,len:400},
+27:{name:"Quantity/Timing",dt:"TQ",opt:"O",rep:true,len:200},
+28:{name:"Result Copies To",dt:"XCN",opt:"O",rep:true,len:250},
+29:{name:"Parent Number",dt:"EI",opt:"O",rep:false,len:200},
+30:{name:"Transportation Mode",dt:"ID",opt:"O",rep:false,len:20},
+31:{name:"Reason for Study",dt:"CE",opt:"O",rep:true,len:250},
+32:{name:"Principal Result Interpreter",dt:"NDL",opt:"O",rep:false,len:200},
+33:{name:"Assistant Result Interpreter",dt:"NDL",opt:"O",rep:true,len:200},
+34:{name:"Technician",dt:"NDL",opt:"O",rep:true,len:200},
+35:{name:"Transcriptionist",dt:"NDL",opt:"O",rep:true,len:200},
+36:{name:"Scheduled Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+37:{name:"Number of Sample Containers",dt:"NM",opt:"O",rep:false,len:4},
+38:{name:"Transport Logistics of Collected Sample",dt:"CE",opt:"O",rep:true,len:250},
+39:{name:"Collector's Comment",dt:"CE",opt:"O",rep:true,len:250},
+40:{name:"Transport Arrangement Responsibility",dt:"CE",opt:"O",rep:false,len:250},
+41:{name:"Transport Arranged",dt:"ID",opt:"O",rep:false,len:30},
+42:{name:"Escort Required",dt:"ID",opt:"O",rep:false,len:1},
+43:{name:"Planned Patient Transport Comment",dt:"CE",opt:"O",rep:true,len:250},
+44:{name:"Procedure Code",dt:"CE",opt:"O",rep:false,len:250},
+45:{name:"Procedure Code Modifier",dt:"CE",opt:"O",rep:true,len:250},
+46:{name:"Placer Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250},
+47:{name:"Filler Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250},
+48:{name:"Medically Necessary Duplicate Procedure Reason",dt:"CWE",opt:"C",rep:false,len:250},
+49:{name:"Result Handling",dt:"IS",opt:"O",rep:false,len:2},
+50:{name:"Parent Universal Service Identifier",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+OBX:{name:"Observation/Result",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Value Type",dt:"ID",opt:"C",rep:false,len:3},
+3:{name:"Observation Identifier",dt:"CE",opt:"R",rep:false,len:250},
+4:{name:"Observation Sub-ID",dt:"ST",opt:"C",rep:false,len:20},
+5:{name:"Observation Value",dt:"*",opt:"C",rep:true,len:65536},
+6:{name:"Units",dt:"CE",opt:"O",rep:false,len:250},
+7:{name:"References Range",dt:"ST",opt:"O",rep:false,len:60},
+8:{name:"Abnormal Flags",dt:"IS",opt:"O",rep:true,len:5},
+9:{name:"Probability",dt:"NM",opt:"O",rep:false,len:5},
+10:{name:"Nature of Abnormal Test",dt:"ID",opt:"O",rep:false,len:2},
+11:{name:"Observation Result Status",dt:"ID",opt:"R",rep:false,len:1},
+12:{name:"Effective Date of Reference Range",dt:"TS",opt:"O",rep:false,len:26},
+13:{name:"User Defined Access Checks",dt:"ST",opt:"O",rep:false,len:20},
+14:{name:"Date/Time of Observation",dt:"TS",opt:"O",rep:false,len:26},
+15:{name:"Producer's ID",dt:"CE",opt:"O",rep:false,len:250},
+16:{name:"Responsible Observer",dt:"XCN",opt:"O",rep:true,len:250},
+17:{name:"Observation Method",dt:"CE",opt:"O",rep:true,len:250},
+18:{name:"Equipment Instance Identifier",dt:"EI",opt:"O",rep:true,len:22},
+19:{name:"Date/Time of the Analysis",dt:"TS",opt:"O",rep:false,len:26}
+}},
+DG1:{name:"Diagnosis",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Diagnosis Coding Method",dt:"ID",opt:"B",rep:false,len:2},
+3:{name:"Diagnosis Code",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Diagnosis Description",dt:"ST",opt:"B",rep:false,len:40},
+5:{name:"Diagnosis Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+6:{name:"Diagnosis Type",dt:"IS",opt:"R",rep:false,len:2},
+7:{name:"Major Diagnostic Category",dt:"CE",opt:"B",rep:false,len:250},
+8:{name:"Diagnostic Related Group",dt:"CE",opt:"B",rep:false,len:250},
+9:{name:"DRG Approval Indicator",dt:"ID",opt:"B",rep:false,len:1},
+10:{name:"DRG Grouper Review Code",dt:"IS",opt:"B",rep:false,len:2},
+11:{name:"Outlier Type",dt:"CE",opt:"B",rep:false,len:250},
+12:{name:"Outlier Days",dt:"NM",opt:"B",rep:false,len:3},
+13:{name:"Outlier Cost",dt:"CP",opt:"B",rep:false,len:12},
+14:{name:"Grouper Version and Type",dt:"ST",opt:"B",rep:false,len:4},
+15:{name:"Diagnosis Priority",dt:"ID",opt:"O",rep:false,len:2},
+16:{name:"Diagnosing Clinician",dt:"XCN",opt:"O",rep:true,len:250}
+}},
+IN1:{name:"Insurance",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Insurance Plan ID",dt:"CE",opt:"R",rep:false,len:250},
+3:{name:"Insurance Company ID",dt:"CX",opt:"R",rep:true,len:250},
+4:{name:"Insurance Company Name",dt:"XON",opt:"O",rep:true,len:250},
+5:{name:"Insurance Company Address",dt:"XAD",opt:"O",rep:true,len:250},
+6:{name:"Insurance Co Contact Person",dt:"XPN",opt:"O",rep:true,len:250},
+7:{name:"Insurance Co Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+8:{name:"Group Number",dt:"ST",opt:"O",rep:false,len:12},
+9:{name:"Group Name",dt:"XON",opt:"O",rep:true,len:250},
+10:{name:"Insured's Group Emp ID",dt:"CX",opt:"O",rep:true,len:250},
+11:{name:"Insured's Group Emp Name",dt:"XON",opt:"O",rep:true,len:250},
+12:{name:"Plan Effective Date",dt:"DT",opt:"O",rep:false,len:8},
+13:{name:"Plan Expiration Date",dt:"DT",opt:"O",rep:false,len:8},
+14:{name:"Authorization Information",dt:"AUI",opt:"O",rep:false,len:239},
+15:{name:"Plan Type",dt:"IS",opt:"O",rep:false,len:3},
+16:{name:"Name of Insured",dt:"XPN",opt:"O",rep:true,len:250},
+17:{name:"Insured's Relationship to Patient",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Insured's Date of Birth",dt:"TS",opt:"O",rep:false,len:26},
+19:{name:"Insured's Address",dt:"XAD",opt:"O",rep:true,len:250},
+20:{name:"Assignment of Benefits",dt:"IS",opt:"O",rep:false,len:2},
+21:{name:"Coordination of Benefits",dt:"IS",opt:"O",rep:false,len:2},
+22:{name:"Coord of Ben. Priority",dt:"ST",opt:"O",rep:false,len:2}
+}},
+AL1:{name:"Patient Allergy",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Allergen Type Code",dt:"CE",opt:"O",rep:false,len:250},
+3:{name:"Allergen Code/Description",dt:"CE",opt:"R",rep:false,len:250},
+4:{name:"Allergy Severity Code",dt:"CE",opt:"O",rep:false,len:250},
+5:{name:"Allergy Reaction Code",dt:"ST",opt:"O",rep:true,len:15},
+6:{name:"Identification Date",dt:"DT",opt:"B",rep:false,len:8}
+}},
+GT1:{name:"Guarantor",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Guarantor Number",dt:"CX",opt:"O",rep:true,len:250},
+3:{name:"Guarantor Name",dt:"XPN",opt:"R",rep:true,len:250},
+4:{name:"Guarantor Spouse Name",dt:"XPN",opt:"O",rep:true,len:250},
+5:{name:"Guarantor Address",dt:"XAD",opt:"O",rep:true,len:250},
+6:{name:"Guarantor Ph Num - Home",dt:"XTN",opt:"O",rep:true,len:250},
+7:{name:"Guarantor Ph Num - Business",dt:"XTN",opt:"O",rep:true,len:250},
+8:{name:"Guarantor Date/Time of Birth",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Guarantor Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
+10:{name:"Guarantor Type",dt:"IS",opt:"O",rep:false,len:2},
+11:{name:"Guarantor Relationship",dt:"CE",opt:"O",rep:false,len:250},
+12:{name:"Guarantor SSN",dt:"ST",opt:"O",rep:false,len:11}
+}},
+NTE:{name:"Notes and Comments",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Source of Comment",dt:"ID",opt:"O",rep:false,len:8},
+3:{name:"Comment",dt:"FT",opt:"O",rep:true,len:65536},
+4:{name:"Comment Type",dt:"CE",opt:"O",rep:false,len:250}
+}},
+MSA:{name:"Message Acknowledgment",fields:{
+1:{name:"Acknowledgment Code",dt:"ID",opt:"R",rep:false,len:2},
+2:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
+3:{name:"Text Message",dt:"ST",opt:"O",rep:false,len:80},
+4:{name:"Expected Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
+5:{name:"Delayed Acknowledgment Type",dt:"ID",opt:"B",rep:false,len:1},
+6:{name:"Error Condition",dt:"CE",opt:"O",rep:false,len:250}
+}},
+ERR:{name:"Error",fields:{
 1:{name:"Error Code and Location",dt:"ELD",opt:"B",rep:true,len:493},
 2:{name:"Error Location",dt:"ERL",opt:"O",rep:true,len:18},
 3:{name:"HL7 Error Code",dt:"CWE",opt:"R",rep:false,len:705},
@@ -991,39 +1255,106 @@ HL7_V25.ERR = {name:"Error",fields:{
 9:{name:"Inform Person Indicator",dt:"IS",opt:"O",rep:true,len:20},
 10:{name:"Override Type",dt:"CWE",opt:"O",rep:false,len:705},
 11:{name:"Override Reason Code",dt:"CWE",opt:"O",rep:true,len:705},
-12:{name:"Help Desk Contact Point",dt:"XTN",opt:"O",rep:true,len:652}}};
-
-// ORC v2.5 extensions
-HL7_V25.ORC.fields[20] = {name:"Advanced Beneficiary Notice Code",dt:"CE",opt:"O",rep:false,len:250};
-HL7_V25.ORC.fields[21] = {name:"Ordering Facility Name",dt:"XON",opt:"O",rep:true,len:250};
-HL7_V25.ORC.fields[22] = {name:"Ordering Facility Address",dt:"XAD",opt:"O",rep:true,len:250};
-HL7_V25.ORC.fields[23] = {name:"Ordering Facility Phone Number",dt:"XTN",opt:"O",rep:true,len:250};
-HL7_V25.ORC.fields[24] = {name:"Ordering Provider Address",dt:"XAD",opt:"O",rep:true,len:250};
-HL7_V25.ORC.fields[25] = {name:"Order Status Modifier",dt:"CWE",opt:"O",rep:false,len:250};
-
-// OBR v2.5 extensions
-HL7_V25.OBR.fields[44] = {name:"Procedure Code",dt:"CE",opt:"O",rep:false,len:250};
-HL7_V25.OBR.fields[45] = {name:"Procedure Code Modifier",dt:"CE",opt:"O",rep:true,len:250};
-HL7_V25.OBR.fields[46] = {name:"Placer Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250};
-HL7_V25.OBR.fields[47] = {name:"Filler Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250};
-HL7_V25.OBR.fields[48] = {name:"Medically Necessary Duplicate Procedure Reason",dt:"CWE",opt:"C",rep:false,len:250};
-HL7_V25.OBR.fields[49] = {name:"Result Handling",dt:"IS",opt:"O",rep:false,len:2};
-HL7_V25.OBR.fields[50] = {name:"Parent Universal Service Identifier",dt:"CWE",opt:"O",rep:false,len:250};
-
-// OBX v2.5 extensions
-HL7_V25.OBX.fields[18] = {name:"Equipment Instance Identifier",dt:"EI",opt:"O",rep:true,len:22};
-HL7_V25.OBX.fields[19] = {name:"Date/Time of the Analysis",dt:"TS",opt:"O",rep:false,len:26};
-
-// New segments added in v2.5 (also inherited by v2.8)
-HL7_V25.SFT = {name:"Software Segment",fields:{
+12:{name:"Help Desk Contact Point",dt:"XTN",opt:"O",rep:true,len:652}
+}},
+QRD:{name:"Original-Style Query Definition",fields:{
+1:{name:"Query Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+2:{name:"Query Format Code",dt:"ID",opt:"R",rep:false,len:1},
+3:{name:"Query Priority",dt:"ID",opt:"R",rep:false,len:1},
+4:{name:"Query ID",dt:"ST",opt:"R",rep:false,len:10},
+5:{name:"Deferred Response Type",dt:"ID",opt:"O",rep:false,len:1},
+6:{name:"Deferred Response Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Quantity Limited Request",dt:"CQ",opt:"R",rep:false,len:10},
+8:{name:"Who Subject Filter",dt:"XCN",opt:"R",rep:true,len:250},
+9:{name:"What Subject Filter",dt:"CE",opt:"R",rep:true,len:250},
+10:{name:"What Department Data Code",dt:"CE",opt:"R",rep:true,len:250},
+11:{name:"What Data Code Value Qual",dt:"CM",opt:"O",rep:true,len:20},
+12:{name:"Query Results Level",dt:"ID",opt:"O",rep:false,len:1}
+}},
+QRF:{name:"Original-Style Query Filter",fields:{
+1:{name:"Where Subject Filter",dt:"ST",opt:"R",rep:true,len:20},
+2:{name:"When Data Start Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+3:{name:"When Data End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+4:{name:"What User Qualifier",dt:"ST",opt:"O",rep:true,len:60},
+5:{name:"Other QRY Subject Filter",dt:"ST",opt:"O",rep:true,len:60}
+}},
+MRG:{name:"Merge Patient Information",fields:{
+1:{name:"Prior Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
+2:{name:"Prior Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:250},
+3:{name:"Prior Patient Account Number",dt:"CX",opt:"O",rep:false,len:250},
+4:{name:"Prior Patient ID",dt:"CX",opt:"B",rep:false,len:250},
+5:{name:"Prior Visit Number",dt:"CX",opt:"O",rep:false,len:250},
+6:{name:"Prior Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
+7:{name:"Prior Patient Name",dt:"XPN",opt:"O",rep:true,len:250}
+}},
+SCH:{name:"Scheduling Activity",fields:{
+1:{name:"Placer Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
+2:{name:"Filler Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
+3:{name:"Occurrence Number",dt:"NM",opt:"C",rep:false,len:5},
+4:{name:"Placer Group Number",dt:"EI",opt:"O",rep:false,len:22},
+5:{name:"Schedule ID",dt:"CE",opt:"O",rep:false,len:250},
+6:{name:"Event Reason",dt:"CE",opt:"R",rep:false,len:250},
+7:{name:"Appointment Reason",dt:"CE",opt:"O",rep:false,len:250},
+8:{name:"Appointment Type",dt:"CE",opt:"O",rep:false,len:250},
+9:{name:"Appointment Duration",dt:"NM",opt:"O",rep:false,len:20},
+10:{name:"Appointment Duration Units",dt:"CE",opt:"O",rep:false,len:250},
+11:{name:"Appointment Timing Quantity",dt:"TQ",opt:"O",rep:true,len:200},
+12:{name:"Placer Contact Person",dt:"XCN",opt:"O",rep:true,len:250},
+13:{name:"Placer Contact Phone Number",dt:"XTN",opt:"O",rep:false,len:250},
+14:{name:"Placer Contact Address",dt:"XAD",opt:"O",rep:true,len:250},
+15:{name:"Placer Contact Location",dt:"PL",opt:"O",rep:false,len:80},
+16:{name:"Filler Contact Person",dt:"XCN",opt:"R",rep:true,len:250},
+17:{name:"Filler Contact Phone Number",dt:"XTN",opt:"O",rep:false,len:250},
+18:{name:"Filler Contact Address",dt:"XAD",opt:"O",rep:true,len:250},
+19:{name:"Filler Contact Location",dt:"PL",opt:"O",rep:false,len:80},
+20:{name:"Entered By Person",dt:"XCN",opt:"R",rep:true,len:250},
+21:{name:"Entered By Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+22:{name:"Entered By Location",dt:"PL",opt:"O",rep:false,len:80},
+23:{name:"Parent Placer Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
+24:{name:"Parent Filler Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
+25:{name:"Filler Status Code",dt:"CE",opt:"O",rep:false,len:250}
+}},
+TXA:{name:"Transcription Document Header",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Document Type",dt:"IS",opt:"R",rep:false,len:30},
+3:{name:"Document Content Presentation",dt:"ID",opt:"C",rep:false,len:2},
+4:{name:"Activity Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+5:{name:"Primary Activity Provider Code/Name",dt:"XCN",opt:"C",rep:true,len:250},
+6:{name:"Origination Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Transcription Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Edit Date/Time",dt:"TS",opt:"O",rep:true,len:26},
+9:{name:"Originator Code/Name",dt:"XCN",opt:"O",rep:true,len:250},
+10:{name:"Assigned Document Authenticator",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Transcriptionist Code/Name",dt:"XCN",opt:"O",rep:true,len:250},
+12:{name:"Unique Document Number",dt:"EI",opt:"R",rep:false,len:30},
+13:{name:"Parent Document Number",dt:"EI",opt:"O",rep:false,len:30},
+14:{name:"Placer Order Number",dt:"EI",opt:"O",rep:true,len:22},
+15:{name:"Filler Order Number",dt:"EI",opt:"O",rep:false,len:22},
+16:{name:"Unique Document File Name",dt:"ST",opt:"O",rep:false,len:30},
+17:{name:"Document Completion Status",dt:"ID",opt:"R",rep:false,len:2},
+18:{name:"Document Confidentiality Status",dt:"ID",opt:"O",rep:false,len:2},
+19:{name:"Document Availability Status",dt:"ID",opt:"O",rep:false,len:2},
+20:{name:"Document Storage Status",dt:"ID",opt:"O",rep:false,len:2},
+21:{name:"Document Change Reason",dt:"ST",opt:"C",rep:false,len:30},
+22:{name:"Authentication Person Time Stamp",dt:"PPN",opt:"C",rep:true,len:250},
+23:{name:"Distributed Copies",dt:"XCN",opt:"O",rep:true,len:250}
+}},
+DSP:{name:"Display Data",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Display Level",dt:"SI",opt:"O",rep:false,len:4},
+3:{name:"Data Line",dt:"TX",opt:"R",rep:false,len:300},
+4:{name:"Logical Break Point",dt:"ST",opt:"O",rep:false,len:2},
+5:{name:"Result ID",dt:"TX",opt:"O",rep:false,len:20}
+}},
+SFT:{name:"Software Segment",fields:{
 1:{name:"Software Vendor Organization",dt:"XON",opt:"R",rep:false,len:567},
 2:{name:"Software Certified Version or Release Number",dt:"ST",opt:"R",rep:false,len:15},
 3:{name:"Software Product Name",dt:"ST",opt:"R",rep:false,len:20},
 4:{name:"Software Binary ID",dt:"ST",opt:"R",rep:false,len:20},
 5:{name:"Software Product Information",dt:"TX",opt:"O",rep:false,len:1024},
-6:{name:"Software Install Date",dt:"TS",opt:"O",rep:false,len:26}}};
-
-HL7_V25.SPM = {name:"Specimen",fields:{
+6:{name:"Software Install Date",dt:"TS",opt:"O",rep:false,len:26}
+}},
+SPM:{name:"Specimen",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Specimen ID",dt:"EIP",opt:"O",rep:false,len:80},
 3:{name:"Specimen Parent IDs",dt:"EIP",opt:"O",rep:true,len:80},
@@ -1050,9 +1381,9 @@ HL7_V25.SPM = {name:"Specimen",fields:{
 24:{name:"Specimen Condition",dt:"CWE",opt:"O",rep:true,len:250},
 25:{name:"Specimen Current Quantity",dt:"CQ",opt:"O",rep:false,len:20},
 26:{name:"Number of Specimen Containers",dt:"NM",opt:"O",rep:false,len:4},
-27:{name:"Container Type",dt:"CWE",opt:"O",rep:false,len:250}}};
-
-HL7_V25.TQ1 = {name:"Timing/Quantity",fields:{
+27:{name:"Container Type",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+TQ1:{name:"Timing/Quantity",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Quantity",dt:"CQ",opt:"O",rep:false,len:20},
 3:{name:"Repeat Pattern",dt:"RPT",opt:"O",rep:true,len:540},
@@ -1066,9 +1397,9 @@ HL7_V25.TQ1 = {name:"Timing/Quantity",fields:{
 11:{name:"Text Instruction",dt:"TX",opt:"O",rep:false,len:250},
 12:{name:"Conjunction",dt:"ID",opt:"C",rep:false,len:10},
 13:{name:"Occurrence Duration",dt:"CQ",opt:"O",rep:false,len:20},
-14:{name:"Total Occurrences",dt:"NM",opt:"O",rep:false,len:10}}};
-
-HL7_V25.TQ2 = {name:"Timing/Quantity Relationship",fields:{
+14:{name:"Total Occurrences",dt:"NM",opt:"O",rep:false,len:10}
+}},
+TQ2:{name:"Timing/Quantity Relationship",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Sequence/Results Flag",dt:"ID",opt:"O",rep:false,len:1},
 3:{name:"Related Placer Number",dt:"EI",opt:"O",rep:true,len:22},
@@ -1078,9 +1409,9 @@ HL7_V25.TQ2 = {name:"Timing/Quantity Relationship",fields:{
 7:{name:"Cyclic Entry/Exit Indicator",dt:"ID",opt:"O",rep:false,len:1},
 8:{name:"Sequence Condition Time Interval",dt:"CQ",opt:"O",rep:false,len:20},
 9:{name:"Cyclic Group Maximum Number of Repeats",dt:"NM",opt:"O",rep:false,len:10},
-10:{name:"Special Service Request Relationship",dt:"ID",opt:"O",rep:false,len:1}}};
-
-HL7_V25.RXA = {name:"Pharmacy/Treatment Administration",fields:{
+10:{name:"Special Service Request Relationship",dt:"ID",opt:"O",rep:false,len:1}
+}},
+RXA:{name:"Pharmacy/Treatment Administration",fields:{
 1:{name:"Give Sub-ID Counter",dt:"NM",opt:"R",rep:false,len:4},
 2:{name:"Administration Sub-ID Counter",dt:"NM",opt:"R",rep:false,len:4},
 3:{name:"Date/Time Start of Administration",dt:"TS",opt:"R",rep:false,len:26},
@@ -1106,9 +1437,9 @@ HL7_V25.RXA = {name:"Pharmacy/Treatment Administration",fields:{
 23:{name:"Administered Drug Strength Volume",dt:"NM",opt:"O",rep:false,len:5},
 24:{name:"Administered Drug Strength Volume Units",dt:"CWE",opt:"O",rep:false,len:250},
 25:{name:"Administered Barcode Identifier",dt:"CWE",opt:"O",rep:false,len:60},
-26:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1}}};
-
-HL7_V25.RXE = {name:"Pharmacy/Treatment Encoded Order",fields:{
+26:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1}
+}},
+RXE:{name:"Pharmacy/Treatment Encoded Order",fields:{
 1:{name:"Quantity/Timing",dt:"TQ",opt:"B",rep:false,len:200},
 2:{name:"Give Code",dt:"CE",opt:"R",rep:false,len:250},
 3:{name:"Give Amount - Minimum",dt:"NM",opt:"R",rep:false,len:20},
@@ -1152,9 +1483,9 @@ HL7_V25.RXE = {name:"Pharmacy/Treatment Encoded Order",fields:{
 41:{name:"Dispensing Pharmacy Address",dt:"XAD",opt:"O",rep:false,len:250},
 42:{name:"Deliver-to Patient Location",dt:"PL",opt:"O",rep:false,len:80},
 43:{name:"Deliver-to Address",dt:"XAD",opt:"O",rep:false,len:250},
-44:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1}}};
-
-HL7_V25.RXO = {name:"Pharmacy/Treatment Order",fields:{
+44:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1}
+}},
+RXO:{name:"Pharmacy/Treatment Order",fields:{
 1:{name:"Requested Give Code",dt:"CE",opt:"C",rep:false,len:250},
 2:{name:"Requested Give Amount - Minimum",dt:"NM",opt:"C",rep:false,len:20},
 3:{name:"Requested Give Amount - Maximum",dt:"NM",opt:"O",rep:false,len:20},
@@ -1182,17 +1513,17 @@ HL7_V25.RXO = {name:"Pharmacy/Treatment Order",fields:{
 25:{name:"Requested Drug Strength Volume",dt:"NM",opt:"O",rep:false,len:5},
 26:{name:"Requested Drug Strength Volume Units",dt:"CWE",opt:"O",rep:false,len:250},
 27:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1},
-28:{name:"Dispensing Interval",dt:"NM",opt:"O",rep:false,len:20}}};
-
-HL7_V25.RXR = {name:"Pharmacy/Treatment Route",fields:{
+28:{name:"Dispensing Interval",dt:"NM",opt:"O",rep:false,len:20}
+}},
+RXR:{name:"Pharmacy/Treatment Route",fields:{
 1:{name:"Route",dt:"CE",opt:"R",rep:false,len:250},
 2:{name:"Administration Site",dt:"CWE",opt:"O",rep:false,len:250},
 3:{name:"Administration Device",dt:"CE",opt:"O",rep:false,len:250},
 4:{name:"Administration Method",dt:"CWE",opt:"O",rep:false,len:250},
 5:{name:"Routing Instruction",dt:"CE",opt:"O",rep:false,len:250},
-6:{name:"Administration Site Modifier",dt:"CWE",opt:"O",rep:false,len:250}}};
-
-HL7_V25.FT1 = {name:"Financial Transaction",fields:{
+6:{name:"Administration Site Modifier",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+FT1:{name:"Financial Transaction",fields:{
 1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
 2:{name:"Transaction ID",dt:"ST",opt:"O",rep:false,len:12},
 3:{name:"Transaction Batch ID",dt:"ST",opt:"O",rep:false,len:10},
@@ -1223,9 +1554,9 @@ HL7_V25.FT1 = {name:"Financial Transaction",fields:{
 28:{name:"Medically Necessary Duplicate Procedure Reason",dt:"CWE",opt:"O",rep:false,len:250},
 29:{name:"NDC Code",dt:"CNE",opt:"O",rep:false,len:250},
 30:{name:"Payment Reference ID",dt:"CX",opt:"O",rep:false,len:250},
-31:{name:"Transaction Reference Key",dt:"SI",opt:"O",rep:true,len:4}}};
-
-HL7_V25.PR1 = {name:"Procedures",fields:{
+31:{name:"Transaction Reference Key",dt:"SI",opt:"O",rep:true,len:4}
+}},
+PR1:{name:"Procedures",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Procedure Coding Method",dt:"IS",opt:"B",rep:false,len:3},
 3:{name:"Procedure Code",dt:"CE",opt:"R",rep:false,len:250},
@@ -1245,9 +1576,9 @@ HL7_V25.PR1 = {name:"Procedures",fields:{
 17:{name:"Procedure DRG Type",dt:"IS",opt:"O",rep:false,len:20},
 18:{name:"Tissue Type Code",dt:"CE",opt:"O",rep:true,len:250},
 19:{name:"Procedure Identifier",dt:"EI",opt:"C",rep:false,len:427},
-20:{name:"Procedure Action Code",dt:"ID",opt:"C",rep:false,len:1}}};
-
-HL7_V25.PD1 = {name:"Patient Additional Demographic",fields:{
+20:{name:"Procedure Action Code",dt:"ID",opt:"C",rep:false,len:1}
+}},
+PD1:{name:"Patient Additional Demographic",fields:{
 1:{name:"Living Dependency",dt:"IS",opt:"O",rep:true,len:2},
 2:{name:"Living Arrangement",dt:"IS",opt:"O",rep:false,len:2},
 3:{name:"Patient Primary Facility",dt:"XON",opt:"O",rep:true,len:250},
@@ -1268,9 +1599,9 @@ HL7_V25.PD1 = {name:"Patient Additional Demographic",fields:{
 18:{name:"Publicity Code Effective Date",dt:"DT",opt:"O",rep:false,len:8},
 19:{name:"Military Branch",dt:"IS",opt:"O",rep:false,len:5},
 20:{name:"Military Rank/Grade",dt:"IS",opt:"O",rep:false,len:2},
-21:{name:"Military Status",dt:"IS",opt:"O",rep:false,len:3}}};
-
-HL7_V25.IN2 = {name:"Insurance Additional Information",fields:{
+21:{name:"Military Status",dt:"IS",opt:"O",rep:false,len:3}
+}},
+IN2:{name:"Insurance Additional Information",fields:{
 1:{name:"Insured's Employee ID",dt:"CX",opt:"O",rep:true,len:250},
 2:{name:"Insured's Social Security Number",dt:"ST",opt:"O",rep:false,len:11},
 3:{name:"Insured's Employer's Name and ID",dt:"XCN",opt:"O",rep:true,len:250},
@@ -1342,9 +1673,9 @@ HL7_V25.IN2 = {name:"Insurance Additional Information",fields:{
 69:{name:"Insured Organization Name and ID",dt:"XON",opt:"O",rep:true,len:250},
 70:{name:"Insured Employer Organization Name and ID",dt:"XON",opt:"O",rep:true,len:250},
 71:{name:"Race",dt:"CE",opt:"O",rep:true,len:250},
-72:{name:"CMS Patient's Relationship to Insured",dt:"CE",opt:"O",rep:false,len:250}}};
-
-HL7_V25.ROL = {name:"Role",fields:{
+72:{name:"CMS Patient's Relationship to Insured",dt:"CE",opt:"O",rep:false,len:250}
+}},
+ROL:{name:"Role",fields:{
 1:{name:"Role Instance ID",dt:"EI",opt:"C",rep:false,len:60},
 2:{name:"Action Code",dt:"ID",opt:"R",rep:false,len:2},
 3:{name:"Role-ROL",dt:"CE",opt:"R",rep:false,len:250},
@@ -1356,9 +1687,9 @@ HL7_V25.ROL = {name:"Role",fields:{
 9:{name:"Provider Type",dt:"CE",opt:"O",rep:true,len:250},
 10:{name:"Organization Unit Type",dt:"CE",opt:"O",rep:false,len:250},
 11:{name:"Office/Home Address/Birthplace",dt:"XAD",opt:"O",rep:true,len:250},
-12:{name:"Phone",dt:"XTN",opt:"O",rep:true,len:250}}};
-
-HL7_V25.DB1 = {name:"Disability",fields:{
+12:{name:"Phone",dt:"XTN",opt:"O",rep:true,len:250}
+}},
+DB1:{name:"Disability",fields:{
 1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
 2:{name:"Disabled Person Code",dt:"IS",opt:"O",rep:false,len:2},
 3:{name:"Disabled Person Identifier",dt:"CX",opt:"O",rep:true,len:250},
@@ -1366,9 +1697,9 @@ HL7_V25.DB1 = {name:"Disability",fields:{
 5:{name:"Disability Start Date",dt:"DT",opt:"O",rep:false,len:8},
 6:{name:"Disability End Date",dt:"DT",opt:"O",rep:false,len:8},
 7:{name:"Disability Return to Work Date",dt:"DT",opt:"O",rep:false,len:8},
-8:{name:"Disability Unable to Work Date",dt:"DT",opt:"O",rep:false,len:8}}};
-
-HL7_V25.ACC = {name:"Accident",fields:{
+8:{name:"Disability Unable to Work Date",dt:"DT",opt:"O",rep:false,len:8}
+}},
+ACC:{name:"Accident",fields:{
 1:{name:"Accident Date/Time",dt:"TS",opt:"O",rep:false,len:26},
 2:{name:"Accident Code",dt:"CE",opt:"O",rep:false,len:250},
 3:{name:"Accident Location",dt:"ST",opt:"O",rep:false,len:25},
@@ -1379,46 +1710,849 @@ HL7_V25.ACC = {name:"Accident",fields:{
 8:{name:"Accident Description",dt:"ST",opt:"O",rep:false,len:25},
 9:{name:"Brought In By",dt:"ST",opt:"O",rep:false,len:80},
 10:{name:"Police Notified Indicator",dt:"ID",opt:"O",rep:false,len:1},
-11:{name:"Accident Address",dt:"XAD",opt:"O",rep:false,len:250}}};
+11:{name:"Accident Address",dt:"XAD",opt:"O",rep:false,len:250}
+}},
+};
 
 // ========== HL7 v2.8 SEGMENT DEFINITIONS ==========
-// Start with v2.5 as base, then override/extend
-const HL7_V28 = JSON.parse(JSON.stringify(HL7_V25));
-
-// MSH v2.8 extensions
-HL7_V28.MSH.fields[22] = {name:"Sending Responsible Organization",dt:"XON",opt:"O",rep:false,len:567};
-HL7_V28.MSH.fields[23] = {name:"Receiving Responsible Organization",dt:"XON",opt:"O",rep:false,len:567};
-HL7_V28.MSH.fields[24] = {name:"Sending Network Address",dt:"HD",opt:"O",rep:false,len:227};
-HL7_V28.MSH.fields[25] = {name:"Receiving Network Address",dt:"HD",opt:"O",rep:false,len:227};
-
-// OBX v2.8 extensions
-HL7_V28.OBX.fields[20] = {name:"Observation Site",dt:"CWE",opt:"O",rep:true,len:250};
-HL7_V28.OBX.fields[21] = {name:"Observation Instance Identifier",dt:"EI",opt:"O",rep:false,len:22};
-HL7_V28.OBX.fields[22] = {name:"Mood Code",dt:"CNE",opt:"O",rep:false,len:250};
-HL7_V28.OBX.fields[23] = {name:"Performing Organization Name",dt:"XON",opt:"O",rep:false,len:567};
-HL7_V28.OBX.fields[24] = {name:"Performing Organization Address",dt:"XAD",opt:"O",rep:false,len:631};
-HL7_V28.OBX.fields[25] = {name:"Performing Organization Medical Director",dt:"XCN",opt:"O",rep:false,len:3002};
-
-// CE→CWE in v2.8 key lab fields
-[["OBX",[3,6,15,17]],["OBR",[4,44,45]],["DG1",[3]],["AL1",[2,3]],
-["RXA",[5,7,8,9,14,17,18,19]],["RXE",[2,5,6,7,11,21,24,26,27,29,31]],
-["RXO",[1,4,5,6,7,10,12,19,20,22,24]],["RXR",[1,3,5]],
-["FT1",[7,13,14,19,25,26,27]],["PR1",[3,13,15,16,18]],
-["PD1",[11,15]],["IN2",[11,33,34,36,39,41,42,43,62,65,71,72]],
-["ROL",[3,7,8,9,10]],["ACC",[2,4]]].forEach(([seg,nums])=>{
-  nums.forEach(n=>{ const f=HL7_V28[seg].fields[n]; if(f&&f.dt==="CE"){f.dt="CWE";} });
-});
+const HL7_V28 = {
+MSH:{name:"Message Header",fields:{
+1:{name:"Field Separator",dt:"ST",opt:"R",rep:false,len:1},
+2:{name:"Encoding Characters",dt:"ST",opt:"R",rep:false,len:4},
+3:{name:"Sending Application",dt:"HD",opt:"O",rep:false,len:180},
+4:{name:"Sending Facility",dt:"HD",opt:"O",rep:false,len:180},
+5:{name:"Receiving Application",dt:"HD",opt:"O",rep:false,len:180},
+6:{name:"Receiving Facility",dt:"HD",opt:"O",rep:false,len:180},
+7:{name:"Date/Time of Message",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Security",dt:"ST",opt:"O",rep:false,len:40},
+9:{name:"Message Type",dt:"MSG",opt:"R",rep:false,len:15},
+10:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
+11:{name:"Processing ID",dt:"PT",opt:"R",rep:false,len:3},
+12:{name:"Version ID",dt:"VID",opt:"R",rep:false,len:60},
+13:{name:"Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
+14:{name:"Continuation Pointer",dt:"ST",opt:"O",rep:false,len:180},
+15:{name:"Accept Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
+16:{name:"Application Acknowledgment Type",dt:"ID",opt:"O",rep:false,len:2},
+17:{name:"Country Code",dt:"ID",opt:"O",rep:false,len:3},
+18:{name:"Character Set",dt:"ID",opt:"O",rep:true,len:16},
+19:{name:"Principal Language of Message",dt:"CE",opt:"O",rep:false,len:250},
+20:{name:"Alternate Character Set Handling",dt:"ID",opt:"O",rep:false,len:20},
+21:{name:"Message Profile Identifier",dt:"EI",opt:"O",rep:true,len:427},
+22:{name:"Sending Responsible Organization",dt:"XON",opt:"O",rep:false,len:567},
+23:{name:"Receiving Responsible Organization",dt:"XON",opt:"O",rep:false,len:567},
+24:{name:"Sending Network Address",dt:"HD",opt:"O",rep:false,len:227},
+25:{name:"Receiving Network Address",dt:"HD",opt:"O",rep:false,len:227}
+}},
+EVN:{name:"Event Type",fields:{
+1:{name:"Event Type Code",dt:"ID",opt:"B",rep:false,len:3},
+2:{name:"Recorded Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+3:{name:"Date/Time Planned Event",dt:"TS",opt:"O",rep:false,len:26},
+4:{name:"Event Reason Code",dt:"IS",opt:"O",rep:false,len:3},
+5:{name:"Operator ID",dt:"XCN",opt:"O",rep:true,len:250},
+6:{name:"Event Occurred",dt:"TS",opt:"O",rep:false,len:26}
+}},
+PID:{name:"Patient Identification",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Patient ID",dt:"CX",opt:"B",rep:false,len:20},
+3:{name:"Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
+4:{name:"Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:20},
+5:{name:"Patient Name",dt:"XPN",opt:"R",rep:true,len:250},
+6:{name:"Mother's Maiden Name",dt:"XPN",opt:"O",rep:true,len:250},
+7:{name:"Date/Time of Birth",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
+9:{name:"Patient Alias",dt:"XPN",opt:"B",rep:true,len:250},
+10:{name:"Race",dt:"CE",opt:"O",rep:true,len:250},
+11:{name:"Patient Address",dt:"XAD",opt:"O",rep:true,len:250},
+12:{name:"County Code",dt:"IS",opt:"B",rep:false,len:4},
+13:{name:"Phone Number - Home",dt:"XTN",opt:"O",rep:true,len:250},
+14:{name:"Phone Number - Business",dt:"XTN",opt:"O",rep:true,len:250},
+15:{name:"Primary Language",dt:"CE",opt:"O",rep:false,len:250},
+16:{name:"Marital Status",dt:"CE",opt:"O",rep:false,len:250},
+17:{name:"Religion",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Patient Account Number",dt:"CX",opt:"O",rep:false,len:250},
+19:{name:"SSN Number",dt:"ST",opt:"B",rep:false,len:16},
+20:{name:"Driver's License Number",dt:"DLN",opt:"B",rep:false,len:25},
+21:{name:"Mother's Identifier",dt:"CX",opt:"O",rep:true,len:250},
+22:{name:"Ethnic Group",dt:"CE",opt:"O",rep:true,len:250},
+23:{name:"Birth Place",dt:"ST",opt:"O",rep:false,len:250},
+24:{name:"Multiple Birth Indicator",dt:"ID",opt:"O",rep:false,len:1},
+25:{name:"Birth Order",dt:"NM",opt:"O",rep:false,len:2},
+26:{name:"Citizenship",dt:"CE",opt:"O",rep:true,len:250},
+27:{name:"Veterans Military Status",dt:"CE",opt:"O",rep:false,len:250},
+28:{name:"Nationality",dt:"CE",opt:"B",rep:false,len:250},
+29:{name:"Patient Death Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+30:{name:"Patient Death Indicator",dt:"ID",opt:"O",rep:false,len:1},
+31:{name:"Identity Unknown Indicator",dt:"ID",opt:"O",rep:false,len:1},
+32:{name:"Identity Reliability Code",dt:"IS",opt:"O",rep:true,len:20},
+33:{name:"Last Update Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+34:{name:"Last Update Facility",dt:"HD",opt:"O",rep:false,len:241},
+35:{name:"Species Code",dt:"CE",opt:"C",rep:false,len:250},
+36:{name:"Breed Code",dt:"CE",opt:"C",rep:false,len:250},
+37:{name:"Strain",dt:"ST",opt:"O",rep:false,len:80},
+38:{name:"Production Class Code",dt:"CE",opt:"O",rep:false,len:250},
+39:{name:"Tribal Citizenship",dt:"CWE",opt:"O",rep:true,len:250}
+}},
+PV1:{name:"Patient Visit",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Patient Class",dt:"IS",opt:"R",rep:false,len:1},
+3:{name:"Assigned Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+4:{name:"Admission Type",dt:"IS",opt:"O",rep:false,len:2},
+5:{name:"Preadmit Number",dt:"CX",opt:"O",rep:false,len:250},
+6:{name:"Prior Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+7:{name:"Attending Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+8:{name:"Referring Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+9:{name:"Consulting Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+10:{name:"Hospital Service",dt:"IS",opt:"O",rep:false,len:3},
+11:{name:"Temporary Location",dt:"PL",opt:"O",rep:false,len:80},
+12:{name:"Preadmit Test Indicator",dt:"IS",opt:"O",rep:false,len:2},
+13:{name:"Re-admission Indicator",dt:"IS",opt:"O",rep:false,len:2},
+14:{name:"Admit Source",dt:"IS",opt:"O",rep:false,len:6},
+15:{name:"Ambulatory Status",dt:"IS",opt:"O",rep:true,len:2},
+16:{name:"VIP Indicator",dt:"IS",opt:"O",rep:false,len:2},
+17:{name:"Admitting Doctor",dt:"XCN",opt:"O",rep:true,len:250},
+18:{name:"Patient Type",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Visit Number",dt:"CX",opt:"O",rep:false,len:250},
+20:{name:"Financial Class",dt:"FC",opt:"O",rep:true,len:50},
+21:{name:"Charge Price Indicator",dt:"IS",opt:"O",rep:false,len:2},
+22:{name:"Courtesy Code",dt:"IS",opt:"O",rep:false,len:2},
+23:{name:"Credit Rating",dt:"IS",opt:"O",rep:false,len:2},
+24:{name:"Contract Code",dt:"IS",opt:"O",rep:true,len:2},
+25:{name:"Contract Effective Date",dt:"DT",opt:"O",rep:true,len:8},
+26:{name:"Contract Amount",dt:"NM",opt:"O",rep:true,len:12},
+27:{name:"Contract Period",dt:"NM",opt:"O",rep:true,len:3},
+28:{name:"Interest Code",dt:"IS",opt:"O",rep:false,len:2},
+29:{name:"Transfer to Bad Debt Code",dt:"IS",opt:"O",rep:false,len:1},
+30:{name:"Transfer to Bad Debt Date",dt:"DT",opt:"O",rep:false,len:8},
+31:{name:"Bad Debt Agency Code",dt:"IS",opt:"O",rep:false,len:10},
+32:{name:"Bad Debt Transfer Amount",dt:"NM",opt:"O",rep:false,len:12},
+33:{name:"Bad Debt Recovery Amount",dt:"NM",opt:"O",rep:false,len:12},
+34:{name:"Delete Account Indicator",dt:"IS",opt:"O",rep:false,len:1},
+35:{name:"Delete Account Date",dt:"DT",opt:"O",rep:false,len:8},
+36:{name:"Discharge Disposition",dt:"IS",opt:"O",rep:false,len:3},
+37:{name:"Discharged to Location",dt:"DLD",opt:"O",rep:false,len:25},
+38:{name:"Diet Type",dt:"CE",opt:"O",rep:false,len:250},
+39:{name:"Servicing Facility",dt:"IS",opt:"O",rep:false,len:2},
+40:{name:"Bed Status",dt:"IS",opt:"B",rep:false,len:1},
+41:{name:"Account Status",dt:"IS",opt:"O",rep:false,len:2},
+42:{name:"Pending Location",dt:"PL",opt:"O",rep:false,len:80},
+43:{name:"Prior Temporary Location",dt:"PL",opt:"O",rep:false,len:80},
+44:{name:"Admit Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+45:{name:"Discharge Date/Time",dt:"TS",opt:"O",rep:true,len:26},
+46:{name:"Current Patient Balance",dt:"NM",opt:"O",rep:false,len:12},
+47:{name:"Total Charges",dt:"NM",opt:"O",rep:false,len:12},
+48:{name:"Total Adjustments",dt:"NM",opt:"O",rep:false,len:12},
+49:{name:"Total Payments",dt:"NM",opt:"O",rep:false,len:12},
+50:{name:"Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
+51:{name:"Visit Indicator",dt:"IS",opt:"O",rep:false,len:1},
+52:{name:"Other Healthcare Provider",dt:"XCN",opt:"B",rep:true,len:250}
+}},
+PV2:{name:"Patient Visit - Additional",fields:{
+1:{name:"Prior Pending Location",dt:"PL",opt:"C",rep:false,len:80},
+2:{name:"Accommodation Code",dt:"CE",opt:"O",rep:false,len:250},
+3:{name:"Admit Reason",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Transfer Reason",dt:"CE",opt:"O",rep:false,len:250},
+5:{name:"Patient Valuables",dt:"ST",opt:"O",rep:true,len:25},
+6:{name:"Patient Valuables Location",dt:"ST",opt:"O",rep:false,len:25},
+7:{name:"Visit User Code",dt:"IS",opt:"O",rep:true,len:2},
+8:{name:"Expected Admit Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Expected Discharge Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+10:{name:"Estimated Length of Inpatient Stay",dt:"NM",opt:"O",rep:false,len:3},
+11:{name:"Actual Length of Inpatient Stay",dt:"NM",opt:"O",rep:false,len:3},
+12:{name:"Visit Description",dt:"ST",opt:"O",rep:false,len:50},
+13:{name:"Referral Source Code",dt:"XCN",opt:"O",rep:true,len:250},
+14:{name:"Previous Service Date",dt:"DT",opt:"O",rep:false,len:8},
+15:{name:"Employment Illness Related Indicator",dt:"ID",opt:"O",rep:false,len:1},
+16:{name:"Purge Status Code",dt:"IS",opt:"O",rep:false,len:1},
+17:{name:"Purge Status Date",dt:"DT",opt:"O",rep:false,len:8},
+18:{name:"Special Program Code",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Retention Indicator",dt:"ID",opt:"O",rep:false,len:1},
+20:{name:"Expected Number of Insurance Plans",dt:"NM",opt:"O",rep:false,len:1},
+21:{name:"Visit Publicity Code",dt:"IS",opt:"O",rep:false,len:1},
+22:{name:"Visit Protection Indicator",dt:"ID",opt:"O",rep:false,len:1},
+23:{name:"Clinic Organization Name",dt:"XON",opt:"O",rep:true,len:250},
+24:{name:"Patient Status Code",dt:"IS",opt:"O",rep:false,len:2},
+25:{name:"Visit Priority Code",dt:"IS",opt:"O",rep:false,len:1},
+26:{name:"Previous Treatment Date",dt:"DT",opt:"O",rep:false,len:8},
+27:{name:"Expected Discharge Disposition",dt:"IS",opt:"O",rep:false,len:2},
+28:{name:"Signature on File Date",dt:"DT",opt:"O",rep:false,len:8},
+29:{name:"First Similar Illness Date",dt:"DT",opt:"O",rep:false,len:8},
+30:{name:"Patient Charge Adjustment Code",dt:"CE",opt:"O",rep:false,len:250}
+}},
+NK1:{name:"Next of Kin",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Name",dt:"XPN",opt:"O",rep:true,len:250},
+3:{name:"Relationship",dt:"CE",opt:"O",rep:false,len:250},
+4:{name:"Address",dt:"XAD",opt:"O",rep:true,len:250},
+5:{name:"Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+6:{name:"Business Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+7:{name:"Contact Role",dt:"CE",opt:"O",rep:false,len:250},
+8:{name:"Start Date",dt:"DT",opt:"O",rep:false,len:8},
+9:{name:"End Date",dt:"DT",opt:"O",rep:false,len:8},
+10:{name:"Next of Kin Job Title",dt:"ST",opt:"O",rep:false,len:60},
+11:{name:"Next of Kin Job Code/Class",dt:"JCC",opt:"O",rep:false,len:20},
+12:{name:"Next of Kin Employee Number",dt:"CX",opt:"O",rep:false,len:250},
+13:{name:"Organization Name",dt:"XON",opt:"O",rep:true,len:250}
+}},
+ORC:{name:"Common Order",fields:{
+1:{name:"Order Control",dt:"ID",opt:"R",rep:false,len:2},
+2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
+3:{name:"Filler Order Number",dt:"EI",opt:"C",rep:false,len:22},
+4:{name:"Placer Group Number",dt:"EI",opt:"O",rep:false,len:22},
+5:{name:"Order Status",dt:"ID",opt:"O",rep:false,len:2},
+6:{name:"Response Flag",dt:"ID",opt:"O",rep:false,len:1},
+7:{name:"Quantity/Timing",dt:"TQ",opt:"O",rep:true,len:200},
+8:{name:"Parent",dt:"EI",opt:"O",rep:false,len:200},
+9:{name:"Date/Time of Transaction",dt:"TS",opt:"O",rep:false,len:26},
+10:{name:"Entered By",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Verified By",dt:"XCN",opt:"O",rep:true,len:250},
+12:{name:"Ordering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+13:{name:"Enterer's Location",dt:"PL",opt:"O",rep:false,len:80},
+14:{name:"Call Back Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+15:{name:"Order Effective Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+16:{name:"Order Control Code Reason",dt:"CE",opt:"O",rep:false,len:250},
+17:{name:"Entering Organization",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Entering Device",dt:"CE",opt:"O",rep:false,len:250},
+19:{name:"Action By",dt:"XCN",opt:"O",rep:true,len:250},
+20:{name:"Advanced Beneficiary Notice Code",dt:"CE",opt:"O",rep:false,len:250},
+21:{name:"Ordering Facility Name",dt:"XON",opt:"O",rep:true,len:250},
+22:{name:"Ordering Facility Address",dt:"XAD",opt:"O",rep:true,len:250},
+23:{name:"Ordering Facility Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+24:{name:"Ordering Provider Address",dt:"XAD",opt:"O",rep:true,len:250},
+25:{name:"Order Status Modifier",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+OBR:{name:"Observation Request",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Placer Order Number",dt:"EI",opt:"C",rep:false,len:22},
+3:{name:"Filler Order Number",dt:"EI",opt:"C",rep:false,len:22},
+4:{name:"Universal Service Identifier",dt:"CWE",opt:"R",rep:false,len:250},
+5:{name:"Priority",dt:"ID",opt:"B",rep:false,len:2},
+6:{name:"Requested Date/Time",dt:"TS",opt:"B",rep:false,len:26},
+7:{name:"Observation Date/Time",dt:"TS",opt:"C",rep:false,len:26},
+8:{name:"Observation End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Collection Volume",dt:"CQ",opt:"O",rep:false,len:20},
+10:{name:"Collector Identifier",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Specimen Action Code",dt:"ID",opt:"O",rep:false,len:1},
+12:{name:"Danger Code",dt:"CE",opt:"O",rep:false,len:250},
+13:{name:"Relevant Clinical Information",dt:"ST",opt:"O",rep:false,len:300},
+14:{name:"Specimen Received Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+15:{name:"Specimen Source",dt:"SPS",opt:"O",rep:false,len:300},
+16:{name:"Ordering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+17:{name:"Order Callback Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+18:{name:"Placer Field 1",dt:"ST",opt:"O",rep:false,len:60},
+19:{name:"Placer Field 2",dt:"ST",opt:"O",rep:false,len:60},
+20:{name:"Filler Field 1",dt:"ST",opt:"O",rep:false,len:60},
+21:{name:"Filler Field 2",dt:"ST",opt:"O",rep:false,len:60},
+22:{name:"Results Rpt/Status Chng Date/Time",dt:"TS",opt:"C",rep:false,len:26},
+23:{name:"Charge to Practice",dt:"MOC",opt:"O",rep:false,len:40},
+24:{name:"Diagnostic Service Section ID",dt:"ID",opt:"O",rep:false,len:10},
+25:{name:"Result Status",dt:"ID",opt:"C",rep:false,len:1},
+26:{name:"Parent Result",dt:"PRL",opt:"O",rep:false,len:400},
+27:{name:"Quantity/Timing",dt:"TQ",opt:"O",rep:true,len:200},
+28:{name:"Result Copies To",dt:"XCN",opt:"O",rep:true,len:250},
+29:{name:"Parent Number",dt:"EI",opt:"O",rep:false,len:200},
+30:{name:"Transportation Mode",dt:"ID",opt:"O",rep:false,len:20},
+31:{name:"Reason for Study",dt:"CE",opt:"O",rep:true,len:250},
+32:{name:"Principal Result Interpreter",dt:"NDL",opt:"O",rep:false,len:200},
+33:{name:"Assistant Result Interpreter",dt:"NDL",opt:"O",rep:true,len:200},
+34:{name:"Technician",dt:"NDL",opt:"O",rep:true,len:200},
+35:{name:"Transcriptionist",dt:"NDL",opt:"O",rep:true,len:200},
+36:{name:"Scheduled Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+37:{name:"Number of Sample Containers",dt:"NM",opt:"O",rep:false,len:4},
+38:{name:"Transport Logistics of Collected Sample",dt:"CE",opt:"O",rep:true,len:250},
+39:{name:"Collector's Comment",dt:"CE",opt:"O",rep:true,len:250},
+40:{name:"Transport Arrangement Responsibility",dt:"CE",opt:"O",rep:false,len:250},
+41:{name:"Transport Arranged",dt:"ID",opt:"O",rep:false,len:30},
+42:{name:"Escort Required",dt:"ID",opt:"O",rep:false,len:1},
+43:{name:"Planned Patient Transport Comment",dt:"CE",opt:"O",rep:true,len:250},
+44:{name:"Procedure Code",dt:"CWE",opt:"O",rep:false,len:250},
+45:{name:"Procedure Code Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+46:{name:"Placer Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250},
+47:{name:"Filler Supplemental Service Info",dt:"CE",opt:"O",rep:true,len:250},
+48:{name:"Medically Necessary Duplicate Procedure Reason",dt:"CWE",opt:"C",rep:false,len:250},
+49:{name:"Result Handling",dt:"IS",opt:"O",rep:false,len:2},
+50:{name:"Parent Universal Service Identifier",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+OBX:{name:"Observation/Result",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Value Type",dt:"ID",opt:"C",rep:false,len:3},
+3:{name:"Observation Identifier",dt:"CWE",opt:"R",rep:false,len:250},
+4:{name:"Observation Sub-ID",dt:"ST",opt:"C",rep:false,len:20},
+5:{name:"Observation Value",dt:"*",opt:"C",rep:true,len:65536},
+6:{name:"Units",dt:"CWE",opt:"O",rep:false,len:250},
+7:{name:"References Range",dt:"ST",opt:"O",rep:false,len:60},
+8:{name:"Abnormal Flags",dt:"IS",opt:"O",rep:true,len:5},
+9:{name:"Probability",dt:"NM",opt:"O",rep:false,len:5},
+10:{name:"Nature of Abnormal Test",dt:"ID",opt:"O",rep:false,len:2},
+11:{name:"Observation Result Status",dt:"ID",opt:"R",rep:false,len:1},
+12:{name:"Effective Date of Reference Range",dt:"TS",opt:"O",rep:false,len:26},
+13:{name:"User Defined Access Checks",dt:"ST",opt:"O",rep:false,len:20},
+14:{name:"Date/Time of Observation",dt:"TS",opt:"O",rep:false,len:26},
+15:{name:"Producer's ID",dt:"CWE",opt:"O",rep:false,len:250},
+16:{name:"Responsible Observer",dt:"XCN",opt:"O",rep:true,len:250},
+17:{name:"Observation Method",dt:"CWE",opt:"O",rep:true,len:250},
+18:{name:"Equipment Instance Identifier",dt:"EI",opt:"O",rep:true,len:22},
+19:{name:"Date/Time of the Analysis",dt:"TS",opt:"O",rep:false,len:26},
+20:{name:"Observation Site",dt:"CWE",opt:"O",rep:true,len:250},
+21:{name:"Observation Instance Identifier",dt:"EI",opt:"O",rep:false,len:22},
+22:{name:"Mood Code",dt:"CNE",opt:"O",rep:false,len:250},
+23:{name:"Performing Organization Name",dt:"XON",opt:"O",rep:false,len:567},
+24:{name:"Performing Organization Address",dt:"XAD",opt:"O",rep:false,len:631},
+25:{name:"Performing Organization Medical Director",dt:"XCN",opt:"O",rep:false,len:3002}
+}},
+DG1:{name:"Diagnosis",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Diagnosis Coding Method",dt:"ID",opt:"B",rep:false,len:2},
+3:{name:"Diagnosis Code",dt:"CWE",opt:"O",rep:false,len:250},
+4:{name:"Diagnosis Description",dt:"ST",opt:"B",rep:false,len:40},
+5:{name:"Diagnosis Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+6:{name:"Diagnosis Type",dt:"IS",opt:"R",rep:false,len:2},
+7:{name:"Major Diagnostic Category",dt:"CE",opt:"B",rep:false,len:250},
+8:{name:"Diagnostic Related Group",dt:"CE",opt:"B",rep:false,len:250},
+9:{name:"DRG Approval Indicator",dt:"ID",opt:"B",rep:false,len:1},
+10:{name:"DRG Grouper Review Code",dt:"IS",opt:"B",rep:false,len:2},
+11:{name:"Outlier Type",dt:"CE",opt:"B",rep:false,len:250},
+12:{name:"Outlier Days",dt:"NM",opt:"B",rep:false,len:3},
+13:{name:"Outlier Cost",dt:"CP",opt:"B",rep:false,len:12},
+14:{name:"Grouper Version and Type",dt:"ST",opt:"B",rep:false,len:4},
+15:{name:"Diagnosis Priority",dt:"ID",opt:"O",rep:false,len:2},
+16:{name:"Diagnosing Clinician",dt:"XCN",opt:"O",rep:true,len:250}
+}},
+IN1:{name:"Insurance",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Insurance Plan ID",dt:"CE",opt:"R",rep:false,len:250},
+3:{name:"Insurance Company ID",dt:"CX",opt:"R",rep:true,len:250},
+4:{name:"Insurance Company Name",dt:"XON",opt:"O",rep:true,len:250},
+5:{name:"Insurance Company Address",dt:"XAD",opt:"O",rep:true,len:250},
+6:{name:"Insurance Co Contact Person",dt:"XPN",opt:"O",rep:true,len:250},
+7:{name:"Insurance Co Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+8:{name:"Group Number",dt:"ST",opt:"O",rep:false,len:12},
+9:{name:"Group Name",dt:"XON",opt:"O",rep:true,len:250},
+10:{name:"Insured's Group Emp ID",dt:"CX",opt:"O",rep:true,len:250},
+11:{name:"Insured's Group Emp Name",dt:"XON",opt:"O",rep:true,len:250},
+12:{name:"Plan Effective Date",dt:"DT",opt:"O",rep:false,len:8},
+13:{name:"Plan Expiration Date",dt:"DT",opt:"O",rep:false,len:8},
+14:{name:"Authorization Information",dt:"AUI",opt:"O",rep:false,len:239},
+15:{name:"Plan Type",dt:"IS",opt:"O",rep:false,len:3},
+16:{name:"Name of Insured",dt:"XPN",opt:"O",rep:true,len:250},
+17:{name:"Insured's Relationship to Patient",dt:"CE",opt:"O",rep:false,len:250},
+18:{name:"Insured's Date of Birth",dt:"TS",opt:"O",rep:false,len:26},
+19:{name:"Insured's Address",dt:"XAD",opt:"O",rep:true,len:250},
+20:{name:"Assignment of Benefits",dt:"IS",opt:"O",rep:false,len:2},
+21:{name:"Coordination of Benefits",dt:"IS",opt:"O",rep:false,len:2},
+22:{name:"Coord of Ben. Priority",dt:"ST",opt:"O",rep:false,len:2}
+}},
+AL1:{name:"Patient Allergy",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Allergen Type Code",dt:"CWE",opt:"O",rep:false,len:250},
+3:{name:"Allergen Code/Description",dt:"CWE",opt:"R",rep:false,len:250},
+4:{name:"Allergy Severity Code",dt:"CE",opt:"O",rep:false,len:250},
+5:{name:"Allergy Reaction Code",dt:"ST",opt:"O",rep:true,len:15},
+6:{name:"Identification Date",dt:"DT",opt:"B",rep:false,len:8}
+}},
+GT1:{name:"Guarantor",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Guarantor Number",dt:"CX",opt:"O",rep:true,len:250},
+3:{name:"Guarantor Name",dt:"XPN",opt:"R",rep:true,len:250},
+4:{name:"Guarantor Spouse Name",dt:"XPN",opt:"O",rep:true,len:250},
+5:{name:"Guarantor Address",dt:"XAD",opt:"O",rep:true,len:250},
+6:{name:"Guarantor Ph Num - Home",dt:"XTN",opt:"O",rep:true,len:250},
+7:{name:"Guarantor Ph Num - Business",dt:"XTN",opt:"O",rep:true,len:250},
+8:{name:"Guarantor Date/Time of Birth",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Guarantor Administrative Sex",dt:"IS",opt:"O",rep:false,len:1},
+10:{name:"Guarantor Type",dt:"IS",opt:"O",rep:false,len:2},
+11:{name:"Guarantor Relationship",dt:"CE",opt:"O",rep:false,len:250},
+12:{name:"Guarantor SSN",dt:"ST",opt:"O",rep:false,len:11}
+}},
+NTE:{name:"Notes and Comments",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Source of Comment",dt:"ID",opt:"O",rep:false,len:8},
+3:{name:"Comment",dt:"FT",opt:"O",rep:true,len:65536},
+4:{name:"Comment Type",dt:"CE",opt:"O",rep:false,len:250}
+}},
+MSA:{name:"Message Acknowledgment",fields:{
+1:{name:"Acknowledgment Code",dt:"ID",opt:"R",rep:false,len:2},
+2:{name:"Message Control ID",dt:"ST",opt:"R",rep:false,len:20},
+3:{name:"Text Message",dt:"ST",opt:"O",rep:false,len:80},
+4:{name:"Expected Sequence Number",dt:"NM",opt:"O",rep:false,len:15},
+5:{name:"Delayed Acknowledgment Type",dt:"ID",opt:"B",rep:false,len:1},
+6:{name:"Error Condition",dt:"CE",opt:"O",rep:false,len:250}
+}},
+ERR:{name:"Error",fields:{
+1:{name:"Error Code and Location",dt:"ELD",opt:"B",rep:true,len:493},
+2:{name:"Error Location",dt:"ERL",opt:"O",rep:true,len:18},
+3:{name:"HL7 Error Code",dt:"CWE",opt:"R",rep:false,len:705},
+4:{name:"Severity",dt:"ID",opt:"R",rep:false,len:2},
+5:{name:"Application Error Code",dt:"CWE",opt:"O",rep:false,len:705},
+6:{name:"Application Error Parameter",dt:"ST",opt:"O",rep:true,len:80},
+7:{name:"Diagnostic Information",dt:"TX",opt:"O",rep:false,len:2048},
+8:{name:"User Message",dt:"TX",opt:"O",rep:false,len:250},
+9:{name:"Inform Person Indicator",dt:"IS",opt:"O",rep:true,len:20},
+10:{name:"Override Type",dt:"CWE",opt:"O",rep:false,len:705},
+11:{name:"Override Reason Code",dt:"CWE",opt:"O",rep:true,len:705},
+12:{name:"Help Desk Contact Point",dt:"XTN",opt:"O",rep:true,len:652}
+}},
+QRD:{name:"Original-Style Query Definition",fields:{
+1:{name:"Query Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+2:{name:"Query Format Code",dt:"ID",opt:"R",rep:false,len:1},
+3:{name:"Query Priority",dt:"ID",opt:"R",rep:false,len:1},
+4:{name:"Query ID",dt:"ST",opt:"R",rep:false,len:10},
+5:{name:"Deferred Response Type",dt:"ID",opt:"O",rep:false,len:1},
+6:{name:"Deferred Response Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Quantity Limited Request",dt:"CQ",opt:"R",rep:false,len:10},
+8:{name:"Who Subject Filter",dt:"XCN",opt:"R",rep:true,len:250},
+9:{name:"What Subject Filter",dt:"CE",opt:"R",rep:true,len:250},
+10:{name:"What Department Data Code",dt:"CE",opt:"R",rep:true,len:250},
+11:{name:"What Data Code Value Qual",dt:"CM",opt:"O",rep:true,len:20},
+12:{name:"Query Results Level",dt:"ID",opt:"O",rep:false,len:1}
+}},
+QRF:{name:"Original-Style Query Filter",fields:{
+1:{name:"Where Subject Filter",dt:"ST",opt:"R",rep:true,len:20},
+2:{name:"When Data Start Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+3:{name:"When Data End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+4:{name:"What User Qualifier",dt:"ST",opt:"O",rep:true,len:60},
+5:{name:"Other QRY Subject Filter",dt:"ST",opt:"O",rep:true,len:60}
+}},
+MRG:{name:"Merge Patient Information",fields:{
+1:{name:"Prior Patient Identifier List",dt:"CX",opt:"R",rep:true,len:250},
+2:{name:"Prior Alternate Patient ID",dt:"CX",opt:"B",rep:true,len:250},
+3:{name:"Prior Patient Account Number",dt:"CX",opt:"O",rep:false,len:250},
+4:{name:"Prior Patient ID",dt:"CX",opt:"B",rep:false,len:250},
+5:{name:"Prior Visit Number",dt:"CX",opt:"O",rep:false,len:250},
+6:{name:"Prior Alternate Visit ID",dt:"CX",opt:"O",rep:false,len:250},
+7:{name:"Prior Patient Name",dt:"XPN",opt:"O",rep:true,len:250}
+}},
+SCH:{name:"Scheduling Activity",fields:{
+1:{name:"Placer Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
+2:{name:"Filler Appointment ID",dt:"EI",opt:"C",rep:false,len:75},
+3:{name:"Occurrence Number",dt:"NM",opt:"C",rep:false,len:5},
+4:{name:"Placer Group Number",dt:"EI",opt:"O",rep:false,len:22},
+5:{name:"Schedule ID",dt:"CE",opt:"O",rep:false,len:250},
+6:{name:"Event Reason",dt:"CE",opt:"R",rep:false,len:250},
+7:{name:"Appointment Reason",dt:"CE",opt:"O",rep:false,len:250},
+8:{name:"Appointment Type",dt:"CE",opt:"O",rep:false,len:250},
+9:{name:"Appointment Duration",dt:"NM",opt:"O",rep:false,len:20},
+10:{name:"Appointment Duration Units",dt:"CE",opt:"O",rep:false,len:250},
+11:{name:"Appointment Timing Quantity",dt:"TQ",opt:"O",rep:true,len:200},
+12:{name:"Placer Contact Person",dt:"XCN",opt:"O",rep:true,len:250},
+13:{name:"Placer Contact Phone Number",dt:"XTN",opt:"O",rep:false,len:250},
+14:{name:"Placer Contact Address",dt:"XAD",opt:"O",rep:true,len:250},
+15:{name:"Placer Contact Location",dt:"PL",opt:"O",rep:false,len:80},
+16:{name:"Filler Contact Person",dt:"XCN",opt:"R",rep:true,len:250},
+17:{name:"Filler Contact Phone Number",dt:"XTN",opt:"O",rep:false,len:250},
+18:{name:"Filler Contact Address",dt:"XAD",opt:"O",rep:true,len:250},
+19:{name:"Filler Contact Location",dt:"PL",opt:"O",rep:false,len:80},
+20:{name:"Entered By Person",dt:"XCN",opt:"R",rep:true,len:250},
+21:{name:"Entered By Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+22:{name:"Entered By Location",dt:"PL",opt:"O",rep:false,len:80},
+23:{name:"Parent Placer Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
+24:{name:"Parent Filler Appointment ID",dt:"EI",opt:"O",rep:false,len:75},
+25:{name:"Filler Status Code",dt:"CE",opt:"O",rep:false,len:250}
+}},
+TXA:{name:"Transcription Document Header",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Document Type",dt:"IS",opt:"R",rep:false,len:30},
+3:{name:"Document Content Presentation",dt:"ID",opt:"C",rep:false,len:2},
+4:{name:"Activity Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+5:{name:"Primary Activity Provider Code/Name",dt:"XCN",opt:"C",rep:true,len:250},
+6:{name:"Origination Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Transcription Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+8:{name:"Edit Date/Time",dt:"TS",opt:"O",rep:true,len:26},
+9:{name:"Originator Code/Name",dt:"XCN",opt:"O",rep:true,len:250},
+10:{name:"Assigned Document Authenticator",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Transcriptionist Code/Name",dt:"XCN",opt:"O",rep:true,len:250},
+12:{name:"Unique Document Number",dt:"EI",opt:"R",rep:false,len:30},
+13:{name:"Parent Document Number",dt:"EI",opt:"O",rep:false,len:30},
+14:{name:"Placer Order Number",dt:"EI",opt:"O",rep:true,len:22},
+15:{name:"Filler Order Number",dt:"EI",opt:"O",rep:false,len:22},
+16:{name:"Unique Document File Name",dt:"ST",opt:"O",rep:false,len:30},
+17:{name:"Document Completion Status",dt:"ID",opt:"R",rep:false,len:2},
+18:{name:"Document Confidentiality Status",dt:"ID",opt:"O",rep:false,len:2},
+19:{name:"Document Availability Status",dt:"ID",opt:"O",rep:false,len:2},
+20:{name:"Document Storage Status",dt:"ID",opt:"O",rep:false,len:2},
+21:{name:"Document Change Reason",dt:"ST",opt:"C",rep:false,len:30},
+22:{name:"Authentication Person Time Stamp",dt:"PPN",opt:"C",rep:true,len:250},
+23:{name:"Distributed Copies",dt:"XCN",opt:"O",rep:true,len:250}
+}},
+DSP:{name:"Display Data",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Display Level",dt:"SI",opt:"O",rep:false,len:4},
+3:{name:"Data Line",dt:"TX",opt:"R",rep:false,len:300},
+4:{name:"Logical Break Point",dt:"ST",opt:"O",rep:false,len:2},
+5:{name:"Result ID",dt:"TX",opt:"O",rep:false,len:20}
+}},
+SFT:{name:"Software Segment",fields:{
+1:{name:"Software Vendor Organization",dt:"XON",opt:"R",rep:false,len:567},
+2:{name:"Software Certified Version or Release Number",dt:"ST",opt:"R",rep:false,len:15},
+3:{name:"Software Product Name",dt:"ST",opt:"R",rep:false,len:20},
+4:{name:"Software Binary ID",dt:"ST",opt:"R",rep:false,len:20},
+5:{name:"Software Product Information",dt:"TX",opt:"O",rep:false,len:1024},
+6:{name:"Software Install Date",dt:"TS",opt:"O",rep:false,len:26}
+}},
+SPM:{name:"Specimen",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Specimen ID",dt:"EIP",opt:"O",rep:false,len:80},
+3:{name:"Specimen Parent IDs",dt:"EIP",opt:"O",rep:true,len:80},
+4:{name:"Specimen Type",dt:"CWE",opt:"R",rep:false,len:250},
+5:{name:"Specimen Type Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+6:{name:"Specimen Additives",dt:"CWE",opt:"O",rep:true,len:250},
+7:{name:"Specimen Collection Method",dt:"CWE",opt:"O",rep:false,len:250},
+8:{name:"Specimen Source Site",dt:"CWE",opt:"O",rep:false,len:250},
+9:{name:"Specimen Source Site Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+10:{name:"Specimen Collection Site",dt:"CWE",opt:"O",rep:false,len:250},
+11:{name:"Specimen Role",dt:"CWE",opt:"O",rep:true,len:250},
+12:{name:"Specimen Collection Amount",dt:"CQ",opt:"O",rep:false,len:20},
+13:{name:"Grouped Specimen Count",dt:"NM",opt:"O",rep:false,len:6},
+14:{name:"Specimen Description",dt:"ST",opt:"O",rep:true,len:250},
+15:{name:"Specimen Handling Code",dt:"CWE",opt:"O",rep:true,len:250},
+16:{name:"Specimen Risk Code",dt:"CWE",opt:"O",rep:true,len:250},
+17:{name:"Specimen Collection Date/Time",dt:"DR",opt:"O",rep:false,len:26},
+18:{name:"Specimen Received Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+19:{name:"Specimen Expiration Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+20:{name:"Specimen Availability",dt:"ID",opt:"O",rep:false,len:1},
+21:{name:"Specimen Reject Reason",dt:"CWE",opt:"O",rep:true,len:250},
+22:{name:"Specimen Quality",dt:"CWE",opt:"O",rep:false,len:250},
+23:{name:"Specimen Appropriateness",dt:"CWE",opt:"O",rep:false,len:250},
+24:{name:"Specimen Condition",dt:"CWE",opt:"O",rep:true,len:250},
+25:{name:"Specimen Current Quantity",dt:"CQ",opt:"O",rep:false,len:20},
+26:{name:"Number of Specimen Containers",dt:"NM",opt:"O",rep:false,len:4},
+27:{name:"Container Type",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+TQ1:{name:"Timing/Quantity",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Quantity",dt:"CQ",opt:"O",rep:false,len:20},
+3:{name:"Repeat Pattern",dt:"RPT",opt:"O",rep:true,len:540},
+4:{name:"Explicit Time",dt:"TM",opt:"O",rep:true,len:20},
+5:{name:"Relative Time and Units",dt:"CQ",opt:"O",rep:true,len:20},
+6:{name:"Service Duration",dt:"CQ",opt:"O",rep:false,len:20},
+7:{name:"Start Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+8:{name:"End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Priority",dt:"CWE",opt:"O",rep:true,len:250},
+10:{name:"Condition Text",dt:"TX",opt:"O",rep:false,len:250},
+11:{name:"Text Instruction",dt:"TX",opt:"O",rep:false,len:250},
+12:{name:"Conjunction",dt:"ID",opt:"C",rep:false,len:10},
+13:{name:"Occurrence Duration",dt:"CQ",opt:"O",rep:false,len:20},
+14:{name:"Total Occurrences",dt:"NM",opt:"O",rep:false,len:10}
+}},
+TQ2:{name:"Timing/Quantity Relationship",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Sequence/Results Flag",dt:"ID",opt:"O",rep:false,len:1},
+3:{name:"Related Placer Number",dt:"EI",opt:"O",rep:true,len:22},
+4:{name:"Related Filler Number",dt:"EI",opt:"O",rep:true,len:22},
+5:{name:"Related Placer Group Number",dt:"EI",opt:"O",rep:true,len:22},
+6:{name:"Sequence Condition Code",dt:"ID",opt:"O",rep:false,len:2},
+7:{name:"Cyclic Entry/Exit Indicator",dt:"ID",opt:"O",rep:false,len:1},
+8:{name:"Sequence Condition Time Interval",dt:"CQ",opt:"O",rep:false,len:20},
+9:{name:"Cyclic Group Maximum Number of Repeats",dt:"NM",opt:"O",rep:false,len:10},
+10:{name:"Special Service Request Relationship",dt:"ID",opt:"O",rep:false,len:1}
+}},
+RXA:{name:"Pharmacy/Treatment Administration",fields:{
+1:{name:"Give Sub-ID Counter",dt:"NM",opt:"R",rep:false,len:4},
+2:{name:"Administration Sub-ID Counter",dt:"NM",opt:"R",rep:false,len:4},
+3:{name:"Date/Time Start of Administration",dt:"TS",opt:"R",rep:false,len:26},
+4:{name:"Date/Time End of Administration",dt:"TS",opt:"R",rep:false,len:26},
+5:{name:"Administered Code",dt:"CWE",opt:"R",rep:false,len:250},
+6:{name:"Administered Amount",dt:"NM",opt:"R",rep:false,len:20},
+7:{name:"Administered Units",dt:"CWE",opt:"O",rep:false,len:250},
+8:{name:"Administered Dosage Form",dt:"CWE",opt:"O",rep:false,len:250},
+9:{name:"Administration Notes",dt:"CWE",opt:"O",rep:true,len:250},
+10:{name:"Administering Provider",dt:"XCN",opt:"O",rep:true,len:250},
+11:{name:"Administered-at Location",dt:"LA2",opt:"C",rep:false,len:200},
+12:{name:"Administered Per (Time Unit)",dt:"ST",opt:"C",rep:false,len:20},
+13:{name:"Administered Strength",dt:"NM",opt:"O",rep:false,len:20},
+14:{name:"Administered Strength Units",dt:"CWE",opt:"O",rep:false,len:250},
+15:{name:"Substance Lot Number",dt:"ST",opt:"O",rep:true,len:20},
+16:{name:"Substance Expiration Date",dt:"TS",opt:"O",rep:true,len:26},
+17:{name:"Substance Manufacturer Name",dt:"CWE",opt:"O",rep:true,len:250},
+18:{name:"Substance/Treatment Refusal Reason",dt:"CWE",opt:"O",rep:true,len:250},
+19:{name:"Indication",dt:"CWE",opt:"O",rep:true,len:250},
+20:{name:"Completion Status",dt:"ID",opt:"O",rep:false,len:2},
+21:{name:"Action Code - RXA",dt:"ID",opt:"O",rep:false,len:2},
+22:{name:"System Entry Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+23:{name:"Administered Drug Strength Volume",dt:"NM",opt:"O",rep:false,len:5},
+24:{name:"Administered Drug Strength Volume Units",dt:"CWE",opt:"O",rep:false,len:250},
+25:{name:"Administered Barcode Identifier",dt:"CWE",opt:"O",rep:false,len:60},
+26:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1}
+}},
+RXE:{name:"Pharmacy/Treatment Encoded Order",fields:{
+1:{name:"Quantity/Timing",dt:"TQ",opt:"B",rep:false,len:200},
+2:{name:"Give Code",dt:"CWE",opt:"R",rep:false,len:250},
+3:{name:"Give Amount - Minimum",dt:"NM",opt:"R",rep:false,len:20},
+4:{name:"Give Amount - Maximum",dt:"NM",opt:"O",rep:false,len:20},
+5:{name:"Give Units",dt:"CWE",opt:"R",rep:false,len:250},
+6:{name:"Give Dosage Form",dt:"CWE",opt:"O",rep:false,len:250},
+7:{name:"Provider's Administration Instructions",dt:"CWE",opt:"O",rep:true,len:250},
+8:{name:"Deliver-To Location",dt:"LA1",opt:"O",rep:false,len:200},
+9:{name:"Substitution Status",dt:"ID",opt:"O",rep:false,len:1},
+10:{name:"Dispense Amount",dt:"NM",opt:"C",rep:false,len:20},
+11:{name:"Dispense Units",dt:"CWE",opt:"C",rep:false,len:250},
+12:{name:"Number of Refills",dt:"NM",opt:"O",rep:false,len:3},
+13:{name:"Ordering Provider's DEA Number",dt:"XCN",opt:"C",rep:true,len:250},
+14:{name:"Pharmacist/Treatment Supplier's Verifier ID",dt:"XCN",opt:"O",rep:true,len:250},
+15:{name:"Prescription Number",dt:"ST",opt:"C",rep:false,len:20},
+16:{name:"Number of Refills Remaining",dt:"NM",opt:"C",rep:false,len:20},
+17:{name:"Number of Refills/Doses Dispensed",dt:"NM",opt:"C",rep:false,len:20},
+18:{name:"D/T of Most Recent Refill or Dose Dispensed",dt:"TS",opt:"C",rep:false,len:26},
+19:{name:"Total Daily Dose",dt:"CQ",opt:"C",rep:false,len:10},
+20:{name:"Needs Human Review",dt:"ID",opt:"O",rep:false,len:1},
+21:{name:"Pharmacy/Treatment Supplier's Special Dispensing Instructions",dt:"CWE",opt:"O",rep:true,len:250},
+22:{name:"Give Per (Time Unit)",dt:"ST",opt:"C",rep:false,len:20},
+23:{name:"Give Rate Amount",dt:"ST",opt:"O",rep:false,len:6},
+24:{name:"Give Rate Units",dt:"CWE",opt:"O",rep:false,len:250},
+25:{name:"Give Strength",dt:"NM",opt:"O",rep:false,len:20},
+26:{name:"Give Strength Units",dt:"CWE",opt:"O",rep:false,len:250},
+27:{name:"Give Indication",dt:"CWE",opt:"O",rep:true,len:250},
+28:{name:"Dispense Package Size",dt:"NM",opt:"O",rep:false,len:20},
+29:{name:"Dispense Package Size Unit",dt:"CWE",opt:"O",rep:false,len:250},
+30:{name:"Dispense Package Method",dt:"ID",opt:"O",rep:false,len:2},
+31:{name:"Supplementary Code",dt:"CWE",opt:"O",rep:true,len:250},
+32:{name:"Original Order Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+33:{name:"Give Drug Strength Volume",dt:"NM",opt:"O",rep:false,len:5},
+34:{name:"Give Drug Strength Volume Units",dt:"CWE",opt:"O",rep:false,len:250},
+35:{name:"Controlled Substance Schedule",dt:"CWE",opt:"O",rep:false,len:60},
+36:{name:"Formulary Status",dt:"ID",opt:"O",rep:false,len:1},
+37:{name:"Pharmaceutical Substance Alternative",dt:"CWE",opt:"O",rep:true,len:60},
+38:{name:"Pharmacy of Most Recent Fill",dt:"CWE",opt:"O",rep:false,len:250},
+39:{name:"Initial Dispense Amount",dt:"NM",opt:"O",rep:false,len:250},
+40:{name:"Dispensing Pharmacy",dt:"CWE",opt:"O",rep:false,len:250},
+41:{name:"Dispensing Pharmacy Address",dt:"XAD",opt:"O",rep:false,len:250},
+42:{name:"Deliver-to Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+43:{name:"Deliver-to Address",dt:"XAD",opt:"O",rep:false,len:250},
+44:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1}
+}},
+RXO:{name:"Pharmacy/Treatment Order",fields:{
+1:{name:"Requested Give Code",dt:"CWE",opt:"C",rep:false,len:250},
+2:{name:"Requested Give Amount - Minimum",dt:"NM",opt:"C",rep:false,len:20},
+3:{name:"Requested Give Amount - Maximum",dt:"NM",opt:"O",rep:false,len:20},
+4:{name:"Requested Give Units",dt:"CWE",opt:"C",rep:false,len:250},
+5:{name:"Requested Dosage Form",dt:"CWE",opt:"O",rep:false,len:250},
+6:{name:"Provider's Pharmacy/Treatment Instructions",dt:"CWE",opt:"O",rep:true,len:250},
+7:{name:"Provider's Administration Instructions",dt:"CWE",opt:"O",rep:true,len:250},
+8:{name:"Deliver-To Location",dt:"LA1",opt:"O",rep:false,len:200},
+9:{name:"Allow Substitutions",dt:"ID",opt:"O",rep:false,len:1},
+10:{name:"Requested Dispense Code",dt:"CWE",opt:"O",rep:false,len:250},
+11:{name:"Requested Dispense Amount",dt:"NM",opt:"O",rep:false,len:20},
+12:{name:"Requested Dispense Units",dt:"CWE",opt:"O",rep:false,len:250},
+13:{name:"Number of Refills",dt:"NM",opt:"O",rep:false,len:3},
+14:{name:"Ordering Provider's DEA Number",dt:"XCN",opt:"C",rep:true,len:250},
+15:{name:"Pharmacist/Treatment Supplier's Verifier ID",dt:"XCN",opt:"C",rep:true,len:250},
+16:{name:"Needs Human Review",dt:"ID",opt:"O",rep:false,len:1},
+17:{name:"Requested Give Per (Time Unit)",dt:"ST",opt:"C",rep:false,len:20},
+18:{name:"Requested Give Strength",dt:"NM",opt:"O",rep:false,len:20},
+19:{name:"Requested Give Strength Units",dt:"CWE",opt:"O",rep:false,len:250},
+20:{name:"Indication",dt:"CWE",opt:"O",rep:true,len:250},
+21:{name:"Requested Give Rate Amount",dt:"ST",opt:"O",rep:false,len:6},
+22:{name:"Requested Give Rate Units",dt:"CWE",opt:"O",rep:false,len:250},
+23:{name:"Total Daily Dose",dt:"CQ",opt:"O",rep:false,len:10},
+24:{name:"Supplementary Code",dt:"CWE",opt:"O",rep:true,len:250},
+25:{name:"Requested Drug Strength Volume",dt:"NM",opt:"O",rep:false,len:5},
+26:{name:"Requested Drug Strength Volume Units",dt:"CWE",opt:"O",rep:false,len:250},
+27:{name:"Pharmacy Order Type",dt:"ID",opt:"O",rep:false,len:1},
+28:{name:"Dispensing Interval",dt:"NM",opt:"O",rep:false,len:20}
+}},
+RXR:{name:"Pharmacy/Treatment Route",fields:{
+1:{name:"Route",dt:"CWE",opt:"R",rep:false,len:250},
+2:{name:"Administration Site",dt:"CWE",opt:"O",rep:false,len:250},
+3:{name:"Administration Device",dt:"CWE",opt:"O",rep:false,len:250},
+4:{name:"Administration Method",dt:"CWE",opt:"O",rep:false,len:250},
+5:{name:"Routing Instruction",dt:"CWE",opt:"O",rep:false,len:250},
+6:{name:"Administration Site Modifier",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+FT1:{name:"Financial Transaction",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Transaction ID",dt:"ST",opt:"O",rep:false,len:12},
+3:{name:"Transaction Batch ID",dt:"ST",opt:"O",rep:false,len:10},
+4:{name:"Transaction Date",dt:"DR",opt:"R",rep:false,len:53},
+5:{name:"Transaction Posting Date",dt:"TS",opt:"O",rep:false,len:26},
+6:{name:"Transaction Type",dt:"IS",opt:"R",rep:false,len:8},
+7:{name:"Transaction Code",dt:"CWE",opt:"R",rep:false,len:250},
+8:{name:"Transaction Description",dt:"ST",opt:"B",rep:false,len:40},
+9:{name:"Transaction Description - Alt",dt:"ST",opt:"B",rep:false,len:40},
+10:{name:"Transaction Quantity",dt:"NM",opt:"O",rep:false,len:6},
+11:{name:"Transaction Amount - Extended",dt:"CP",opt:"O",rep:false,len:12},
+12:{name:"Transaction Amount - Unit",dt:"CP",opt:"O",rep:false,len:12},
+13:{name:"Department Code",dt:"CWE",opt:"O",rep:false,len:250},
+14:{name:"Insurance Plan ID",dt:"CWE",opt:"O",rep:false,len:250},
+15:{name:"Insurance Amount",dt:"CP",opt:"O",rep:false,len:12},
+16:{name:"Assigned Patient Location",dt:"PL",opt:"O",rep:false,len:80},
+17:{name:"Fee Schedule",dt:"IS",opt:"O",rep:false,len:1},
+18:{name:"Patient Type",dt:"IS",opt:"O",rep:false,len:2},
+19:{name:"Diagnosis Code - FT1",dt:"CWE",opt:"O",rep:true,len:250},
+20:{name:"Performed By Code",dt:"XCN",opt:"O",rep:true,len:250},
+21:{name:"Ordered By Code",dt:"XCN",opt:"O",rep:true,len:250},
+22:{name:"Unit Cost",dt:"CP",opt:"O",rep:false,len:12},
+23:{name:"Filler Order Number",dt:"EI",opt:"O",rep:false,len:22},
+24:{name:"Entered By Code",dt:"XCN",opt:"O",rep:true,len:250},
+25:{name:"Procedure Code",dt:"CWE",opt:"O",rep:false,len:250},
+26:{name:"Procedure Code Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+27:{name:"Advanced Beneficiary Notice Code",dt:"CWE",opt:"O",rep:false,len:250},
+28:{name:"Medically Necessary Duplicate Procedure Reason",dt:"CWE",opt:"O",rep:false,len:250},
+29:{name:"NDC Code",dt:"CNE",opt:"O",rep:false,len:250},
+30:{name:"Payment Reference ID",dt:"CX",opt:"O",rep:false,len:250},
+31:{name:"Transaction Reference Key",dt:"SI",opt:"O",rep:true,len:4}
+}},
+PR1:{name:"Procedures",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Procedure Coding Method",dt:"IS",opt:"B",rep:false,len:3},
+3:{name:"Procedure Code",dt:"CWE",opt:"R",rep:false,len:250},
+4:{name:"Procedure Description",dt:"ST",opt:"B",rep:false,len:40},
+5:{name:"Procedure Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+6:{name:"Procedure Functional Type",dt:"IS",opt:"O",rep:false,len:2},
+7:{name:"Procedure Minutes",dt:"NM",opt:"O",rep:false,len:4},
+8:{name:"Anesthesiologist",dt:"XCN",opt:"B",rep:true,len:250},
+9:{name:"Anesthesia Code",dt:"IS",opt:"O",rep:false,len:2},
+10:{name:"Anesthesia Minutes",dt:"NM",opt:"O",rep:false,len:4},
+11:{name:"Surgeon",dt:"XCN",opt:"B",rep:true,len:250},
+12:{name:"Procedure Practitioner",dt:"XCN",opt:"B",rep:true,len:250},
+13:{name:"Consent Code",dt:"CWE",opt:"O",rep:false,len:250},
+14:{name:"Procedure Priority",dt:"ID",opt:"O",rep:false,len:2},
+15:{name:"Associated Diagnosis Code",dt:"CWE",opt:"O",rep:false,len:250},
+16:{name:"Procedure Code Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+17:{name:"Procedure DRG Type",dt:"IS",opt:"O",rep:false,len:20},
+18:{name:"Tissue Type Code",dt:"CWE",opt:"O",rep:true,len:250},
+19:{name:"Procedure Identifier",dt:"EI",opt:"C",rep:false,len:427},
+20:{name:"Procedure Action Code",dt:"ID",opt:"C",rep:false,len:1}
+}},
+PD1:{name:"Patient Additional Demographic",fields:{
+1:{name:"Living Dependency",dt:"IS",opt:"O",rep:true,len:2},
+2:{name:"Living Arrangement",dt:"IS",opt:"O",rep:false,len:2},
+3:{name:"Patient Primary Facility",dt:"XON",opt:"O",rep:true,len:250},
+4:{name:"Patient Primary Care Provider Name & ID No.",dt:"XCN",opt:"B",rep:true,len:250},
+5:{name:"Student Indicator",dt:"IS",opt:"O",rep:false,len:2},
+6:{name:"Handicap",dt:"IS",opt:"O",rep:false,len:2},
+7:{name:"Living Will Code",dt:"IS",opt:"O",rep:false,len:2},
+8:{name:"Organ Donor Code",dt:"IS",opt:"O",rep:false,len:2},
+9:{name:"Separate Bill",dt:"ID",opt:"O",rep:false,len:1},
+10:{name:"Duplicate Patient",dt:"CX",opt:"O",rep:true,len:250},
+11:{name:"Publicity Code",dt:"CWE",opt:"O",rep:false,len:250},
+12:{name:"Protection Indicator",dt:"ID",opt:"O",rep:false,len:1},
+13:{name:"Protection Indicator Effective Date",dt:"DT",opt:"O",rep:false,len:8},
+14:{name:"Place of Worship",dt:"XON",opt:"O",rep:true,len:250},
+15:{name:"Advance Directive Code",dt:"CWE",opt:"O",rep:true,len:250},
+16:{name:"Immunization Registry Status",dt:"IS",opt:"O",rep:false,len:1},
+17:{name:"Immunization Registry Status Effective Date",dt:"DT",opt:"O",rep:false,len:8},
+18:{name:"Publicity Code Effective Date",dt:"DT",opt:"O",rep:false,len:8},
+19:{name:"Military Branch",dt:"IS",opt:"O",rep:false,len:5},
+20:{name:"Military Rank/Grade",dt:"IS",opt:"O",rep:false,len:2},
+21:{name:"Military Status",dt:"IS",opt:"O",rep:false,len:3}
+}},
+IN2:{name:"Insurance Additional Information",fields:{
+1:{name:"Insured's Employee ID",dt:"CX",opt:"O",rep:true,len:250},
+2:{name:"Insured's Social Security Number",dt:"ST",opt:"O",rep:false,len:11},
+3:{name:"Insured's Employer's Name and ID",dt:"XCN",opt:"O",rep:true,len:250},
+4:{name:"Employer Information Data",dt:"IS",opt:"O",rep:false,len:1},
+5:{name:"Mail Claim Party",dt:"IS",opt:"O",rep:true,len:1},
+6:{name:"Medicare Health Ins Card Number",dt:"ST",opt:"O",rep:false,len:15},
+7:{name:"Medicaid Case Name",dt:"XPN",opt:"O",rep:true,len:250},
+8:{name:"Medicaid Case Number",dt:"ST",opt:"O",rep:false,len:15},
+9:{name:"Military Sponsor Name",dt:"XPN",opt:"O",rep:true,len:250},
+10:{name:"Military ID Number",dt:"ST",opt:"O",rep:false,len:20},
+11:{name:"Dependent Of Military Recipient",dt:"CWE",opt:"O",rep:false,len:250},
+12:{name:"Military Organization",dt:"ST",opt:"O",rep:false,len:25},
+13:{name:"Military Station",dt:"ST",opt:"O",rep:false,len:25},
+14:{name:"Military Service",dt:"IS",opt:"O",rep:false,len:14},
+15:{name:"Military Rank/Grade",dt:"IS",opt:"O",rep:false,len:2},
+16:{name:"Military Status",dt:"IS",opt:"O",rep:false,len:3},
+17:{name:"Military Retire Date",dt:"DT",opt:"O",rep:false,len:8},
+18:{name:"Military Non-Avail Cert On File",dt:"ID",opt:"O",rep:false,len:1},
+19:{name:"Baby Coverage",dt:"ID",opt:"O",rep:false,len:1},
+20:{name:"Combine Baby Bill",dt:"ID",opt:"O",rep:false,len:1},
+21:{name:"Blood Deductible",dt:"ST",opt:"O",rep:false,len:1},
+22:{name:"Special Coverage Approval Name",dt:"XPN",opt:"O",rep:true,len:250},
+23:{name:"Special Coverage Approval Title",dt:"ST",opt:"O",rep:false,len:30},
+24:{name:"Non-Covered Insurance Code",dt:"IS",opt:"O",rep:true,len:8},
+25:{name:"Payor ID",dt:"CX",opt:"O",rep:true,len:250},
+26:{name:"Payor Subscriber ID",dt:"CX",opt:"O",rep:true,len:250},
+27:{name:"Eligibility Source",dt:"IS",opt:"O",rep:false,len:1},
+28:{name:"Room Coverage Type/Amount",dt:"RMC",opt:"O",rep:true,len:250},
+29:{name:"Policy Type/Amount",dt:"PTA",opt:"O",rep:true,len:250},
+30:{name:"Daily Deductible",dt:"DDI",opt:"O",rep:false,len:250},
+31:{name:"Living Dependency",dt:"IS",opt:"O",rep:false,len:2},
+32:{name:"Ambulatory Status",dt:"IS",opt:"O",rep:true,len:2},
+33:{name:"Citizenship",dt:"CWE",opt:"O",rep:true,len:250},
+34:{name:"Primary Language",dt:"CWE",opt:"O",rep:false,len:250},
+35:{name:"Living Arrangement",dt:"IS",opt:"O",rep:false,len:2},
+36:{name:"Publicity Code",dt:"CWE",opt:"O",rep:false,len:250},
+37:{name:"Protection Indicator",dt:"ID",opt:"O",rep:false,len:1},
+38:{name:"Student Indicator",dt:"IS",opt:"O",rep:false,len:2},
+39:{name:"Religion",dt:"CWE",opt:"O",rep:false,len:250},
+40:{name:"Mother's Maiden Name",dt:"XPN",opt:"O",rep:true,len:250},
+41:{name:"Nationality",dt:"CWE",opt:"O",rep:false,len:250},
+42:{name:"Ethnic Group",dt:"CWE",opt:"O",rep:true,len:250},
+43:{name:"Marital Status",dt:"CWE",opt:"O",rep:true,len:250},
+44:{name:"Insured's Employment Start Date",dt:"DT",opt:"O",rep:false,len:8},
+45:{name:"Employment Stop Date",dt:"DT",opt:"O",rep:false,len:8},
+46:{name:"Job Title",dt:"ST",opt:"O",rep:false,len:20},
+47:{name:"Job Code/Class",dt:"JCC",opt:"O",rep:false,len:20},
+48:{name:"Job Status",dt:"IS",opt:"O",rep:false,len:2},
+49:{name:"Employer Contact Person Name",dt:"XPN",opt:"O",rep:true,len:250},
+50:{name:"Employer Contact Person Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+51:{name:"Employer Contact Reason",dt:"IS",opt:"O",rep:false,len:2},
+52:{name:"Insured's Contact Person's Name",dt:"XPN",opt:"O",rep:true,len:250},
+53:{name:"Insured's Contact Person Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+54:{name:"Insured's Contact Person Reason",dt:"IS",opt:"O",rep:true,len:2},
+55:{name:"Relationship to the Patient Start Date",dt:"DT",opt:"O",rep:false,len:8},
+56:{name:"Relationship to the Patient Stop Date",dt:"DT",opt:"O",rep:true,len:8},
+57:{name:"Insurance Co. Contact Reason",dt:"IS",opt:"O",rep:false,len:2},
+58:{name:"Insurance Co Contact Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+59:{name:"Policy Scope",dt:"IS",opt:"O",rep:false,len:2},
+60:{name:"Policy Source",dt:"IS",opt:"O",rep:false,len:2},
+61:{name:"Patient Member Number",dt:"CX",opt:"O",rep:false,len:250},
+62:{name:"Guarantor's Relationship to Insured",dt:"CWE",opt:"O",rep:false,len:250},
+63:{name:"Insured's Phone Number - Home",dt:"XTN",opt:"O",rep:true,len:250},
+64:{name:"Insured's Employer Phone Number",dt:"XTN",opt:"O",rep:true,len:250},
+65:{name:"Military Handicapped Program",dt:"CWE",opt:"O",rep:false,len:250},
+66:{name:"Suspend Flag",dt:"ID",opt:"O",rep:false,len:1},
+67:{name:"Copay Limit Flag",dt:"ID",opt:"O",rep:false,len:1},
+68:{name:"Stoploss Limit Flag",dt:"ID",opt:"O",rep:false,len:1},
+69:{name:"Insured Organization Name and ID",dt:"XON",opt:"O",rep:true,len:250},
+70:{name:"Insured Employer Organization Name and ID",dt:"XON",opt:"O",rep:true,len:250},
+71:{name:"Race",dt:"CWE",opt:"O",rep:true,len:250},
+72:{name:"CMS Patient's Relationship to Insured",dt:"CWE",opt:"O",rep:false,len:250}
+}},
+ROL:{name:"Role",fields:{
+1:{name:"Role Instance ID",dt:"EI",opt:"C",rep:false,len:60},
+2:{name:"Action Code",dt:"ID",opt:"R",rep:false,len:2},
+3:{name:"Role-ROL",dt:"CWE",opt:"R",rep:false,len:250},
+4:{name:"Role Person",dt:"XCN",opt:"R",rep:true,len:250},
+5:{name:"Role Begin Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+6:{name:"Role End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+7:{name:"Role Duration",dt:"CWE",opt:"O",rep:false,len:250},
+8:{name:"Role Action Reason",dt:"CWE",opt:"O",rep:false,len:250},
+9:{name:"Provider Type",dt:"CWE",opt:"O",rep:true,len:250},
+10:{name:"Organization Unit Type",dt:"CWE",opt:"O",rep:false,len:250},
+11:{name:"Office/Home Address/Birthplace",dt:"XAD",opt:"O",rep:true,len:250},
+12:{name:"Phone",dt:"XTN",opt:"O",rep:true,len:250}
+}},
+DB1:{name:"Disability",fields:{
+1:{name:"Set ID",dt:"SI",opt:"R",rep:false,len:4},
+2:{name:"Disabled Person Code",dt:"IS",opt:"O",rep:false,len:2},
+3:{name:"Disabled Person Identifier",dt:"CX",opt:"O",rep:true,len:250},
+4:{name:"Disability Indicator",dt:"ID",opt:"O",rep:false,len:1},
+5:{name:"Disability Start Date",dt:"DT",opt:"O",rep:false,len:8},
+6:{name:"Disability End Date",dt:"DT",opt:"O",rep:false,len:8},
+7:{name:"Disability Return to Work Date",dt:"DT",opt:"O",rep:false,len:8},
+8:{name:"Disability Unable to Work Date",dt:"DT",opt:"O",rep:false,len:8}
+}},
+ACC:{name:"Accident",fields:{
+1:{name:"Accident Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+2:{name:"Accident Code",dt:"CWE",opt:"O",rep:false,len:250},
+3:{name:"Accident Location",dt:"ST",opt:"O",rep:false,len:25},
+4:{name:"Auto Accident State",dt:"CWE",opt:"O",rep:false,len:250},
+5:{name:"Accident Job Related Indicator",dt:"ID",opt:"O",rep:false,len:1},
+6:{name:"Accident Death Indicator",dt:"ID",opt:"O",rep:false,len:12},
+7:{name:"Entered By",dt:"XCN",opt:"O",rep:false,len:250},
+8:{name:"Accident Description",dt:"ST",opt:"O",rep:false,len:25},
+9:{name:"Brought In By",dt:"ST",opt:"O",rep:false,len:80},
+10:{name:"Police Notified Indicator",dt:"ID",opt:"O",rep:false,len:1},
+11:{name:"Accident Address",dt:"XAD",opt:"O",rep:false,len:250}
+}},
+};
 
 const HL7_DEFS = {"2.3": HL7_V23, "2.5": HL7_V25, "2.8": HL7_V28};
 
 // ========== MSH-18 CHARACTER SET MAPPING ==========
-const MSH18_TO_ENCODING = {
-  '':'ASCII', 'ASCII':'ASCII',
-  '8859/1':'ISO-8859-1', '8859/2':'ISO-8859-2', '8859/3':'ISO-8859-3',
-  '8859/4':'ISO-8859-4', '8859/5':'ISO-8859-5', '8859/6':'ISO-8859-6',
-  '8859/7':'ISO-8859-7', '8859/8':'ISO-8859-8', '8859/9':'ISO-8859-9',
-  'UNICODE':'UTF-8', 'UNICODE UTF-8':'UTF-8', 'UTF-8':'UTF-8'
-};
+const MSH18_TO_ENCODING = {"":"ASCII","ASCII":"ASCII","8859/1":"ISO-8859-1","8859/2":"ISO-8859-2","8859/3":"ISO-8859-3","8859/4":"ISO-8859-4","8859/5":"ISO-8859-5","8859/6":"ISO-8859-6","8859/7":"ISO-8859-7","8859/8":"ISO-8859-8","8859/9":"ISO-8859-9","UNICODE":"UTF-8","UNICODE UTF-8":"UTF-8","UTF-8":"UTF-8"};
+// @@GENERATED_DEFS_END@@
 // ========== STATE ==========
 let parsedMessage = null;
 let currentProfile = null;

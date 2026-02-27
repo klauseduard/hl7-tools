@@ -15,7 +15,7 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 **Features:**
 - Three-panel layout: Input (paste/drag-drop/Open button) | Parsed table | Field detail | Compare (field-level diff)
 - **Compare tab**: paste/open a second message, get a field-by-field diff with character-level highlighting of changed characters, summary bar, filter toggle, and side-by-side component breakdown in detail panel
-- Embedded HL7 v2.3, v2.5, and v2.8 segment/field definitions (~22–37 segments) with data type component breakdowns (~38 composite types)
+- Embedded HL7 v2.3, v2.5, and v2.8 segment/field definitions (~22–37 segments) with data type component breakdowns (~49 types) — **generated from Python** via `tools/gen_js_defs.py`
 - Auto-detects HL7 version from MSH-12 (v2.3.1 maps to v2.3, v2.8.x maps to v2.8 definitions)
 - Correct MSH field numbering: MSH-1 = `|` (field separator), MSH-2 = encoding characters
 - Component (`^`) and subcomponent (`&`) splitting, field repetition (`~`) handling
@@ -79,6 +79,19 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 - `--diff FILE_A FILE_B` field-level comparison, `--anon` anonymize, `--profile PATH` load profile
 - `--send host:port` send via MLLP with optional `--tls`/`--tls-insecure`
 
+## Definition Codegen
+
+HL7 segment/data type definitions are maintained in `hl7view/definitions.py` (single source of truth) and generated into `hl7-viewer.html` for the web viewer.
+
+**Workflow:** After editing `definitions.py`, regenerate the JS:
+```bash
+venv/bin/python tools/gen_js_defs.py
+```
+
+- The generator replaces the block between `@@GENERATED_DEFS_START@@` / `@@GENERATED_DEFS_END@@` markers in `hl7-viewer.html`
+- `test_js_defs_in_sync` in `tests/test_definitions.py` fails if they're out of sync
+- Never hand-edit definitions in `hl7-viewer.html` — edit `definitions.py` and regenerate
+
 ## HL7 Parsing Notes
 
 - MSH-1 is the field separator `|` (implicit, not in pipe-split output). MSH-2 is encoding characters. MSH-3 onwards = `fields[2], fields[3], ...` with field number = array index + 1
@@ -92,7 +105,7 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 venv/bin/pytest tests/ -v
 ```
 
-99 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff) plus performance benchmarks (500-OBX parse/serialize/validate). Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+100 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff) plus performance benchmarks (500-OBX parse/serialize/validate) and a JS codegen sync check. Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
 
 - `pytest.ini` sets `pythonpath = .` so no install step needed
 - `tests/conftest.py` — shared fixtures (parsed messages, sample profile)

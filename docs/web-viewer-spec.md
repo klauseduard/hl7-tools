@@ -20,8 +20,8 @@ Reference implementation: `hl7-viewer.html`
 
 - All processing is client-side JavaScript
 - No data leaves the browser — important for patient data privacy
-- No persistent storage (no localStorage, no cookies)
-- State exists only in memory for the duration of the page session
+- Minimal persistent storage via localStorage (empty-field toggle preference, external message injection)
+- All other state exists only in memory for the duration of the page session
 
 ---
 
@@ -94,9 +94,10 @@ Left to right:
 4. **Profile indicator** — shown when profile loaded (name + unload ✕ button)
 5. **Anon** button — toggle anonymization (highlighted yellow when active)
 6. **Non-ASCII** checkbox — toggle Estonian name pool for anonymization
-7. **?** button — opens help modal
-8. **Search input** — text field for live filtering
-9. **Title** — "HL7 Message Viewer" (right-aligned)
+7. **Empty** button — toggle empty field visibility (highlighted yellow when active, persisted in localStorage)
+8. **?** button — opens help modal
+9. **Search input** — text field for live filtering
+10. **Title** — "HL7 Message Viewer" (right-aligned)
 
 ---
 
@@ -119,10 +120,11 @@ Left to right:
 | `Esc` | Search focused | Clear search and blur |
 | `Esc` | Help modal open | Close help modal |
 | `Ctrl+C` | Field row selected | Copy value to clipboard |
+| `E` | Parsed tab focused | Toggle empty field visibility |
 | `Ctrl+Shift+A` | Any context | Toggle anonymization |
 | `Ctrl+Enter` | Textarea focused | Parse message |
 
-Keyboard navigation skips hidden rows (search-filtered or collapsed).
+Keyboard navigation skips hidden rows (search-filtered, collapsed, or empty-filtered).
 
 ### 5.3 Search
 
@@ -236,9 +238,8 @@ Clicking a diff row shows:
 ### 9.3 Limited persistent state
 
 - Closing the tab loses all in-memory state
-- No settings persistence, no recent files, no saved profiles
-- Profile must be reloaded each session
-- **Exception**: external integration via `localStorage` (see section 9)
+- No recent files, no saved profiles — profile must be reloaded each session
+- **localStorage** used for: empty-field toggle preference (`hl7viewer.showEmpty`), external message injection (`hl7viewer.pending`)
 
 ### 9.4 Single message at a time
 

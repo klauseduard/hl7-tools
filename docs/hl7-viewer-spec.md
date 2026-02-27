@@ -467,7 +467,8 @@ When a repeatable text field (FT, TX) contains `~` separators, warn that the rep
 - Segment headers remain visible if any child field matches; hidden if no children match
 - Component/sub-rows follow their parent field's visibility
 - Search applies to both the parsed field table and the compare diff table
-- Clearing the search term restores full view
+- Search combines with the empty-field filter — both filters are independent and additive
+- Clearing the search term restores full view (empty-field filter unaffected)
 
 ---
 
@@ -484,6 +485,7 @@ In interactive/focused contexts, support these actions:
 | Copy value | Copy current field's value to clipboard |
 | Toggle anonymization | Activate/deactivate anonymization |
 | Toggle non-ASCII names | Switch anonymization name pool |
+| Toggle empty fields | Show/hide fields with empty values (preference persisted) |
 | Version cycle | Cycle through auto → 2.3 → 2.5 |
 
 ---

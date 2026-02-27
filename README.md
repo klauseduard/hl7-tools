@@ -75,6 +75,7 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 - **Integration profiles** — load JSON files to overlay custom field names, descriptions, notes, value maps (see [Profiles](#integration-profiles))
 - **Anonymization** — toggle PID field anonymization with ASCII or Estonian (non-ASCII) name pools
 - **Live search** — filter fields by address, name, type, or value
+- **Hide empty fields** — toggle to hide empty fields and their components (`E` key), persisted in localStorage
 - **Click-to-highlight** — click a parsed row to highlight the corresponding position in raw view
 - **Message comparison** — Compare tab for field-level diff of two messages with character-level highlighting of changed characters, summary bar, filter toggle (differences only / all), and side-by-side component breakdown in detail panel
 - **Keyboard navigation** — arrow keys, Enter to expand, Esc to clear search
@@ -87,6 +88,7 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 | `Enter` | Expand/collapse components |
 | `Esc` | Clear search |
 | `Ctrl+C` | Copy field value |
+| `E` | Toggle empty fields |
 | `Ctrl+Shift+A` | Toggle anonymization |
 | `Ctrl+Enter` | Parse (in textarea) |
 

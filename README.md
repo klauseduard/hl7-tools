@@ -74,7 +74,7 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 - **HL7 escape sequences** — `\F\`, `\S\`, `\T\`, `\R\`, `\E\`, `\.br\`, `\.sp\`, `\Xhh\` recognized and decoded
 - **Integration profiles** — load JSON files to overlay custom field names, descriptions, notes, value maps (see [Profiles](#integration-profiles))
 - **Anonymization** — toggle PHI anonymization (PID, NK1, GT1, IN1, MRG) with ASCII or Estonian (non-ASCII) name pools
-- **Live search** — filter fields by address, name, type, or value
+- **Live search** — filter fields by address, name, type, or value (works in both Parsed and Compare tabs)
 - **Hide empty fields** — toggle to hide empty fields and their components (`E` key), persisted in localStorage
 - **Click-to-highlight** — click a parsed row to highlight the corresponding position in raw view
 - **Message comparison** — Compare tab for field-level diff of two messages with character-level highlighting of changed characters, summary bar, filter toggle (differences only / all), and side-by-side component breakdown in detail panel
@@ -194,7 +194,7 @@ hl7view --anon message.hl7
 hl7view --anon-non-ascii message.hl7
 ```
 
-In the TUI, press `a` to toggle anonymization and `n` to switch name pools. Press `t` to transliterate non-ASCII characters to their ASCII equivalents.
+In the TUI, press `a` to toggle anonymization and `n` to switch name pools. Press `t` to transliterate non-ASCII characters to their ASCII equivalents. Anonymization is blocked while unsaved field edits exist — save or discard edits first.
 
 ### MLLP Send
 

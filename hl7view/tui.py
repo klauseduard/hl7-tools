@@ -1046,18 +1046,34 @@ class HL7ViewerApp(App):
             search_bar.remove_class("visible")
             search_bar.value = ""
             self.search_query = ""
+            if self._search_debounce_timer is not None:
+                self._search_debounce_timer.stop()
+                self._search_debounce_timer = None
             self._update_header()
             self._build_tree()
+
+    _search_debounce_timer = None
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "search-bar":
             self.search_query = event.value.strip()
             self._update_header()
-            self._build_tree()
+            if self._search_debounce_timer is not None:
+                self._search_debounce_timer.stop()
+            self._search_debounce_timer = self.set_timer(0.2, self._debounced_search_rebuild)
+
+    def _debounced_search_rebuild(self) -> None:
+        """Rebuild tree after search debounce delay."""
+        self._search_debounce_timer = None
+        self._build_tree()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         if event.input.id == "search-bar":
-            # Close search bar, keep filter active
+            # Close search bar, keep filter active; flush any pending debounce
+            if self._search_debounce_timer is not None:
+                self._search_debounce_timer.stop()
+                self._search_debounce_timer = None
+                self._build_tree()
             search_bar = self.query_one("#search-bar", Input)
             search_bar.remove_class("visible")
             tree = self.query_one("#field-tree", Tree)

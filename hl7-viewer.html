@@ -2460,15 +2460,24 @@ function applyEmptyFilter() {
   }
 
   // Hide segment headers if ALL their field-rows are hidden (empty + search + collapse combined)
+  // Single-pass: build a map of segKey → hasVisibleField, then apply to headers
   if (!showEmpty) {
+    const segHasVisible = new Map();
+    for (const row of tbody.children) {
+      if (row.classList.contains('seg-header')) continue;
+      if (!row.classList.contains('field-row')) continue;
+      const segKey = row.dataset.segKey;
+      if (!segKey) continue;
+      if (!segHasVisible.has(segKey)) segHasVisible.set(segKey, false);
+      if (!row.classList.contains('hidden-empty') && !row.classList.contains('hidden-search') && !row.classList.contains('hidden-collapse')) {
+        segHasVisible.set(segKey, true);
+      }
+    }
     for (const row of tbody.children) {
       if (!row.classList.contains('seg-header')) continue;
       const segKey = row.dataset.segKey;
       if (!segKey) continue;
-      // Check if any visible field-row exists for this segment
-      const hasVisible = Array.from(tbody.querySelectorAll('tr.field-row[data-seg-key="' + CSS.escape(segKey) + '"]'))
-        .some(r => !r.classList.contains('hidden-empty') && !r.classList.contains('hidden-search') && !r.classList.contains('hidden-collapse'));
-      row.classList.toggle('hidden-empty', !hasVisible);
+      row.classList.toggle('hidden-empty', !segHasVisible.get(segKey));
     }
   } else {
     for (const row of tbody.children) {
@@ -3138,7 +3147,11 @@ document.getElementById('compareFile').addEventListener('change', function(e) {
   e.target.value = '';
 });
 
-document.getElementById('searchInput').addEventListener('input', applySearch);
+let _searchDebounceTimer = null;
+document.getElementById('searchInput').addEventListener('input', function() {
+  clearTimeout(_searchDebounceTimer);
+  _searchDebounceTimer = setTimeout(applySearch, 150);
+});
 
 document.getElementById('versionSelect').addEventListener('change', function() {
   if (parsedMessage) {

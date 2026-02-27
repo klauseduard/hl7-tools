@@ -92,7 +92,7 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 venv/bin/pytest tests/ -v
 ```
 
-90 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff). Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+95 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff) plus performance benchmarks (500-OBX parse/serialize/validate). Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
 
 - `pytest.ini` sets `pythonpath = .` so no install step needed
 - `tests/conftest.py` — shared fixtures (parsed messages, sample profile)
@@ -104,3 +104,4 @@ venv/bin/pytest tests/ -v
 - `orm-o01-order-v23.hl7` — ORM^O01 radiology order (v2.3.1), 6 segments including ZDS custom segment, non-ASCII Estonian names, ISO-8859-1 charset
 - `oru-r01-lab-v25.hl7` — ORU^R01 lab results (v2.5), 11 segments with 5 OBX (numeric, coded, string, formatted text with escape sequences, repeating values), NTE
 - `oru-r01-lab-v28.hl7` — ORU^R01 CBC lab results (v2.8), 13 segments with SFT, SPM, 5 OBX with performing organization (fields 23–25), CWE types
+- `oru-r01-large-500obx.hl7` — Synthetic ORU^R01 (v2.8), 507 segments with 500 OBX for performance testing

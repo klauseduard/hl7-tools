@@ -40,8 +40,10 @@ Exposes HL7 parsing capabilities to LLM agents via the Model Context Protocol (M
 **Setup:**
 ```bash
 python3 -m venv venv
-venv/bin/pip install -r requirements-mcp.txt
+venv/bin/pip install -e ".[dev]"
 ```
+
+Or without packaging: `venv/bin/pip install -r requirements-mcp.txt`
 
 **Run:** Registered in `~/.claude.json` under `mcpServers.hl7` — starts automatically with Claude Code.
 

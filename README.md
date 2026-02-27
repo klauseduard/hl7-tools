@@ -20,6 +20,25 @@ field names, validation rules, value maps), byte-level encoding detection
 
 ---
 
+## Installation
+
+```bash
+git clone https://github.com/klauseduard/hl7-tools.git
+cd hl7-tools
+python3 -m venv venv
+venv/bin/pip install -e ".[dev]"
+```
+
+This installs the `hl7view` and `hl7view-mcp` commands into the venv. Activate it with `source venv/bin/activate`, or run directly via `venv/bin/hl7view`.
+
+Alternatively, install dependencies without packaging:
+
+```bash
+venv/bin/pip install -r requirements-mcp.txt
+```
+
+---
+
 ## Web Viewer
 
 **File:** `hl7-viewer.html` — single self-contained HTML/CSS/JS file, no dependencies, no server.
@@ -81,20 +100,22 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 
 ```bash
 # Interactive TUI (default when running on a TTY)
-python3 -m hl7view message.hl7
+hl7view message.hl7
 
 # Pipe input
-cat message.hl7 | python3 -m hl7view
+cat message.hl7 | hl7view
 
 # From clipboard (requires xclip)
-python3 -m hl7view --clipboard
+hl7view --clipboard
 
 # Non-interactive table output
-python3 -m hl7view -v message.hl7
+hl7view -v message.hl7
 
 # Extract a single field (for scripting)
-python3 -m hl7view -f PID-5 message.hl7
+hl7view -f PID-5 message.hl7
 ```
+
+`python3 -m hl7view` also works if you prefer not to install the package.
 
 ### Interactive TUI
 
@@ -135,28 +156,28 @@ Flags that produce direct stdout output (no TUI):
 
 ```bash
 # Colored table with component breakdown
-python3 -m hl7view -v message.hl7
+hl7view -v message.hl7
 
 # Include empty fields
-python3 -m hl7view -v -e message.hl7
+hl7view -v -e message.hl7
 
 # Raw segment lines
-python3 -m hl7view --raw message.hl7
+hl7view --raw message.hl7
 
 # Single field extraction
-python3 -m hl7view -f MSH-9 message.hl7
+hl7view -f MSH-9 message.hl7
 
 # Multiple files
-python3 -m hl7view file1.hl7 file2.hl7
+hl7view file1.hl7 file2.hl7
 
 # Disable colors (for piping)
-python3 -m hl7view --no-color message.hl7
+hl7view --no-color message.hl7
 
 # Compare two messages (field-level diff)
-python3 -m hl7view file1.hl7 file2.hl7 --diff
+hl7view file1.hl7 file2.hl7 --diff
 
 # Include identical fields in diff output
-python3 -m hl7view file1.hl7 file2.hl7 --diff -e
+hl7view file1.hl7 file2.hl7 --diff -e
 ```
 
 ### Anonymization
@@ -165,10 +186,10 @@ Anonymize PID segment fields (names, IDs, DOB, addresses, phone numbers, SSN):
 
 ```bash
 # ASCII name pool
-python3 -m hl7view --anon message.hl7
+hl7view --anon message.hl7
 
 # Estonian name pool (with non-ASCII characters: Õ, Ö, Ü, Ä, Ž, Š)
-python3 -m hl7view --anon-non-ascii message.hl7
+hl7view --anon-non-ascii message.hl7
 ```
 
 In the TUI, press `a` to toggle anonymization and `n` to switch name pools. Press `t` to transliterate non-ASCII characters to their ASCII equivalents.
@@ -179,25 +200,25 @@ Send a message to a remote MLLP endpoint and display the response:
 
 ```bash
 # Basic send (waits for ACK)
-python3 -m hl7view message.hl7 --send host:6001
+hl7view message.hl7 --send host:6001
 
 # Fire and forget
-python3 -m hl7view message.hl7 --send host:6001 --send-no-wait
+hl7view message.hl7 --send host:6001 --send-no-wait
 
 # Custom timeout
-python3 -m hl7view message.hl7 --send host:6001 --send-timeout 30
+hl7view message.hl7 --send host:6001 --send-timeout 30
 
 # TLS
-python3 -m hl7view message.hl7 --send host:6002 --tls
+hl7view message.hl7 --send host:6002 --tls
 
 # TLS with custom CA
-python3 -m hl7view message.hl7 --send host:6002 --tls-ca /path/to/ca.pem
+hl7view message.hl7 --send host:6002 --tls-ca /path/to/ca.pem
 
 # mTLS (client certificate)
-python3 -m hl7view message.hl7 --send host:6002 --tls-cert client.pem --tls-key client-key.pem
+hl7view message.hl7 --send host:6002 --tls-cert client.pem --tls-key client-key.pem
 
 # TLS without certificate verification
-python3 -m hl7view message.hl7 --send host:6002 --tls-insecure
+hl7view message.hl7 --send host:6002 --tls-insecure
 ```
 
 In the TUI, press `s` and enter the target. Append `--tls` or `--tls-insecure` to the host:port:
@@ -232,9 +253,10 @@ The TUI automatically applies matching config when sending to a configured host:
 ### Setup
 
 ```bash
-python3 -m venv venv
-venv/bin/pip install -r requirements-mcp.txt
+pip install -e .
 ```
+
+Or without packaging: `pip install -r requirements-mcp.txt`
 
 ### Registration (Claude Code)
 
@@ -278,7 +300,7 @@ Add to `~/.claude.json` under `mcpServers`:
 Both viewers support integration profiles — JSON files that overlay custom field names, descriptions, notes, and value maps onto the parsed view. When used with `hl7_validate`, profiles also drive validation: required field checks and value map enforcement.
 
 - **Web viewer:** load via the toolbar **Load Profile** button
-- **Terminal viewer:** `python3 -m hl7view --profile profiles/sample-profile.json message.hl7`
+- **Terminal viewer:** `hl7view --profile profiles/sample-profile.json message.hl7`
 - **MCP server:** pass profile name to `hl7_parse` or `hl7_validate`
 
 See [`profiles/sample-profile.json`](profiles/sample-profile.json) for the documented schema.

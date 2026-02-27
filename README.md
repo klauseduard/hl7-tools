@@ -260,17 +260,34 @@ Or without packaging: `pip install -r requirements-mcp.txt`
 
 ### Registration (Claude Code)
 
-Add to `~/.claude.json` under `mcpServers`:
+After `pip install -e .`, register with the CLI:
+
+```bash
+claude mcp add hl7 -- /path/to/hl7-tools/venv/bin/hl7view-mcp --transport stdio
+```
+
+Or add manually to `~/.claude.json` under `mcpServers`:
 
 ```json
 "hl7": {
   "type": "stdio",
-  "command": "/path/to/hl7-tools/venv/bin/python3",
-  "args": ["-m", "hl7view.mcp_server", "--transport", "stdio"],
+  "command": "/path/to/hl7-tools/venv/bin/hl7view-mcp",
+  "args": ["--transport", "stdio"],
   "cwd": "/path/to/hl7-tools",
   "env": {}
 }
 ```
+
+The `cwd` must point to the repo root so the server can find `samples/` and `profiles/`.
+
+### When to use MCP vs raw Claude
+
+Raw Claude is good at reading common HL7 segments (PID, MSH, OBR) directly. The MCP tools are most valuable for:
+
+- **Anonymize / Transform / Send** — operations Claude can't do on raw text
+- **Validate** — profile-driven checks (required fields, value maps)
+- **Explain** — precise definitions for uncommon fields (PV1-36, ORC-14) where Claude might hallucinate
+- **Diff** — structured field-by-field comparison of two messages
 
 ### Tools
 

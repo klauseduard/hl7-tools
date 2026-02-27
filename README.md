@@ -9,7 +9,7 @@ HL7 v2 messages. Three interfaces, zero external service dependencies:
 - **[MCP Server](#mcp-server)** — exposes all tools to AI agents via Model Context Protocol
   (parse, validate, anonymize, transform, diff, send, explain)
 
-Built-in segment/field definitions for HL7 v2.3 and v2.5 (~23 segments, ~30
+Built-in segment/field definitions for HL7 v2.3, v2.5, and v2.8 (~23–26 segments, ~32
 composite data types). Supports integration profiles (JSON overlays for custom
 field names, validation rules, value maps), byte-level encoding detection
 (UTF-8/ISO-8859-1/ASCII with BOM), and PHI anonymization of PID/NK1/GT1/IN1/MRG segments.
@@ -65,8 +65,8 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 
 ### Features
 
-- **HL7 definitions** — ~23 segments per version (v2.3, v2.5) with ~30 composite data types and named components
-- **Auto-detect version** from MSH-12 (e.g. v2.3.1 maps to v2.3 definitions)
+- **HL7 definitions** — ~23–26 segments per version (v2.3, v2.5, v2.8) with ~32 composite data types and named components
+- **Auto-detect version** from MSH-12 (e.g. v2.3.1 maps to v2.3, v2.8.x maps to v2.8 definitions)
 - **Correct MSH numbering** — MSH-1 = `|` (field separator), MSH-2 = encoding characters
 - **Component/subcomponent parsing** — `^` components, `&` subcomponents, `~` field repetitions
 - **OBX-5 dynamic typing** — data type resolved from OBX-2 value
@@ -139,7 +139,7 @@ Additional overlays: raw view, file browser, MLLP send/response split view.
 | `Esc` | Close search/overlay/cancel input |
 | `Up/Down` or `j/k` | Navigate fields |
 | `Enter` | Edit field value (on leaf nodes) |
-| `v` | Cycle HL7 version: auto / 2.3 / 2.5 |
+| `v` | Cycle HL7 version: auto / 2.3 / 2.5 / 2.8 |
 | `e` | Toggle show empty fields |
 | `c` | Copy field value to clipboard (xclip) |
 | `r` | Toggle raw message view |
@@ -310,7 +310,7 @@ Raw Claude is good at reading common HL7 segments (PID, MSH, OBR) directly. The 
 |-----|-------------|
 | `hl7://samples/{name}` | Sample HL7 messages from `samples/` directory |
 | `hl7://profiles/{name}` | Integration profiles from `profiles/` directory |
-| `hl7://definitions/{version}` | HL7 v2.3/v2.5 definition summaries |
+| `hl7://definitions/{version}` | HL7 v2.3/v2.5/v2.8 definition summaries |
 
 ---
 
@@ -364,6 +364,7 @@ The `samples/` directory contains test messages:
 - `adt-a01-admit-v25.hl7` — ADT^A01 admission (v2.5)
 - `orm-o01-order-v23.hl7` — ORM^O01 order (v2.3)
 - `oru-r01-lab-v25.hl7` — ORU^R01 lab result (v2.5)
+- `oru-r01-lab-v28.hl7` — ORU^R01 CBC lab result (v2.8) with SFT, SPM, performing organization
 
 ## License
 

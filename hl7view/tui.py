@@ -157,7 +157,7 @@ class HelpScreen(Screen):
             ]),
             ("Display", [
                 ("/", "Search fields by address, name, type, or value"),
-                ("v", "Cycle HL7 version (auto / v2.3 / v2.5)"),
+                ("v", "Cycle HL7 version (auto / v2.3 / v2.5 / v2.8)"),
                 ("e", "Toggle display of empty fields"),
                 ("r", "Toggle raw segment view"),
                 ("c", "Copy selected field value to clipboard"),
@@ -358,14 +358,16 @@ class HL7ViewerApp(App):
         self.show_empty = False
         self.search_query = ""
         self._profile = profile
-        # Version cycling: auto (resolved), 2.3, 2.5
+        # Version cycling: auto (resolved), 2.3, 2.5, 2.8
         self._version_override = version  # None = auto
-        self._version_cycle = ["auto", "2.3", "2.5"]
+        self._version_cycle = ["auto", "2.3", "2.5", "2.8"]
         self._version_idx = 0
         if version == "2.3":
             self._version_idx = 1
         elif version == "2.5":
             self._version_idx = 2
+        elif version == "2.8":
+            self._version_idx = 3
         self._current_node_data = None
         # Anonymization state
         self._anon_active = False

@@ -33,6 +33,16 @@ def test_parse_oru_structure(oru_parsed):
     assert oru_parsed.message_type == "ORU^R01"
 
 
+def test_v28_sample_parses(oru_v28_parsed):
+    assert oru_v28_parsed.version == "2.8"
+    assert oru_v28_parsed.message_type == "ORU^R01^ORU_R01"
+    seg_names = [s.name for s in oru_v28_parsed.segments]
+    assert "SFT" in seg_names
+    assert "SPM" in seg_names
+    assert "OBX" in seg_names
+    assert len(oru_v28_parsed.segments) == 13
+
+
 # --- MSH field numbering ---
 
 def test_msh_field_numbering(adt_parsed):

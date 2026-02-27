@@ -283,8 +283,8 @@ def main():
     parser.add_argument('--profile', metavar='PATH',
                         help='load integration profile JSON for custom field names')
     parser.add_argument('--version', dest='hl7_version', metavar='VER',
-                        choices=['2.3', '2.5'],
-                        help='force HL7 version (2.3 or 2.5)')
+                        choices=['2.3', '2.5', '2.8'],
+                        help='force HL7 version (2.3, 2.5, or 2.8)')
     parser.add_argument('-V', action='version',
                         version=f'%(prog)s {__version__}')
 

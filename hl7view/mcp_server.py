@@ -15,7 +15,7 @@ from fastmcp import FastMCP
 from hl7view.parser import parse_hl7, reparse_field, rebuild_raw_line
 from hl7view.definitions import (
     get_seg_def, get_field_def, DATA_TYPES,
-    resolve_version, HL7_V23, HL7_V25, HL7_DEFS,
+    resolve_version, HL7_V23, HL7_V25, HL7_V28, HL7_DEFS,
 )
 from hl7view.anonymize import anonymize_message
 from hl7view.diff import diff_messages
@@ -630,7 +630,7 @@ def hl7_explain(item: str, version: str = "2.5") -> str:
               - Segment name: "PID", "OBX", "MSH"
               - Field address: "PID-5", "MSH-9", "OBR-4"
               - Data type: "XPN", "CX", "CE", "HD"
-        version: HL7 version to use for definitions ("2.3" or "2.5", default "2.5").
+        version: HL7 version to use for definitions ("2.3", "2.5", or "2.8", default "2.5").
 
     Returns:
         JSON with definition details: for segments all fields are listed,
@@ -820,7 +820,7 @@ def get_profile_resource(name: str) -> str:
 
 @mcp.resource("hl7://definitions/{version}")
 def get_definitions(version: str) -> str:
-    """Get HL7 definitions summary for a version (2.3 or 2.5).
+    """Get HL7 definitions summary for a version (2.3, 2.5, or 2.8).
 
     Returns a list of all segments with their field inventories.
     """

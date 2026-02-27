@@ -42,5 +42,15 @@ def oru_parsed(oru_raw):
 
 
 @pytest.fixture
+def oru_v28_raw():
+    return (SAMPLES_DIR / "oru-r01-lab-v28.hl7").read_text()
+
+
+@pytest.fixture
+def oru_v28_parsed(oru_v28_raw):
+    return parse_hl7(oru_v28_raw)
+
+
+@pytest.fixture
 def sample_profile():
     return load_profile(PROFILES_DIR / "sample-profile.json")

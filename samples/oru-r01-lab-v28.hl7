@@ -1,0 +1,13 @@
+MSH|^~\&|ANALYZER^2.16.840.1.113883.3.111^ISO|CENTRAL_LAB^1.2.372.1^ISO|LIS^2.16.840.1.113883.3.222^ISO|CENTRAL_HOSP^1.2.372.2^ISO|20260227093000||ORU^R01^ORU_R01|MSG20260227001|P|2.8|||AL|NE|EST|UNICODE UTF-8|||CENTRAL_LAB^1.2.372.1^ISO|CENTRAL_HOSP^1.2.372.2^ISO
+SFT|Sysmex Corporation^L|XN-3100^1.5.2|XN-Series Hematology Analyzer|Build-2025.12.01||20250115
+PID|1||PAT99201^^^CENTRAL_HOSP^PI||Koppel^Maria^Liisa||19851103|F|||Parnu mnt 45^^Tallinn^^10134^EST||+3725550199
+PV1|1|O|LAB^200^^CENTRAL_LAB||||20198^Mets^Kersti^^^Dr
+ORC|RE|ORD88010^HIS|LAB92001^ANALYZER|||||||||20198^Mets^Kersti^^^Dr
+OBR|1|ORD88010^HIS|LAB92001^ANALYZER|58410-2^CBC W Auto Differential panel^LN|||20260227080000|||||||||20198^Mets^Kersti^^^Dr||||||20260227092500|||F
+OBX|1|NM|6690-2^Leukocytes^LN||7.2|10*3/uL^thousand per microliter^UCUM|4.5-11.0||||F|||20260227091500||||||Central Laboratory^L|Parnu mnt 102^^Tallinn^^10134^EST|20198^Mets^Kersti^^^Dr
+OBX|2|NM|789-8^Erythrocytes^LN||4.85|10*6/uL^million per microliter^UCUM|4.10-5.10||||F|||20260227091500||||||Central Laboratory^L|Parnu mnt 102^^Tallinn^^10134^EST|20198^Mets^Kersti^^^Dr
+OBX|3|NM|718-7^Hemoglobin^LN||14.2|g/dL^grams per deciliter^UCUM|12.0-16.0||||F|||20260227091500||||||Central Laboratory^L|Parnu mnt 102^^Tallinn^^10134^EST|20198^Mets^Kersti^^^Dr
+OBX|4|NM|4544-3^Hematocrit^LN||42.1|%^percent^UCUM|36.0-46.0||||F|||20260227091500||||||Central Laboratory^L|Parnu mnt 102^^Tallinn^^10134^EST|20198^Mets^Kersti^^^Dr
+OBX|5|NM|777-3^Platelets^LN||245|10*3/uL^thousand per microliter^UCUM|150-400||||F|||20260227091500||||||Central Laboratory^L|Parnu mnt 102^^Tallinn^^10134^EST|20198^Mets^Kersti^^^Dr
+SPM|1|SPM20260227001^LAB||BLD^Blood^HL70487|||VENIP^Venipuncture^HL70488|LACF^Left antecubital fossa^SCT|||||4.0&mL|||||20260227080000|20260227083000
+NTE|1||CBC with auto differential. No clots or hemolysis noted.

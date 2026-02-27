@@ -1,4 +1,4 @@
-"""HL7 v2.3 and v2.5 segment/field definitions and data types."""
+"""HL7 v2.3, v2.5, and v2.8 segment/field definitions and data types."""
 
 import copy
 
@@ -149,6 +149,14 @@ DATA_TYPES = {
         {"name": "Check Digit Scheme", "dt": "ID"}, {"name": "Assigning Authority", "dt": "HD"},
         {"name": "Identifier Type Code", "dt": "ID"}, {"name": "Assigning Facility", "dt": "HD"},
         {"name": "Name Representation Code", "dt": "ID"}, {"name": "Organization Identifier", "dt": "ST"}]},
+    "GTS": {"name": "General Timing Specification", "primitive": True},
+    "RPT": {"name": "Repeat Pattern", "components": [
+        {"name": "Repeat Pattern Code", "dt": "CWE"}, {"name": "Calendar Alignment", "dt": "ID"},
+        {"name": "Phase Range Begin Value", "dt": "NM"}, {"name": "Phase Range End Value", "dt": "NM"},
+        {"name": "Period Quantity", "dt": "NM"}, {"name": "Period Units", "dt": "IS"},
+        {"name": "Institution Specified Time", "dt": "ID"}, {"name": "Event", "dt": "ID"},
+        {"name": "Event Offset Quantity", "dt": "NM"}, {"name": "Event Offset Units", "dt": "IS"},
+        {"name": "General Timing Specification", "dt": "GTS"}]},
 }
 
 
@@ -637,7 +645,111 @@ HL7_V25["OBR"]["fields"][50] = _f("Parent Universal Service Identifier", "CWE", 
 HL7_V25["OBX"]["fields"][18] = _f("Equipment Instance Identifier", "EI", "O", True, 22)
 HL7_V25["OBX"]["fields"][19] = _f("Date/Time of the Analysis", "TS", "O", False, 26)
 
-HL7_DEFS = {"2.3": HL7_V23, "2.5": HL7_V25}
+# New segments added in v2.5 (also inherited by v2.8)
+HL7_V25["SFT"] = {"name": "Software Segment", "fields": {
+    1: _f("Software Vendor Organization", "XON", "R", False, 567),
+    2: _f("Software Certified Version or Release Number", "ST", "R", False, 15),
+    3: _f("Software Product Name", "ST", "R", False, 20),
+    4: _f("Software Binary ID", "ST", "R", False, 20),
+    5: _f("Software Product Information", "TX", "O", False, 1024),
+    6: _f("Software Install Date", "TS", "O", False, 26),
+}}
+
+HL7_V25["SPM"] = {"name": "Specimen", "fields": {
+    1: _f("Set ID", "SI", "O", False, 4),
+    2: _f("Specimen ID", "EIP", "O", False, 80),
+    3: _f("Specimen Parent IDs", "EIP", "O", True, 80),
+    4: _f("Specimen Type", "CWE", "R", False, 250),
+    5: _f("Specimen Type Modifier", "CWE", "O", True, 250),
+    6: _f("Specimen Additives", "CWE", "O", True, 250),
+    7: _f("Specimen Collection Method", "CWE", "O", False, 250),
+    8: _f("Specimen Source Site", "CWE", "O", False, 250),
+    9: _f("Specimen Source Site Modifier", "CWE", "O", True, 250),
+    10: _f("Specimen Collection Site", "CWE", "O", False, 250),
+    11: _f("Specimen Role", "CWE", "O", True, 250),
+    12: _f("Specimen Collection Amount", "CQ", "O", False, 20),
+    13: _f("Grouped Specimen Count", "NM", "O", False, 6),
+    14: _f("Specimen Description", "ST", "O", True, 250),
+    15: _f("Specimen Handling Code", "CWE", "O", True, 250),
+    16: _f("Specimen Risk Code", "CWE", "O", True, 250),
+    17: _f("Specimen Collection Date/Time", "DR", "O", False, 26),
+    18: _f("Specimen Received Date/Time", "TS", "O", False, 26),
+    19: _f("Specimen Expiration Date/Time", "TS", "O", False, 26),
+    20: _f("Specimen Availability", "ID", "O", False, 1),
+    21: _f("Specimen Reject Reason", "CWE", "O", True, 250),
+    22: _f("Specimen Quality", "CWE", "O", False, 250),
+    23: _f("Specimen Appropriateness", "CWE", "O", False, 250),
+    24: _f("Specimen Condition", "CWE", "O", True, 250),
+    25: _f("Specimen Current Quantity", "CQ", "O", False, 20),
+    26: _f("Number of Specimen Containers", "NM", "O", False, 4),
+    27: _f("Container Type", "CWE", "O", False, 250),
+}}
+
+HL7_V25["TQ1"] = {"name": "Timing/Quantity", "fields": {
+    1: _f("Set ID", "SI", "O", False, 4),
+    2: _f("Quantity", "CQ", "O", False, 20),
+    3: _f("Repeat Pattern", "RPT", "O", True, 540),
+    4: _f("Explicit Time", "TM", "O", True, 20),
+    5: _f("Relative Time and Units", "CQ", "O", True, 20),
+    6: _f("Service Duration", "CQ", "O", False, 20),
+    7: _f("Start Date/Time", "TS", "R", False, 26),
+    8: _f("End Date/Time", "TS", "O", False, 26),
+    9: _f("Priority", "CWE", "O", True, 250),
+    10: _f("Condition Text", "TX", "O", False, 250),
+    11: _f("Text Instruction", "TX", "O", False, 250),
+    12: _f("Conjunction", "ID", "C", False, 10),
+    13: _f("Occurrence Duration", "CQ", "O", False, 20),
+    14: _f("Total Occurrences", "NM", "O", False, 10),
+}}
+
+HL7_V25["TQ2"] = {"name": "Timing/Quantity Relationship", "fields": {
+    1: _f("Set ID", "SI", "O", False, 4),
+    2: _f("Sequence/Results Flag", "ID", "O", False, 1),
+    3: _f("Related Placer Number", "EI", "O", True, 22),
+    4: _f("Related Filler Number", "EI", "O", True, 22),
+    5: _f("Related Placer Group Number", "EI", "O", True, 22),
+    6: _f("Sequence Condition Code", "ID", "O", False, 2),
+    7: _f("Cyclic Entry/Exit Indicator", "ID", "O", False, 1),
+    8: _f("Sequence Condition Time Interval", "CQ", "O", False, 20),
+    9: _f("Cyclic Group Maximum Number of Repeats", "NM", "O", False, 10),
+    10: _f("Special Service Request Relationship", "ID", "O", False, 1),
+}}
+
+
+# ========== HL7 v2.8 SEGMENT DEFINITIONS ==========
+# Start with v2.5 as base, then override/extend
+
+HL7_V28 = copy.deepcopy(HL7_V25)
+
+# MSH v2.8 extensions
+HL7_V28["MSH"]["fields"][22] = _f("Sending Responsible Organization", "XON", "O", False, 567)
+HL7_V28["MSH"]["fields"][23] = _f("Receiving Responsible Organization", "XON", "O", False, 567)
+HL7_V28["MSH"]["fields"][24] = _f("Sending Network Address", "HD", "O", False, 227)
+HL7_V28["MSH"]["fields"][25] = _f("Receiving Network Address", "HD", "O", False, 227)
+
+# OBX v2.8 extensions
+HL7_V28["OBX"]["fields"][20] = _f("Observation Site", "CWE", "O", True, 250)
+HL7_V28["OBX"]["fields"][21] = _f("Observation Instance Identifier", "EI", "O", False, 22)
+HL7_V28["OBX"]["fields"][22] = _f("Mood Code", "CNE", "O", False, 250)
+HL7_V28["OBX"]["fields"][23] = _f("Performing Organization Name", "XON", "O", False, 567)
+HL7_V28["OBX"]["fields"][24] = _f("Performing Organization Address", "XAD", "O", False, 631)
+HL7_V28["OBX"]["fields"][25] = _f("Performing Organization Medical Director", "XCN", "O", False, 3002)
+
+# CE→CWE in v2.8 key lab fields
+for _seg_name, _field_nums in [
+    ("OBX", [3, 6, 15, 17]),
+    ("OBR", [4, 44, 45]),
+    ("DG1", [3]),
+    ("AL1", [2, 3]),
+]:
+    for _fnum in _field_nums:
+        if _fnum in HL7_V28[_seg_name]["fields"]:
+            _fld = HL7_V28[_seg_name]["fields"][_fnum]
+            if _fld["dt"] == "CE":
+                HL7_V28[_seg_name]["fields"][_fnum] = _f(
+                    _fld["name"], "CWE", _fld["opt"], _fld["rep"], _fld["len"])
+
+HL7_DEFS = {"2.3": HL7_V23, "2.5": HL7_V25, "2.8": HL7_V28}
 
 # ========== MSH-18 CHARACTER SET MAPPING ==========
 
@@ -666,11 +778,13 @@ def resolve_version(version_string):
     if not version_string:
         return "2.5"
     v = version_string.strip()
+    if v.startswith("2.8"):
+        return "2.8"
     if v.startswith("2.5"):
         return "2.5"
     if v.startswith("2.3") or v == "2.4":
         return "2.3"
-    if v.startswith("2.6") or v.startswith("2.7") or v.startswith("2.8"):
+    if v.startswith("2.6") or v.startswith("2.7"):
         return "2.5"
     return "2.5"
 

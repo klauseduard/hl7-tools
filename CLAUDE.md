@@ -15,8 +15,8 @@ Single self-contained HTML/CSS/JS file. Open directly in Firefox (`file://` work
 **Features:**
 - Three-panel layout: Input (paste/drag-drop/Open button) | Parsed table | Field detail | Compare (field-level diff)
 - **Compare tab**: paste/open a second message, get a field-by-field diff with character-level highlighting of changed characters, summary bar, filter toggle, and side-by-side component breakdown in detail panel
-- Embedded HL7 v2.3 and v2.5 segment/field definitions (~23 segments each) with data type component breakdowns (~30 composite types)
-- Auto-detects HL7 version from MSH-12 (v2.3.1 maps to v2.3 definitions)
+- Embedded HL7 v2.3, v2.5, and v2.8 segment/field definitions (~23–26 segments) with data type component breakdowns (~32 composite types)
+- Auto-detects HL7 version from MSH-12 (v2.3.1 maps to v2.3, v2.8.x maps to v2.8 definitions)
 - Correct MSH field numbering: MSH-1 = `|` (field separator), MSH-2 = encoding characters
 - Component (`^`) and subcomponent (`&`) splitting, field repetition (`~`) handling
 - Loadable integration profile JSON files via `<input type="file">` for custom field names, descriptions, notes, value maps
@@ -60,7 +60,7 @@ Or without packaging: `venv/bin/pip install -r requirements-mcp.txt`
 **Resources (3):**
 - `hl7://samples/{name}` — Sample HL7 messages from `samples/` directory
 - `hl7://profiles/{name}` — Integration profiles from `profiles/` directory
-- `hl7://definitions/{version}` — HL7 v2.3/v2.5 definition summaries
+- `hl7://definitions/{version}` — HL7 v2.3/v2.5/v2.8 definition summaries
 
 ### Terminal TUI (`hl7view/tui.py`)
 
@@ -69,7 +69,7 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 **Keybindings:**
 - Navigation: `↑`/`↓` or `j`/`k` (vi-style), `Enter` expand/edit, `b`/`f` history back/forward
 - File: `o` open file, `p` paste from clipboard
-- Display: `/` search, `v` cycle HL7 version, `e` toggle empty fields, `r` raw view, `c` copy value
+- Display: `/` search, `v` cycle HL7 version (auto/2.3/2.5/2.8), `e` toggle empty fields, `r` raw view, `c` copy value
 - Anonymization: `a` toggle anon, `n` switch name pool (ASCII/Estonian), `t` transliterate non-ASCII
 - Integration: `i` load profile, `s` send via MLLP, `l` load MLLP response
 - General: `?` help screen, `Esc` close overlay/cancel, `q` quit
@@ -92,7 +92,7 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 venv/bin/pytest tests/ -v
 ```
 
-80 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff). Uses all 3 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+90 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff). Uses all 4 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
 
 - `pytest.ini` sets `pythonpath = .` so no install step needed
 - `tests/conftest.py` — shared fixtures (parsed messages, sample profile)
@@ -103,3 +103,4 @@ venv/bin/pytest tests/ -v
 - `adt-a01-admit-v25.hl7` — ADT^A01 admission (v2.5), 5 segments: MSH, EVN, PID, NK1, PV1
 - `orm-o01-order-v23.hl7` — ORM^O01 radiology order (v2.3.1), 6 segments including ZDS custom segment, non-ASCII Estonian names, ISO-8859-1 charset
 - `oru-r01-lab-v25.hl7` — ORU^R01 lab results (v2.5), 11 segments with 5 OBX (numeric, coded, string, formatted text with escape sequences, repeating values), NTE
+- `oru-r01-lab-v28.hl7` — ORU^R01 CBC lab results (v2.8), 13 segments with SFT, SPM, 5 OBX with performing organization (fields 23–25), CWE types

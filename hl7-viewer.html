@@ -274,7 +274,7 @@ border-radius:4px;padding:2px 8px;font-size:12px;color:var(--blue)}
 <div id="toolbar">
 <label>Version:</label>
 <select id="versionSelect"><option value="auto">Auto-detect</option>
-<option value="2.3">v2.3</option><option value="2.5">v2.5</option></select>
+<option value="2.3">v2.3</option><option value="2.5">v2.5</option><option value="2.8">v2.8</option></select>
 <button class="tb-btn" onclick="document.getElementById('hl7File').click()">Open</button>
 <input type="file" id="hl7File" accept=".hl7,.txt,.dat,.msg">
 <button class="tb-btn" onclick="document.getElementById('profileFile').click()">Load Profile</button>
@@ -522,7 +522,15 @@ XON:{name:"Extended Composite Name for Organizations",components:[
 {name:"ID Number",dt:"NM"},{name:"Check Digit",dt:"NM"},
 {name:"Check Digit Scheme",dt:"ID"},{name:"Assigning Authority",dt:"HD"},
 {name:"Identifier Type Code",dt:"ID"},{name:"Assigning Facility",dt:"HD"},
-{name:"Name Representation Code",dt:"ID"},{name:"Organization Identifier",dt:"ST"}]}
+{name:"Name Representation Code",dt:"ID"},{name:"Organization Identifier",dt:"ST"}]},
+GTS:{name:"General Timing Specification",primitive:true},
+RPT:{name:"Repeat Pattern",components:[
+{name:"Repeat Pattern Code",dt:"CWE"},{name:"Calendar Alignment",dt:"ID"},
+{name:"Phase Range Begin Value",dt:"NM"},{name:"Phase Range End Value",dt:"NM"},
+{name:"Period Quantity",dt:"NM"},{name:"Period Units",dt:"IS"},
+{name:"Institution Specified Time",dt:"ID"},{name:"Event",dt:"ID"},
+{name:"Event Offset Quantity",dt:"NM"},{name:"Event Offset Units",dt:"IS"},
+{name:"General Timing Specification",dt:"GTS"}]}
 };
 
 // ========== HL7 v2.3 SEGMENT DEFINITIONS ==========
@@ -979,7 +987,96 @@ HL7_V25.OBR.fields[50] = {name:"Parent Universal Service Identifier",dt:"CWE",op
 HL7_V25.OBX.fields[18] = {name:"Equipment Instance Identifier",dt:"EI",opt:"O",rep:true,len:22};
 HL7_V25.OBX.fields[19] = {name:"Date/Time of the Analysis",dt:"TS",opt:"O",rep:false,len:26};
 
-const HL7_DEFS = {"2.3": HL7_V23, "2.5": HL7_V25};
+// New segments added in v2.5 (also inherited by v2.8)
+HL7_V25.SFT = {name:"Software Segment",fields:{
+1:{name:"Software Vendor Organization",dt:"XON",opt:"R",rep:false,len:567},
+2:{name:"Software Certified Version or Release Number",dt:"ST",opt:"R",rep:false,len:15},
+3:{name:"Software Product Name",dt:"ST",opt:"R",rep:false,len:20},
+4:{name:"Software Binary ID",dt:"ST",opt:"R",rep:false,len:20},
+5:{name:"Software Product Information",dt:"TX",opt:"O",rep:false,len:1024},
+6:{name:"Software Install Date",dt:"TS",opt:"O",rep:false,len:26}}};
+
+HL7_V25.SPM = {name:"Specimen",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Specimen ID",dt:"EIP",opt:"O",rep:false,len:80},
+3:{name:"Specimen Parent IDs",dt:"EIP",opt:"O",rep:true,len:80},
+4:{name:"Specimen Type",dt:"CWE",opt:"R",rep:false,len:250},
+5:{name:"Specimen Type Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+6:{name:"Specimen Additives",dt:"CWE",opt:"O",rep:true,len:250},
+7:{name:"Specimen Collection Method",dt:"CWE",opt:"O",rep:false,len:250},
+8:{name:"Specimen Source Site",dt:"CWE",opt:"O",rep:false,len:250},
+9:{name:"Specimen Source Site Modifier",dt:"CWE",opt:"O",rep:true,len:250},
+10:{name:"Specimen Collection Site",dt:"CWE",opt:"O",rep:false,len:250},
+11:{name:"Specimen Role",dt:"CWE",opt:"O",rep:true,len:250},
+12:{name:"Specimen Collection Amount",dt:"CQ",opt:"O",rep:false,len:20},
+13:{name:"Grouped Specimen Count",dt:"NM",opt:"O",rep:false,len:6},
+14:{name:"Specimen Description",dt:"ST",opt:"O",rep:true,len:250},
+15:{name:"Specimen Handling Code",dt:"CWE",opt:"O",rep:true,len:250},
+16:{name:"Specimen Risk Code",dt:"CWE",opt:"O",rep:true,len:250},
+17:{name:"Specimen Collection Date/Time",dt:"DR",opt:"O",rep:false,len:26},
+18:{name:"Specimen Received Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+19:{name:"Specimen Expiration Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+20:{name:"Specimen Availability",dt:"ID",opt:"O",rep:false,len:1},
+21:{name:"Specimen Reject Reason",dt:"CWE",opt:"O",rep:true,len:250},
+22:{name:"Specimen Quality",dt:"CWE",opt:"O",rep:false,len:250},
+23:{name:"Specimen Appropriateness",dt:"CWE",opt:"O",rep:false,len:250},
+24:{name:"Specimen Condition",dt:"CWE",opt:"O",rep:true,len:250},
+25:{name:"Specimen Current Quantity",dt:"CQ",opt:"O",rep:false,len:20},
+26:{name:"Number of Specimen Containers",dt:"NM",opt:"O",rep:false,len:4},
+27:{name:"Container Type",dt:"CWE",opt:"O",rep:false,len:250}}};
+
+HL7_V25.TQ1 = {name:"Timing/Quantity",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Quantity",dt:"CQ",opt:"O",rep:false,len:20},
+3:{name:"Repeat Pattern",dt:"RPT",opt:"O",rep:true,len:540},
+4:{name:"Explicit Time",dt:"TM",opt:"O",rep:true,len:20},
+5:{name:"Relative Time and Units",dt:"CQ",opt:"O",rep:true,len:20},
+6:{name:"Service Duration",dt:"CQ",opt:"O",rep:false,len:20},
+7:{name:"Start Date/Time",dt:"TS",opt:"R",rep:false,len:26},
+8:{name:"End Date/Time",dt:"TS",opt:"O",rep:false,len:26},
+9:{name:"Priority",dt:"CWE",opt:"O",rep:true,len:250},
+10:{name:"Condition Text",dt:"TX",opt:"O",rep:false,len:250},
+11:{name:"Text Instruction",dt:"TX",opt:"O",rep:false,len:250},
+12:{name:"Conjunction",dt:"ID",opt:"C",rep:false,len:10},
+13:{name:"Occurrence Duration",dt:"CQ",opt:"O",rep:false,len:20},
+14:{name:"Total Occurrences",dt:"NM",opt:"O",rep:false,len:10}}};
+
+HL7_V25.TQ2 = {name:"Timing/Quantity Relationship",fields:{
+1:{name:"Set ID",dt:"SI",opt:"O",rep:false,len:4},
+2:{name:"Sequence/Results Flag",dt:"ID",opt:"O",rep:false,len:1},
+3:{name:"Related Placer Number",dt:"EI",opt:"O",rep:true,len:22},
+4:{name:"Related Filler Number",dt:"EI",opt:"O",rep:true,len:22},
+5:{name:"Related Placer Group Number",dt:"EI",opt:"O",rep:true,len:22},
+6:{name:"Sequence Condition Code",dt:"ID",opt:"O",rep:false,len:2},
+7:{name:"Cyclic Entry/Exit Indicator",dt:"ID",opt:"O",rep:false,len:1},
+8:{name:"Sequence Condition Time Interval",dt:"CQ",opt:"O",rep:false,len:20},
+9:{name:"Cyclic Group Maximum Number of Repeats",dt:"NM",opt:"O",rep:false,len:10},
+10:{name:"Special Service Request Relationship",dt:"ID",opt:"O",rep:false,len:1}}};
+
+// ========== HL7 v2.8 SEGMENT DEFINITIONS ==========
+// Start with v2.5 as base, then override/extend
+const HL7_V28 = JSON.parse(JSON.stringify(HL7_V25));
+
+// MSH v2.8 extensions
+HL7_V28.MSH.fields[22] = {name:"Sending Responsible Organization",dt:"XON",opt:"O",rep:false,len:567};
+HL7_V28.MSH.fields[23] = {name:"Receiving Responsible Organization",dt:"XON",opt:"O",rep:false,len:567};
+HL7_V28.MSH.fields[24] = {name:"Sending Network Address",dt:"HD",opt:"O",rep:false,len:227};
+HL7_V28.MSH.fields[25] = {name:"Receiving Network Address",dt:"HD",opt:"O",rep:false,len:227};
+
+// OBX v2.8 extensions
+HL7_V28.OBX.fields[20] = {name:"Observation Site",dt:"CWE",opt:"O",rep:true,len:250};
+HL7_V28.OBX.fields[21] = {name:"Observation Instance Identifier",dt:"EI",opt:"O",rep:false,len:22};
+HL7_V28.OBX.fields[22] = {name:"Mood Code",dt:"CNE",opt:"O",rep:false,len:250};
+HL7_V28.OBX.fields[23] = {name:"Performing Organization Name",dt:"XON",opt:"O",rep:false,len:567};
+HL7_V28.OBX.fields[24] = {name:"Performing Organization Address",dt:"XAD",opt:"O",rep:false,len:631};
+HL7_V28.OBX.fields[25] = {name:"Performing Organization Medical Director",dt:"XCN",opt:"O",rep:false,len:3002};
+
+// CE→CWE in v2.8 key lab fields
+[["OBX",[3,6,15,17]],["OBR",[4,44,45]],["DG1",[3]],["AL1",[2,3]]].forEach(([seg,nums])=>{
+  nums.forEach(n=>{ const f=HL7_V28[seg].fields[n]; if(f&&f.dt==="CE"){f.dt="CWE";} });
+});
+
+const HL7_DEFS = {"2.3": HL7_V23, "2.5": HL7_V25, "2.8": HL7_V28};
 
 // ========== MSH-18 CHARACTER SET MAPPING ==========
 const MSH18_TO_ENCODING = {
@@ -1297,9 +1394,10 @@ function resolveVersion(parsed) {
   if (sel !== 'auto') return sel;
   if (parsed && parsed.version) {
     const v = parsed.version.trim();
+    if (v.startsWith('2.8')) return '2.8';
     if (v.startsWith('2.5')) return '2.5';
     if (v.startsWith('2.3') || v === '2.4') return '2.3';
-    if (v.startsWith('2.6') || v.startsWith('2.7') || v.startsWith('2.8')) return '2.5';
+    if (v.startsWith('2.6') || v.startsWith('2.7')) return '2.5';
   }
   return '2.5'; // default
 }

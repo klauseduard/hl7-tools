@@ -1375,10 +1375,12 @@ function onNonAsciiChange() {
   }
 }
 
+const PHI_SEGMENTS = new Set(['PID', 'NK1', 'GT1', 'IN1', 'MRG']);
+
 function anonymizeMessage() {
   if (!parsedMessage || !anonReplacements) return;
   for (const seg of parsedMessage.segments) {
-    if (seg.name !== 'PID') continue;
+    if (!PHI_SEGMENTS.has(seg.name)) continue;
     for (const field of seg.fields) {
       const key = seg.name + '-' + field.fieldNum;
       const repl = anonReplacements[key];
@@ -1434,76 +1436,92 @@ function reconstructFieldValue(field) {
   return field.rawValue || field.value || '';
 }
 
+function generateFakeCity() {
+  return FAKE_CITIES[Math.floor(Math.random() * FAKE_CITIES.length)];
+}
+
 function generateReplacements(parsed, useNonAscii) {
   const replacements = {};
   const namePool = useNonAscii ? ESTONIAN_NAMES : ASCII_NAMES;
   let nameIdx = Math.floor(Math.random() * namePool.length);
 
+  // Helper: generate replacement for a repeating or simple field
+  function replId(key, field) {
+    if (field.repetitions && field.repetitions.length > 1) {
+      for (let ri = 0; ri < field.repetitions.length; ri++) {
+        replacements[key + '~' + (ri + 1)] = {value: generateFakeId(field.repetitions[ri].value)};
+      }
+      replacements[key] = replacements[key + '~1'];
+    } else {
+      replacements[key] = {value: generateFakeId(field.rawValue)};
+    }
+  }
+  function replName(key, field) {
+    if (field.repetitions && field.repetitions.length > 1) {
+      for (let ri = 0; ri < field.repetitions.length; ri++) {
+        const name = namePool[nameIdx % namePool.length]; nameIdx++;
+        replacements[key + '~' + (ri + 1)] = {value: generateFakeName(name, field.repetitions[ri].value)};
+      }
+      replacements[key] = replacements[key + '~1'];
+    } else {
+      const name = namePool[nameIdx % namePool.length]; nameIdx++;
+      replacements[key] = {value: generateFakeName(name, field.rawValue)};
+    }
+  }
+  function replAddr(key, field) {
+    if (field.repetitions && field.repetitions.length > 1) {
+      for (let ri = 0; ri < field.repetitions.length; ri++) {
+        replacements[key + '~' + (ri + 1)] = {value: generateFakeAddress(field.repetitions[ri].value)};
+      }
+      replacements[key] = replacements[key + '~1'];
+    } else {
+      replacements[key] = {value: generateFakeAddress(field.rawValue)};
+    }
+  }
+  function replPhone(key, field) {
+    if (field.repetitions && field.repetitions.length > 1) {
+      for (let ri = 0; ri < field.repetitions.length; ri++) {
+        replacements[key + '~' + (ri + 1)] = {value: generateFakePhone(field.repetitions[ri].value)};
+      }
+      replacements[key] = replacements[key + '~1'];
+    } else if (field.rawValue) {
+      replacements[key] = {value: generateFakePhone(field.rawValue)};
+    }
+  }
+
   for (const seg of parsed.segments) {
-    if (seg.name !== 'PID') continue;
+    if (!PHI_SEGMENTS.has(seg.name)) continue;
     for (const field of seg.fields) {
       const fn = field.fieldNum;
-      const key = 'PID-' + fn;
+      const key = seg.name + '-' + fn;
 
-      if (fn === 2 || fn === 3) {
-        // Patient ID (CX) — random numeric, same length
-        if (field.repetitions && field.repetitions.length > 1) {
-          for (let ri = 0; ri < field.repetitions.length; ri++) {
-            replacements[key + '~' + (ri + 1)] = {value: generateFakeId(field.repetitions[ri].value)};
-          }
-          replacements[key] = replacements[key + '~1'];
-        } else {
-          replacements[key] = {value: generateFakeId(field.rawValue)};
-        }
-      } else if (fn === 5 || fn === 9) {
-        // Patient Name / Alias (XPN) — fake name from pool
-        if (field.repetitions && field.repetitions.length > 1) {
-          for (let ri = 0; ri < field.repetitions.length; ri++) {
-            const name = namePool[nameIdx % namePool.length];
-            nameIdx++;
-            replacements[key + '~' + (ri + 1)] = {value: generateFakeName(name, field.repetitions[ri].value)};
-          }
-          replacements[key] = replacements[key + '~1'];
-        } else {
-          const name = namePool[nameIdx % namePool.length];
-          nameIdx++;
-          replacements[key] = {value: generateFakeName(name, field.rawValue)};
-        }
-      } else if (fn === 7) {
-        // Date/Time of Birth (TS) — shift
-        if (field.value) {
-          replacements[key] = {value: shiftDate(field.rawValue)};
-        }
-      } else if (fn === 11) {
-        // Patient Address (XAD)
-        if (field.repetitions && field.repetitions.length > 1) {
-          for (let ri = 0; ri < field.repetitions.length; ri++) {
-            replacements[key + '~' + (ri + 1)] = {value: generateFakeAddress(field.repetitions[ri].value)};
-          }
-          replacements[key] = replacements[key + '~1'];
-        } else {
-          replacements[key] = {value: generateFakeAddress(field.rawValue)};
-        }
-      } else if (fn === 13 || fn === 14) {
-        // Phone (XTN) — random digits preserving format
-        if (field.repetitions && field.repetitions.length > 1) {
-          for (let ri = 0; ri < field.repetitions.length; ri++) {
-            replacements[key + '~' + (ri + 1)] = {value: generateFakePhone(field.repetitions[ri].value)};
-          }
-          replacements[key] = replacements[key + '~1'];
-        } else if (field.rawValue) {
-          replacements[key] = {value: generateFakePhone(field.rawValue)};
-        }
-      } else if (fn === 19) {
-        // SSN — random digits, same length
-        if (field.value) {
-          replacements[key] = {value: generateFakeSsn(field.rawValue)};
-        }
-      } else if (fn === 20) {
-        // Driver's License (DLN) — random alphanumeric
-        if (field.value) {
-          replacements[key] = {value: generateFakeDln(field.rawValue)};
-        }
+      if (seg.name === 'PID') {
+        if (fn === 2 || fn === 3) { replId(key, field); }
+        else if (fn === 5 || fn === 6 || fn === 9) { replName(key, field); }
+        else if (fn === 7) { if (field.value) replacements[key] = {value: shiftDate(field.rawValue)}; }
+        else if (fn === 11) { replAddr(key, field); }
+        else if (fn === 13 || fn === 14) { replPhone(key, field); }
+        else if (fn === 18 || fn === 21) { replId(key, field); }
+        else if (fn === 19) { if (field.value) replacements[key] = {value: generateFakeSsn(field.rawValue)}; }
+        else if (fn === 20) { if (field.value) replacements[key] = {value: generateFakeDln(field.rawValue)}; }
+        else if (fn === 23) { if (field.rawValue) replacements[key] = {value: generateFakeCity()}; }
+      } else if (seg.name === 'NK1') {
+        if (fn === 2) { replName(key, field); }
+        else if (fn === 4) { replAddr(key, field); }
+        else if (fn === 5 || fn === 6) { replPhone(key, field); }
+      } else if (seg.name === 'GT1') {
+        if (fn === 3) { replName(key, field); }
+        else if (fn === 5) { replAddr(key, field); }
+        else if (fn === 6 || fn === 7) { replPhone(key, field); }
+        else if (fn === 8) { if (field.value) replacements[key] = {value: shiftDate(field.rawValue)}; }
+        else if (fn === 12) { if (field.value) replacements[key] = {value: generateFakeSsn(field.rawValue)}; }
+      } else if (seg.name === 'IN1') {
+        if (fn === 16) { replName(key, field); }
+        else if (fn === 18) { if (field.value) replacements[key] = {value: shiftDate(field.rawValue)}; }
+        else if (fn === 19) { replAddr(key, field); }
+      } else if (seg.name === 'MRG') {
+        if (fn >= 1 && fn <= 4) { replId(key, field); }
+        else if (fn === 7) { replName(key, field); }
       }
     }
   }
@@ -3320,17 +3338,31 @@ if (!showEmpty) document.getElementById('emptyBtn').classList.add('active');
 <p>Profiles work with <code>file://</code> URLs &mdash; no web server needed.</p>
 
 <h3>Anonymization</h3>
-<p>The <strong>Anon</strong> button in the toolbar toggles patient data anonymization. When active, PID segment fields containing identifying information are replaced with random fake data. Keyboard shortcut: <span class="kbd">Ctrl+Shift+A</span>.</p>
+<p>The <strong>Anon</strong> button in the toolbar toggles patient data anonymization. When active, PHI-bearing segments (PID, NK1, GT1, IN1, MRG) are replaced with random fake data. Keyboard shortcut: <span class="kbd">Ctrl+Shift+A</span>.</p>
 <p>Anonymized fields:</p>
 <table>
 <tr><th>Field</th><th>Strategy</th></tr>
-<tr><td>PID-2, PID-3</td><td>Random numeric IDs (same length, structure preserved)</td></tr>
-<tr><td>PID-5, PID-9</td><td>Fake names from pool (ASCII or Estonian non-ASCII)</td></tr>
+<tr><td>PID-2, PID-3, PID-18, PID-21</td><td>Random numeric IDs (same length, structure preserved)</td></tr>
+<tr><td>PID-5, PID-6, PID-9</td><td>Fake names from pool (ASCII or Estonian non-ASCII)</td></tr>
 <tr><td>PID-7</td><td>Date of birth shifted by &plusmn;1&ndash;20 years</td></tr>
 <tr><td>PID-11</td><td>Fake address (street, city, ZIP randomized)</td></tr>
 <tr><td>PID-13, PID-14</td><td>Random digits preserving format</td></tr>
 <tr><td>PID-19</td><td>SSN: random digits, same length</td></tr>
 <tr><td>PID-20</td><td>Driver&rsquo;s license: random alphanumeric</td></tr>
+<tr><td>PID-23</td><td>Birth place: random city from pool</td></tr>
+<tr><td>NK1-2</td><td>Fake name from pool</td></tr>
+<tr><td>NK1-4</td><td>Fake address</td></tr>
+<tr><td>NK1-5, NK1-6</td><td>Random digits preserving format</td></tr>
+<tr><td>GT1-3</td><td>Fake name from pool</td></tr>
+<tr><td>GT1-5</td><td>Fake address</td></tr>
+<tr><td>GT1-6, GT1-7</td><td>Random digits preserving format</td></tr>
+<tr><td>GT1-8</td><td>Date shifted by &plusmn;1&ndash;20 years</td></tr>
+<tr><td>GT1-12</td><td>SSN: random digits, same length</td></tr>
+<tr><td>IN1-16</td><td>Fake name from pool</td></tr>
+<tr><td>IN1-18</td><td>Date shifted by &plusmn;1&ndash;20 years</td></tr>
+<tr><td>IN1-19</td><td>Fake address</td></tr>
+<tr><td>MRG-1 &ndash; MRG-4</td><td>Random numeric IDs</td></tr>
+<tr><td>MRG-7</td><td>Fake name from pool</td></tr>
 </table>
 <p>Check <strong>Non-ASCII</strong> to use Estonian-style names containing &Otilde;, &Ouml;, &Uuml;, &Auml;, &#x17D;, &#x160; &mdash; useful for testing encoding handling.</p>
 <p>Toggle off to restore the original data. Each toggle-on generates fresh random values. The original message text is preserved in the Input tab and restored exactly when toggling off.</p>

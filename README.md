@@ -12,7 +12,7 @@ HL7 v2 messages. Three interfaces, zero external service dependencies:
 Built-in segment/field definitions for HL7 v2.3 and v2.5 (~23 segments, ~30
 composite data types). Supports integration profiles (JSON overlays for custom
 field names, validation rules, value maps), byte-level encoding detection
-(UTF-8/ISO-8859-1/ASCII with BOM), and PHI anonymization of PID/NK1 segments.
+(UTF-8/ISO-8859-1/ASCII with BOM), and PHI anonymization of PID/NK1/GT1/IN1/MRG segments.
 
 ![HL7 Message Viewer — parsed view](docs/screenshots/patient_query_with_IK_parsed.png)
 
@@ -73,7 +73,7 @@ Switch between Input/Parsed/Raw/Compare using the tabs above the left panel.
 - **Encoding detection** — byte-level UTF-8/ISO-8859-1/ASCII detection with BOM support; MSH-18 mismatch warnings
 - **HL7 escape sequences** — `\F\`, `\S\`, `\T\`, `\R\`, `\E\`, `\.br\`, `\.sp\`, `\Xhh\` recognized and decoded
 - **Integration profiles** — load JSON files to overlay custom field names, descriptions, notes, value maps (see [Profiles](#integration-profiles))
-- **Anonymization** — toggle PID field anonymization with ASCII or Estonian (non-ASCII) name pools
+- **Anonymization** — toggle PHI anonymization (PID, NK1, GT1, IN1, MRG) with ASCII or Estonian (non-ASCII) name pools
 - **Live search** — filter fields by address, name, type, or value
 - **Hide empty fields** — toggle to hide empty fields and their components (`E` key), persisted in localStorage
 - **Click-to-highlight** — click a parsed row to highlight the corresponding position in raw view
@@ -184,7 +184,7 @@ hl7view file1.hl7 file2.hl7 --diff -e
 
 ### Anonymization
 
-Anonymize PID segment fields (names, IDs, DOB, addresses, phone numbers, SSN):
+Anonymize PHI-bearing segment fields (PID, NK1, GT1, IN1, MRG — names, IDs, DOB, addresses, phone numbers, SSN):
 
 ```bash
 # ASCII name pool
@@ -298,7 +298,7 @@ Raw Claude is good at reading common HL7 segments (PID, MSH, OBR) directly. The 
 | `hl7_parse` | Parse raw HL7 into structured JSON with definitions and profile overlays |
 | `hl7_get_field` | Extract a specific field by address (e.g. `PID-5`, `MSH-9.1`, `OBX[2]-5`) |
 | `hl7_validate` | Check for structural issues: missing required fields, length violations, unknown segments |
-| `hl7_anonymize` | Strip PHI from PID/NK1 segments with random replacements |
+| `hl7_anonymize` | Strip PHI from PID/NK1/GT1/IN1/MRG segments with random replacements |
 | `hl7_transform` | Modify field values by address (e.g. `{"PID-5": "DOE^JOHN"}`) |
 | `hl7_send` | Send message via MLLP with optional TLS/mTLS, return ACK |
 | `hl7_diff` | Compare two messages field-by-field, return structured JSON diff |

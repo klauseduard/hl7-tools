@@ -51,7 +51,7 @@ Or without packaging: `venv/bin/pip install -r requirements-mcp.txt`
 - `hl7_parse` — Parse raw HL7 into structured JSON with definitions and profile overlays
 - `hl7_get_field` — Extract a specific field by address (e.g. "PID-5", "MSH-9.1")
 - `hl7_validate` — Check message for structural issues (missing required fields, length violations, unknown segments); with a profile: enforces `required` fields and `valueMap` value checks
-- `hl7_anonymize` — Strip PHI from PID/NK1 segments
+- `hl7_anonymize` — Strip PHI from PID/NK1/GT1/IN1/MRG segments
 - `hl7_transform` — Modify field values by address (e.g. `{"PID-5": "DOE^JOHN"}`)
 - `hl7_send` — Send message via MLLP with optional TLS/mTLS
 - `hl7_diff` — Compare two messages field-by-field, returns structured JSON diff with per-field status and values
@@ -92,7 +92,7 @@ Interactive terminal viewer using Textual. Launched via `hl7view/cli.py`.
 venv/bin/pytest tests/ -v
 ```
 
-63 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff). Uses all 3 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
+80 tests covering core modules (parser, encoding, profile, anonymize, definitions, diff). Uses all 3 sample messages as fixtures. No browser/UI tests — the Python core logic mirrors the web viewer's JS implementation, so these tests serve as a shared specification.
 
 - `pytest.ini` sets `pythonpath = .` so no install step needed
 - `tests/conftest.py` — shared fixtures (parsed messages, sample profile)

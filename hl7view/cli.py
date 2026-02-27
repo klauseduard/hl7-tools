@@ -259,9 +259,9 @@ def main():
     parser.add_argument('--clipboard', action='store_true',
                         help='read from X clipboard (xclip -o)')
     parser.add_argument('--anon', action='store_true',
-                        help='anonymize PID fields (ASCII name pool)')
+                        help='anonymize PHI fields (ASCII name pool)')
     parser.add_argument('--anon-non-ascii', action='store_true',
-                        help='anonymize PID fields (Estonian name pool with non-ASCII chars)')
+                        help='anonymize PHI fields (Estonian name pool with non-ASCII chars)')
     parser.add_argument('--send', metavar='HOST:PORT',
                         help='send message via MLLP to host:port')
     parser.add_argument('--send-timeout', type=int, default=10, metavar='N',

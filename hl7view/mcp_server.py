@@ -473,7 +473,7 @@ def hl7_validate(message: str, profile: str = "") -> str:
 def hl7_anonymize(message: str, non_ascii_names: bool = False) -> str:
     """Strip PHI (Protected Health Information) from an HL7 message.
 
-    Anonymizes PID and NK1 segments: patient name, ID, DOB, address, phone, SSN.
+    Anonymizes PID, NK1, GT1, IN1, and MRG segments: patient name, ID, DOB, address, phone, SSN.
     Each call generates different random replacements.
 
     Args:

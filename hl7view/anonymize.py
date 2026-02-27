@@ -1,4 +1,4 @@
-"""Anonymization of PID segments and non-ASCII transliteration."""
+"""Anonymization of PHI-bearing segments (PID, NK1, GT1, IN1, MRG) and non-ASCII transliteration."""
 
 import copy
 import random
@@ -114,8 +114,14 @@ def _pick_name(pool):
 # Per-field anonymization
 # ---------------------------------------------------------------------------
 
+def _generate_fake_city(use_non_ascii=False):
+    """Pick a random city from the ASCII or Estonian pool."""
+    cities = _ESTONIAN_CITIES if use_non_ascii else _ASCII_CITIES
+    return random.choice(cities)
+
+
 def _generate_fake_id(raw_value):
-    """Anonymize CX-type field (PID-2, PID-3): randomize digits in component 1."""
+    """Anonymize CX-type field: randomize digits in component 1."""
     if not raw_value:
         return raw_value
     reps = raw_value.split("~")
@@ -129,7 +135,7 @@ def _generate_fake_id(raw_value):
 
 
 def _generate_fake_name(raw_value, pool):
-    """Anonymize XPN-type field (PID-5, PID-9): replace family/given, clear middle."""
+    """Anonymize XPN-type field: replace family/given, clear middle."""
     if not raw_value:
         return raw_value
     reps = raw_value.split("~")
@@ -148,7 +154,7 @@ def _generate_fake_name(raw_value, pool):
 
 
 def _shift_date(raw_value):
-    """Anonymize date (PID-7): shift year ±1–20, preserve format."""
+    """Anonymize date/time field: shift year ±1–20, preserve format."""
     if not raw_value or len(raw_value) < 4:
         return raw_value
     try:
@@ -161,7 +167,7 @@ def _shift_date(raw_value):
 
 
 def _generate_fake_address(raw_value, use_non_ascii=False):
-    """Anonymize XAD-type field (PID-11): replace street/city/zip."""
+    """Anonymize XAD-type field: replace street/city/zip."""
     if not raw_value:
         return raw_value
     streets = _ESTONIAN_STREETS if use_non_ascii else _ASCII_STREETS
@@ -184,7 +190,7 @@ def _generate_fake_address(raw_value, use_non_ascii=False):
 
 
 def _generate_fake_phone(raw_value):
-    """Anonymize XTN-type field (PID-13, PID-14): randomize all digits."""
+    """Anonymize XTN-type field: randomize all digits."""
     if not raw_value:
         return raw_value
     reps = raw_value.split("~")
@@ -209,14 +215,16 @@ _reparse_field = reparse_field
 # ---------------------------------------------------------------------------
 
 def anonymize_message(parsed, use_non_ascii=False):
-    """Deep-copy parsed message, anonymize all PID segments, rebuild raw_lines.
+    """Deep-copy parsed message, anonymize PHI-bearing segments, rebuild raw_lines.
+
+    Processes PID, NK1, GT1, IN1, and MRG segments.
 
     Args:
         parsed: ParsedMessage to anonymize.
         use_non_ascii: If True, use Estonian name pool; otherwise ASCII.
 
     Returns:
-        A new ParsedMessage with PID fields anonymized.
+        A new ParsedMessage with PHI fields anonymized.
     """
     result = copy.deepcopy(parsed)
     pool = ESTONIAN_NAMES if use_non_ascii else ASCII_NAMES
@@ -227,7 +235,7 @@ def anonymize_message(parsed, use_non_ascii=False):
                 new_raw = None
                 if fld.field_num in (2, 3):
                     new_raw = _generate_fake_id(fld.raw_value)
-                elif fld.field_num in (5, 9):
+                elif fld.field_num in (5, 6, 9):
                     new_raw = _generate_fake_name(fld.raw_value, pool)
                 elif fld.field_num == 7:
                     new_raw = _shift_date(fld.raw_value)
@@ -235,8 +243,12 @@ def anonymize_message(parsed, use_non_ascii=False):
                     new_raw = _generate_fake_address(fld.raw_value, use_non_ascii)
                 elif fld.field_num in (13, 14):
                     new_raw = _generate_fake_phone(fld.raw_value)
+                elif fld.field_num in (18, 21):
+                    new_raw = _generate_fake_id(fld.raw_value)
                 elif fld.field_num in (19, 20):
                     new_raw = _randomize_alphanum(fld.raw_value) if fld.raw_value else None
+                elif fld.field_num == 23:
+                    new_raw = _generate_fake_city(use_non_ascii) if fld.raw_value else None
                 if new_raw is not None:
                     _reparse_field(fld, new_raw)
             seg.raw_line = _rebuild_raw_line(seg.name, seg.fields)
@@ -252,6 +264,51 @@ def anonymize_message(parsed, use_non_ascii=False):
                     new_raw = _generate_fake_address(fld.raw_value, use_non_ascii)
                 elif fld.field_num in (5, 6):
                     new_raw = _generate_fake_phone(fld.raw_value)
+                if new_raw is not None:
+                    _reparse_field(fld, new_raw)
+            seg.raw_line = _rebuild_raw_line(seg.name, seg.fields)
+
+        elif seg.name == "GT1":
+            # GT1-3: name (XPN), GT1-5: address (XAD),
+            # GT1-6/7: phone (XTN), GT1-8: date (TS), GT1-12: SSN
+            for fld in seg.fields:
+                new_raw = None
+                if fld.field_num == 3:
+                    new_raw = _generate_fake_name(fld.raw_value, pool)
+                elif fld.field_num == 5:
+                    new_raw = _generate_fake_address(fld.raw_value, use_non_ascii)
+                elif fld.field_num in (6, 7):
+                    new_raw = _generate_fake_phone(fld.raw_value)
+                elif fld.field_num == 8:
+                    new_raw = _shift_date(fld.raw_value)
+                elif fld.field_num == 12:
+                    new_raw = _randomize_digits(fld.raw_value) if fld.raw_value else None
+                if new_raw is not None:
+                    _reparse_field(fld, new_raw)
+            seg.raw_line = _rebuild_raw_line(seg.name, seg.fields)
+
+        elif seg.name == "IN1":
+            # IN1-16: name (XPN), IN1-18: date (TS), IN1-19: address (XAD)
+            for fld in seg.fields:
+                new_raw = None
+                if fld.field_num == 16:
+                    new_raw = _generate_fake_name(fld.raw_value, pool)
+                elif fld.field_num == 18:
+                    new_raw = _shift_date(fld.raw_value)
+                elif fld.field_num == 19:
+                    new_raw = _generate_fake_address(fld.raw_value, use_non_ascii)
+                if new_raw is not None:
+                    _reparse_field(fld, new_raw)
+            seg.raw_line = _rebuild_raw_line(seg.name, seg.fields)
+
+        elif seg.name == "MRG":
+            # MRG-1..4: prior IDs (CX), MRG-7: prior name (XPN)
+            for fld in seg.fields:
+                new_raw = None
+                if fld.field_num in (1, 2, 3, 4):
+                    new_raw = _generate_fake_id(fld.raw_value)
+                elif fld.field_num == 7:
+                    new_raw = _generate_fake_name(fld.raw_value, pool)
                 if new_raw is not None:
                     _reparse_field(fld, new_raw)
             seg.raw_line = _rebuild_raw_line(seg.name, seg.fields)

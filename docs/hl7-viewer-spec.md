@@ -315,17 +315,32 @@ When a profile is loaded:
 
 ### 6.1 Target fields
 
-Anonymization operates on **PID segments only**, targeting identifying fields:
+Anonymization operates on **PHI-bearing segments** (PID, NK1, GT1, IN1, MRG), targeting identifying fields:
 
 | Field | Replacement method |
 |-------|-------------------|
 | PID-2, PID-3 (Patient IDs) | Replace digits in ID component (component 1) with random digits; preserve CX component structure and length |
-| PID-5, PID-9 (Patient Name, Alias) | Replace family and given names from a fake name pool; clear middle/second name; preserve remaining XPN components (suffix, prefix, degree, name type) |
+| PID-5, PID-6, PID-9 (Patient Name, Mother's Maiden Name, Alias) | Replace family and given names from a fake name pool; clear middle/second name; preserve remaining XPN components |
 | PID-7 (Date of Birth) | Shift year by random ±1–20 years; preserve month, day, and time portion |
 | PID-11 (Patient Address) | Replace street and city from fake pools; randomize zip/postal code digits; preserve country and remaining XAD components |
 | PID-13, PID-14 (Phone Home, Business) | Replace all digits with random digits; preserve all non-digit characters (formatting, `+`, separators) and XTN component structure |
+| PID-18, PID-21 (Patient Account, Mother's ID) | Replace digits in ID component with random digits; preserve CX structure |
 | PID-19 (SSN) | Replace all digits with random digits; preserve separators (dashes, spaces) |
 | PID-20 (Driver's License) | Randomize digits and alpha characters in license number (component 1); preserve issuing state and expiry date components |
+| PID-23 (Birth Place) | Replace with random city from pool |
+| NK1-2 (Next of Kin Name) | Replace family/given names from fake name pool |
+| NK1-4 (Address) | Replace street/city/zip from fake pools |
+| NK1-5, NK1-6 (Phone Home, Business) | Replace all digits with random digits; preserve format |
+| GT1-3 (Guarantor Name) | Replace family/given names from fake name pool |
+| GT1-5 (Address) | Replace street/city/zip from fake pools |
+| GT1-6, GT1-7 (Phone Home, Business) | Replace all digits with random digits; preserve format |
+| GT1-8 (Date of Birth) | Shift year by random ±1–20 years |
+| GT1-12 (SSN) | Replace all digits with random digits; preserve separators |
+| IN1-16 (Name of Insured) | Replace family/given names from fake name pool |
+| IN1-18 (Insured's Date of Birth) | Shift year by random ±1–20 years |
+| IN1-19 (Insured's Address) | Replace street/city/zip from fake pools |
+| MRG-1 through MRG-4 (Prior Patient IDs) | Replace digits in ID component with random digits; preserve CX structure |
+| MRG-7 (Prior Patient Name) | Replace family/given names from fake name pool |
 
 ### 6.2 Repetition handling
 
@@ -344,7 +359,7 @@ Two pools selectable by the user:
 ### 6.4 Toggle behavior
 
 - Anonymization is a reversible toggle — original data is preserved
-- When activated: all PID fields are replaced, raw segment lines are reconstructed, all views update
+- When activated: all PHI fields (PID, NK1, GT1, IN1, MRG) are replaced, raw segment lines are reconstructed, all views update
 - When deactivated: original data is restored
 - Switching name pool (ASCII ↔ non-ASCII) re-anonymizes with the new pool
 - Parsing a new message resets anonymization state

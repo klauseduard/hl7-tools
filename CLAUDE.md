@@ -90,7 +90,9 @@ venv/bin/python tools/gen_js_defs.py
 
 - The generator replaces the block between `@@GENERATED_DEFS_START@@` / `@@GENERATED_DEFS_END@@` markers in `hl7-viewer.html`
 - `test_js_defs_in_sync` in `tests/test_definitions.py` fails if they're out of sync
+- CI runs the generator and fails if `hl7-viewer.html` has uncommitted changes
 - Never hand-edit definitions in `hl7-viewer.html` — edit `definitions.py` and regenerate
+- Commit both `definitions.py` and `hl7-viewer.html` together
 
 ## HL7 Parsing Notes
 
